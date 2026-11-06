@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: #FAF6F0;
+    color: #2C2523;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-image: 
+      radial-gradient(at 12% 8%, rgba(20, 184, 166, 0.08) 0px, transparent 48%),
+      radial-gradient(at 88% 15%, rgba(217, 119, 87, 0.07) 0px, transparent 45%),
+      radial-gradient(at 50% 90%, rgba(132, 169, 140, 0.1) 0px, transparent 55%);
+    background-attachment: fixed;
+  }
+
+  /* Evitar auto-zoom em inputs no iOS Safari quando focado */
+  @media screen and (max-width: 768px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+/* Scrollbar delicada estilo Cozy Kitchen */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F2ECE1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D5C7AD;
+  border-radius: 9999px;
+  border: 2px solid #F2ECE1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #14B8A6;
+}
+
+/* Utilitários de Safe Area para PWA iOS e Android */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+}
+
