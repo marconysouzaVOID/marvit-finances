@@ -35,16 +35,16 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
   };
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-5 sm:p-6 shadow-cozy">
+    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-maldives-600 text-xl">
               donut_large
             </span>
           </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-display font-bold text-espresso-900">
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-xl font-display font-bold text-espresso-900">
               Pilares Orçamentários da Casa
             </h2>
             <p className="text-xs text-espresso-600">

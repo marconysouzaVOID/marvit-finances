@@ -3,8 +3,9 @@ import { MarvitBackupData } from '../types';
 export const DEFAULT_VAULT_ID = 'marvit';
 export const DEFAULT_INITIAL_PIN = '2026';
 
-export async function hashPin(vaultId: string, pin: string): Promise<string> {
-  const normalized = `${vaultId.trim().toLowerCase()}::${pin.trim()}::marvit_salt_v2`;
+export async function hashPin(_vaultId: string, pin: string): Promise<string> {
+  // Acesso geral único: sempre usa a chave global "marvit" para garantir paridade total entre PC e Celular
+  const normalized = `${DEFAULT_VAULT_ID}::${pin.trim()}::marvit_salt_v2`;
   const encoded = new TextEncoder().encode(normalized);
   const hashBuffer = await window.crypto.subtle.digest('SHA-256', encoded);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -21,12 +22,11 @@ export interface CloudSyncResponse {
 }
 
 export async function pushVaultToCloud(
-  vaultId: string,
+  _vaultId: string,
   pinHash: string,
   payload: MarvitBackupData,
   newPinHash?: string
 ): Promise<CloudSyncResponse> {
-  const cleanId = (vaultId || DEFAULT_VAULT_ID).trim().toLowerCase();
   const effectiveStoredHash = newPinHash || pinHash;
 
   try {
@@ -34,7 +34,7 @@ export async function pushVaultToCloud(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        vaultId: cleanId,
+        vaultId: DEFAULT_VAULT_ID,
         pinHash,
         ...(newPinHash ? { newPinHash } : {}),
         payload,
@@ -46,22 +46,22 @@ export async function pushVaultToCloud(
       if (res.status === 401) {
         return {
           ok: false,
-          message: errJson.error || 'PIN incorreto para este Cofre na nuvem.',
+          message: errJson.error || 'PIN incorreto.',
         };
       }
-      saveLocalMirrorVault(cleanId, effectiveStoredHash, payload);
+      saveLocalMirrorVault(effectiveStoredHash, payload);
       return {
         ok: true,
         mode: 'local-fallback',
         updatedAt: new Date().toISOString(),
         message: newPinHash
           ? 'Novo PIN salvo no dispositivo!'
-          : 'Cofre salvo no armazenamento seguro local.',
+          : 'Dados salvos no armazenamento local seguro.',
       };
     }
 
     const result = await res.json();
-    saveLocalMirrorVault(cleanId, effectiveStoredHash, payload);
+    saveLocalMirrorVault(effectiveStoredHash, payload);
     return {
       ok: true,
       mode: result.mode || 'cloud',
@@ -70,33 +70,32 @@ export async function pushVaultToCloud(
       message:
         result.message ||
         (newPinHash
-          ? 'Novo PIN salvo com sucesso!'
-          : 'Sincronizado com sucesso na nuvem!'),
+          ? 'Novo PIN geral salvo com sucesso!'
+          : 'Sincronizado com sucesso entre PC e Celular!'),
     };
   } catch {
-    saveLocalMirrorVault(cleanId, effectiveStoredHash, payload);
+    saveLocalMirrorVault(effectiveStoredHash, payload);
     return {
       ok: true,
       mode: 'local-fallback',
       updatedAt: new Date().toISOString(),
       message: newPinHash
-        ? 'Novo PIN salvo no cofre local!'
+        ? 'Novo PIN salvo localmente!'
         : 'Salvo no cofre local deste dispositivo (modo offline).',
     };
   }
 }
 
 export async function pullVaultFromCloud(
-  vaultId: string,
+  _vaultId: string,
   pinHash: string
 ): Promise<CloudSyncResponse> {
-  const cleanId = (vaultId || DEFAULT_VAULT_ID).trim().toLowerCase();
-  const defaultHash = await hashPin(cleanId, DEFAULT_INITIAL_PIN);
+  const defaultHash = await hashPin(DEFAULT_VAULT_ID, DEFAULT_INITIAL_PIN);
 
   try {
     const res = await fetch(
-      `/api/sync?vaultId=${encodeURIComponent(cleanId)}&pinHash=${encodeURIComponent(pinHash)}`,
-      { method: 'GET' }
+      `/api/sync?vaultId=${DEFAULT_VAULT_ID}&pinHash=${encodeURIComponent(pinHash)}&t=${Date.now()}`,
+      { method: 'GET', cache: 'no-store' }
     );
 
     if (res.status === 401) {
@@ -111,7 +110,7 @@ export async function pullVaultFromCloud(
       const result = await res.json();
       if (result && 'ok' in result) {
         if (result.data) {
-          saveLocalMirrorVault(cleanId, pinHash, result.data);
+          saveLocalMirrorVault(pinHash, result.data);
         }
         return {
           ok: true,
@@ -120,7 +119,7 @@ export async function pullVaultFromCloud(
           updatedAt: result.updatedAt,
           isDefaultPin: result.isDefaultPin ?? pinHash === defaultHash,
           message: result.data
-            ? 'Dados carregados da nuvem com sucesso!'
+            ? 'Finanças sincronizadas da nuvem!'
             : 'Primeiro acesso autenticado com sucesso!',
         };
       }
@@ -129,11 +128,11 @@ export async function pullVaultFromCloud(
     // Fallback para espelho local caso offline ou sem backend ativo
   }
 
-  const localResult = loadLocalMirrorVault(cleanId, pinHash);
+  const localResult = loadLocalMirrorVault(pinHash);
   if (localResult.status === 'unauthorized') {
     return {
       ok: false,
-      message: 'PIN incorreto para o cofre salvo neste dispositivo.',
+      message: 'PIN incorreto.',
     };
   }
   if (localResult.status === 'found' && localResult.data) {
@@ -147,7 +146,7 @@ export async function pullVaultFromCloud(
     };
   }
 
-  if (cleanId === DEFAULT_VAULT_ID && pinHash !== defaultHash) {
+  if (pinHash !== defaultHash) {
     return {
       ok: false,
       message: 'PIN incorreto. No primeiro acesso, utilize o PIN padrão: 2026.',
@@ -158,17 +157,13 @@ export async function pullVaultFromCloud(
     ok: true,
     mode: 'local-fallback',
     data: null,
-    isDefaultPin: pinHash === defaultHash,
+    isDefaultPin: true,
     message: 'Acesso liberado!',
   };
 }
 
-function saveLocalMirrorVault(
-  vaultId: string,
-  pinHash: string,
-  data: MarvitBackupData
-): void {
-  const key = `marvit_vault_mirror_${vaultId.trim().toLowerCase()}`;
+function saveLocalMirrorVault(pinHash: string, data: MarvitBackupData): void {
+  const key = `marvit_vault_mirror_${DEFAULT_VAULT_ID}`;
   localStorage.setItem(
     key,
     JSON.stringify({
@@ -179,15 +174,12 @@ function saveLocalMirrorVault(
   );
 }
 
-function loadLocalMirrorVault(
-  vaultId: string,
-  pinHash: string
-): {
+function loadLocalMirrorVault(pinHash: string): {
   status: 'found' | 'not_found' | 'unauthorized';
   data?: MarvitBackupData;
   updatedAt?: string;
 } {
-  const key = `marvit_vault_mirror_${vaultId.trim().toLowerCase()}`;
+  const key = `marvit_vault_mirror_${DEFAULT_VAULT_ID}`;
   const raw = localStorage.getItem(key);
   if (!raw) return { status: 'not_found' };
   try {

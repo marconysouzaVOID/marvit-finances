@@ -96,14 +96,14 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
   };
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-5 shadow-cozy transition-colors">
-      {/* Linha Superior: Navegação Rápida do Mês Ativo + Ano + Botões */}
+    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-3.5 sm:p-5 shadow-cozy transition-colors overflow-hidden">
+      {/* Linha Superior: Navegação Rápida do Mês Ativo + Nota + Botões */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div className="flex items-center justify-between sm:justify-start gap-2.5">
+        <div className="flex items-center justify-between sm:justify-start gap-2 w-full lg:w-auto">
           <button
             type="button"
             onClick={() => handleStepMonth(-1)}
-            className="w-9 h-9 rounded-xl bg-oat-100 hover:bg-maldives-50 border border-oat-300 hover:border-maldives-400 flex items-center justify-center text-espresso-800 hover:text-maldives-700 transition cursor-pointer"
+            className="w-9 h-9 shrink-0 rounded-xl bg-oat-100 hover:bg-maldives-50 border border-oat-300 hover:border-maldives-400 flex items-center justify-center text-espresso-800 hover:text-maldives-700 transition cursor-pointer"
             title="Mês anterior"
           >
             <span className="material-symbols-outlined text-[20px]">
@@ -111,15 +111,15 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
             </span>
           </button>
 
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-2xl bg-maldives-50/80 border border-maldives-200">
-            <span className="material-symbols-outlined text-maldives-600 text-xl">
+          <div className="flex items-center justify-center sm:justify-start gap-2 px-3 py-1.5 rounded-2xl bg-maldives-50/80 border border-maldives-200 flex-1 sm:flex-initial min-w-0">
+            <span className="material-symbols-outlined text-maldives-600 text-lg sm:text-xl shrink-0">
               calendar_month
             </span>
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-maldives-700 block leading-none">
+            <div className="min-w-0 text-left">
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-maldives-700 block leading-none truncate">
                 Competência em Edição
               </span>
-              <span className="text-sm sm:text-base font-display font-extrabold text-espresso-900">
+              <span className="text-xs sm:text-base font-display font-extrabold text-espresso-900 block truncate">
                 {MONTH_NAMES_FULL[selectedMonthIdx]} de {selectedYear}
               </span>
             </div>
@@ -128,7 +128,7 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
           <button
             type="button"
             onClick={() => handleStepMonth(1)}
-            className="w-9 h-9 rounded-xl bg-oat-100 hover:bg-maldives-50 border border-oat-300 hover:border-maldives-400 flex items-center justify-center text-espresso-800 hover:text-maldives-700 transition cursor-pointer"
+            className="w-9 h-9 shrink-0 rounded-xl bg-oat-100 hover:bg-maldives-50 border border-oat-300 hover:border-maldives-400 flex items-center justify-center text-espresso-800 hover:text-maldives-700 transition cursor-pointer"
             title="Próximo mês"
           >
             <span className="material-symbols-outlined text-[20px]">
@@ -144,7 +144,7 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
                 setViewYear(Number(cy));
                 onSelectMonth(currentSystemMonthKey);
               }}
-              className="px-2.5 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-700 border border-oat-300 text-xs font-bold transition cursor-pointer"
+              className="hidden sm:inline-flex px-2.5 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-700 border border-oat-300 text-xs font-bold transition cursor-pointer shrink-0"
               title="Voltar para o mês atual"
             >
               Mês Atual
@@ -153,8 +153,8 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
         </div>
 
         {/* Nota Rápida do Mês + Ações do Calendário */}
-        <div className="flex flex-wrap items-center gap-2 flex-1 lg:justify-end">
-          <div className="relative flex-1 sm:max-w-xs min-w-[180px]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 lg:justify-end">
+          <div className="relative flex-1 sm:max-w-xs min-w-0">
             <span className="material-symbols-outlined text-espresso-400 text-[16px] absolute left-3 top-2">
               sticky_note_2
             </span>
@@ -167,64 +167,84 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
             />
           </div>
 
-          <button
-            type="button"
-            onClick={onCopyFromPreviousMonth}
-            className="px-3 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
-            title="Copiar renda e despesas do mês anterior para este mês"
-          >
-            <span className="material-symbols-outlined text-[16px] text-sage-600">
-              content_copy
-            </span>
-            <span className="hidden sm:inline">Copiar Mês Anterior</span>
-          </button>
+          <div className="grid grid-cols-2 sm:flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onCopyFromPreviousMonth}
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
+              title="Copiar renda e despesas do mês anterior para este mês"
+            >
+              <span className="material-symbols-outlined text-[16px] text-sage-600 shrink-0">
+                content_copy
+              </span>
+              <span className="truncate">Copiar Anterior</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setIsGridExpanded(!isGridExpanded)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center gap-1.5 transition cursor-pointer ${
-              isGridExpanded
-                ? 'bg-maldives-500 text-white border-maldives-600 shadow-xs'
-                : 'bg-oat-100 text-espresso-800 border-oat-300 hover:border-maldives-400'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[17px]">
-              {isGridExpanded ? 'expand_less' : 'date_range'}
-            </span>
-            <span>{isGridExpanded ? 'Fechar Calendário' : 'Calendário Anual'}</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setIsGridExpanded(!isGridExpanded)}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold border flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                isGridExpanded
+                  ? 'bg-maldives-500 text-white border-maldives-600 shadow-xs'
+                  : 'bg-oat-100 text-espresso-800 border-oat-300 hover:border-maldives-400'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px] shrink-0">
+                {isGridExpanded ? 'expand_less' : 'date_range'}
+              </span>
+              <span className="truncate">
+                {isGridExpanded ? 'Fechar Visão' : 'Calendário Anual'}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Régua Rápida dos 12 Meses do Ano */}
-      <div className="mt-3.5 pt-3 border-t border-oat-200/90 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-        <div className="flex items-center gap-1 pr-2 border-r border-oat-200 shrink-0">
-          <button
-            type="button"
-            onClick={() => setViewYear((y) => y - 1)}
-            className="p-1 rounded-lg hover:bg-oat-200 text-espresso-600 cursor-pointer"
-            title="Ano anterior"
-          >
-            <span className="material-symbols-outlined text-[16px]">
-              keyboard_double_arrow_left
+      {/* Régua Rápida dos 12 Meses do Ano (Responsiva: 6x2 no celular, 12x1 no desktop) */}
+      <div className="mt-3 pt-3 border-t border-oat-200/90 flex flex-col sm:flex-row sm:items-center gap-2">
+        <div className="flex items-center justify-between sm:justify-start gap-1 sm:pr-2 sm:border-r border-oat-200 shrink-0">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setViewYear((y) => y - 1)}
+              className="p-1 rounded-lg bg-oat-100 sm:bg-transparent hover:bg-oat-200 text-espresso-600 cursor-pointer flex items-center justify-center"
+              title="Ano anterior"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                keyboard_double_arrow_left
+              </span>
+            </button>
+            <span className="text-xs font-mono font-extrabold text-espresso-900 px-1.5">
+              {viewYear}
             </span>
-          </button>
-          <span className="text-xs font-mono font-extrabold text-espresso-900 px-1">
-            {viewYear}
-          </span>
-          <button
-            type="button"
-            onClick={() => setViewYear((y) => y + 1)}
-            className="p-1 rounded-lg hover:bg-oat-200 text-espresso-600 cursor-pointer"
-            title="Próximo ano"
-          >
-            <span className="material-symbols-outlined text-[16px]">
-              keyboard_double_arrow_right
-            </span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setViewYear((y) => y + 1)}
+              className="p-1 rounded-lg bg-oat-100 sm:bg-transparent hover:bg-oat-200 text-espresso-600 cursor-pointer flex items-center justify-center"
+              title="Próximo ano"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                keyboard_double_arrow_right
+              </span>
+            </button>
+          </div>
+
+          {selectedMonthKey !== currentSystemMonthKey && (
+            <button
+              type="button"
+              onClick={() => {
+                const [cy] = currentSystemMonthKey.split('-');
+                setViewYear(Number(cy));
+                onSelectMonth(currentSystemMonthKey);
+              }}
+              className="sm:hidden px-2 py-0.5 rounded-lg bg-maldives-50 text-maldives-700 border border-maldives-200 text-[10px] font-bold cursor-pointer"
+            >
+              Ir p/ Mês Atual
+            </button>
+          )}
         </div>
 
-        <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 flex-1 min-w-[420px]">
+        <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 w-full flex-1">
           {MONTH_NAMES_SHORT.map((shortName, idx) => {
             const mKey = `${viewYear}-${String(idx + 1).padStart(2, '0')}`;
             const isSelected = mKey === selectedMonthKey;
@@ -236,7 +256,7 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
                 key={mKey}
                 type="button"
                 onClick={() => handleSelectYearAndMonth(viewYear, idx)}
-                className={`relative py-1.5 px-2 rounded-xl text-xs font-bold transition flex flex-col items-center justify-center cursor-pointer border ${
+                className={`relative py-1.5 px-1 rounded-xl text-[11px] sm:text-xs font-bold transition flex flex-col items-center justify-center cursor-pointer border min-w-0 ${
                   isSelected
                     ? 'bg-maldives-500 text-white border-maldives-600 shadow-xs'
                     : isCurrentNow
@@ -244,7 +264,7 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
                     : 'bg-oat-100/70 text-espresso-700 border-oat-200 hover:border-maldives-300 hover:text-espresso-900'
                 }`}
               >
-                <span>{shortName}</span>
+                <span className="truncate">{shortName}</span>
                 <span
                   className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
                     isSelected

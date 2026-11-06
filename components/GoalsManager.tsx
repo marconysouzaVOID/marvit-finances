@@ -109,22 +109,22 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
   return (
     <div className="space-y-6">
       {/* Cabeçalho dos Potes dos Sonhos */}
-      <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-5 sm:p-6 shadow-cozy">
+      <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <InteractiveAsset
               src="/assets/marvit-metas.png"
               alt="Potes dos Sonhos & Metas"
-              size="lg"
+              size="md"
               tone="maldives"
               badgeIcon="emoji_events"
             />
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-xl sm:text-2xl font-display font-bold text-espresso-900">
+                <h2 className="text-lg sm:text-2xl font-display font-bold text-espresso-900">
                   Potes dos Sonhos & Metas de Longo Prazo
                 </h2>
-                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300">
+                <span className="text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300">
                   Juros Compostos Ativos
                 </span>
               </div>
@@ -750,7 +750,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
               </div>
 
               {/* Rodapé do Card: Toggle de Vínculo com Orçamento + Botão de Depósito Rápido */}
-              <div className="mt-4 pt-3 border-t border-oat-200 flex items-center justify-between gap-2">
+              <div className="mt-4 pt-3 border-t border-oat-200 flex flex-wrap items-center justify-between gap-2">
                 <button
                   type="button"
                   onClick={() =>
@@ -772,7 +772,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                 <button
                   type="button"
                   onClick={() => handleQuickDeposit(goal)}
-                  className="px-3 py-1.5 rounded-xl bg-maldives-500 hover:bg-maldives-600 text-white text-xs font-bold transition flex items-center gap-1 shadow-sm cursor-pointer"
+                  className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-maldives-500 hover:bg-maldives-600 text-white text-[11px] sm:text-xs font-bold transition flex items-center gap-1 shadow-sm cursor-pointer"
                   title="Somar 1 aporte mensal ao saldo guardado deste pote"
                 >
                   <span className="material-symbols-outlined text-[16px]">

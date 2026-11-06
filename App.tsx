@@ -184,7 +184,11 @@ export const App: React.FC = () => {
       const savedVault = localStorage.getItem(VAULT_SESSION_KEY);
       if (savedVault) {
         const parsedVault = JSON.parse(savedVault) as VaultCredentials;
-        setVault(parsedVault);
+        setVault({
+          ...parsedVault,
+          vaultId: DEFAULT_VAULT_ID,
+          autoSync: true,
+        });
       }
     } catch {
       // Ignora erro de parse
@@ -214,6 +218,31 @@ export const App: React.FC = () => {
       handleUnlockAppWithBiometrics(true);
     }
   }, [isAppLocked]);
+
+  // Sincronização automática da Conta Geral Unificada (PC + Celular) ao focar a janela/aba
+  useEffect(() => {
+    if (isAppLocked || !vault?.pinHash) return;
+
+    const syncFromCloud = async () => {
+      const res = await pullVaultFromCloud(DEFAULT_VAULT_ID, vault.pinHash);
+      if (res.ok && res.data) {
+        handleRestorePayload(res.data, true);
+      }
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        syncFromCloud();
+      }
+    };
+
+    window.addEventListener('focus', syncFromCloud);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      window.removeEventListener('focus', syncFromCloud);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [isAppLocked, vault?.pinHash]);
 
   // Sempre que os dados do mês atual mudarem (profile, customGoals, expenses, currentMonthNotes), sincroniza em monthsData[selectedMonthKey]
   const syncedMonthsData = useMemo<Record<string, MonthDataRecord>>(() => {
@@ -585,7 +614,7 @@ export const App: React.FC = () => {
     setLockError('');
 
     try {
-      const targetVaultId = vault?.vaultId || DEFAULT_VAULT_ID;
+      const targetVaultId = DEFAULT_VAULT_ID;
       const candidateHash = await hashPin(targetVaultId, cleanPin);
       const defaultHash = await hashPin(targetVaultId, DEFAULT_INITIAL_PIN);
 
@@ -901,7 +930,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col pb-24 md:pb-12 pt-safe">
+    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden flex flex-col pb-28 md:pb-12 pt-safe">
       {/* Input oculto para importar JSON */}
       <input
         ref={fileInputRef}
@@ -918,20 +947,20 @@ export const App: React.FC = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-4 right-4 z-50 bg-espresso-900 text-oat-50 px-4 py-2.5 rounded-2xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-maldives-400"
+            className="fixed top-4 inset-x-4 sm:left-auto sm:right-4 sm:max-w-sm z-50 bg-espresso-900 text-oat-50 px-4 py-2.5 rounded-2xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-maldives-400"
           >
-            <span className="material-symbols-outlined text-maldives-400 text-base">
+            <span className="material-symbols-outlined text-maldives-400 text-base shrink-0">
               check_circle
             </span>
-            <span>{toast}</span>
+            <span className="truncate">{toast}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Cabeçalho Principal */}
-      <header className="sticky top-0 z-30 bg-oat-100/85 backdrop-blur-md border-b border-oat-300/80 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-30 w-full bg-oat-100/85 backdrop-blur-md border-b border-oat-300/80 transition-colors">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <InteractiveAsset
               src="/assets/marvit-logo.png"
               alt="Marvit&Finances Logo"
@@ -939,23 +968,23 @@ export const App: React.FC = () => {
               tone="maldives"
               floatAnimation={false}
             />
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-lg sm:text-xl font-display font-extrabold text-espresso-900 tracking-tight">
+                <h1 className="text-base sm:text-xl font-display font-extrabold text-espresso-900 tracking-tight truncate">
                   Marvit<span className="text-maldives-600">&</span>Finances
                 </h1>
               </div>
-              <p className="text-[11px] text-espresso-600 hidden sm:block">
+              <p className="text-[11px] text-espresso-600 hidden sm:block truncate">
                 Orçamento por pilares, Potes dos Sonhos & Liberdade Financeira
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Alternador de Tema Claro / Escuro */}
             <button
               onClick={toggleTheme}
-              className="px-2.5 py-1.5 rounded-xl bg-oat-50 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="w-9 h-9 sm:w-auto sm:h-auto sm:px-2.5 sm:py-1.5 rounded-xl bg-oat-50 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               title={isDark ? 'Mudar para Modo Claro' : 'Mudar para Modo Escuro'}
             >
               <span className="material-symbols-outlined text-[18px] text-maldives-600">
@@ -966,10 +995,10 @@ export const App: React.FC = () => {
               </span>
             </button>
 
-            {/* Botão Instalar App PWA */}
+            {/* Botão Instalar App PWA (Visível no cabeçalho a partir de sm, e no menu mobile) */}
             <button
               onClick={handleInstallPwa}
-              className="px-2.5 py-1.5 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-600 border border-sage-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+              className="hidden sm:flex px-2.5 py-1.5 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-600 border border-sage-300 text-xs font-bold transition items-center gap-1.5 cursor-pointer"
               title="Instalar aplicativo no celular ou computador (PWA)"
             >
               <span className="material-symbols-outlined text-[17px]">
@@ -978,31 +1007,30 @@ export const App: React.FC = () => {
               <span className="hidden lg:inline">App PWA</span>
             </button>
 
-            {/* Botão Cofre & PIN */}
+            {/* Botão Cofre & PIN (Acesso Geral Unificado) */}
             <button
               onClick={() => setIsVaultModalOpen(true)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 cursor-pointer ${
+              className={`w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 vault
                   ? 'bg-maldives-50 border-maldives-300 text-maldives-800'
                   : 'bg-oat-50 border-oat-300 text-espresso-800 hover:border-maldives-400'
               }`}
-              title="Alterar PIN, Sincronização na Nuvem e Biometria"
+              title="Acesso Geral Unificado (PC + Celular), Troca de PIN e Biometria"
             >
-              <span className="material-symbols-outlined text-[17px] text-maldives-600">
+              <span className="material-symbols-outlined text-[18px] text-maldives-600">
                 {vault ? 'cloud_done' : 'passkey'}
               </span>
-              <span className="hidden sm:inline">
-                {vault ? `Cofre & PIN (${vault.vaultId})` : 'Cofre & PIN'}
-              </span>
+              <span className="hidden sm:inline">Cofre & PIN</span>
             </button>
 
             {/* Menu de Exportação e Backup */}
             <div className="relative">
               <button
                 onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-                className="px-3 py-1.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+                className="w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                title="Exportar relatórios, backup e instalar PWA"
               >
-                <span className="material-symbols-outlined text-[17px]">
+                <span className="material-symbols-outlined text-[18px]">
                   ios_share
                 </span>
                 <span className="hidden sm:inline">Exportar</span>
@@ -1016,6 +1044,19 @@ export const App: React.FC = () => {
                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
                     className="absolute right-0 mt-2 w-60 bg-oat-50 border-2 border-oat-300 rounded-2xl shadow-cozy-lg p-2 z-50 space-y-1"
                   >
+                    <button
+                      onClick={() => {
+                        setIsExportMenuOpen(false);
+                        handleInstallPwa();
+                      }}
+                      className="sm:hidden w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-sage-600 hover:bg-sage-50 flex items-center gap-2.5 transition cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-sage-600 text-lg">
+                        install_mobile
+                      </span>
+                      <span>Instalar Aplicativo (PWA)</span>
+                    </button>
+
                     <button
                       onClick={handleExportPng}
                       className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
@@ -1088,7 +1129,7 @@ export const App: React.FC = () => {
                 sessionStorage.removeItem(SESSION_UNLOCKED_KEY);
                 setIsAppLocked(true);
               }}
-              className="p-1.5 rounded-xl bg-oat-50 hover:bg-terracotta-50 text-espresso-600 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
+              className="w-9 h-9 sm:w-auto sm:h-auto sm:p-1.5 rounded-xl bg-oat-50 hover:bg-terracotta-50 text-espresso-600 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
               title="Bloquear aplicação com PIN"
             >
               <span className="material-symbols-outlined text-[18px]">
@@ -1100,7 +1141,7 @@ export const App: React.FC = () => {
       </header>
 
       {/* Conteúdo Principal */}
-      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 pt-5 space-y-5 flex-1">
+      <main className="max-w-7xl w-full mx-auto px-3.5 sm:px-6 pt-4 sm:pt-5 space-y-4 sm:space-y-5 flex-1">
         {/* Calendário Interativo de Meses para transitar e preencher/editar qualquer competência */}
         <MonthCalendarBar
           selectedMonthKey={selectedMonthKey}
@@ -1315,19 +1356,20 @@ export const App: React.FC = () => {
       </main>
 
       {/* Bottom Navigation Bar Responsiva para Mobile & PWA (iOS e Android) */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-oat-50/95 backdrop-blur-lg border-t border-oat-300 pb-safe shadow-cozy-lg">
-        <div className="grid grid-cols-5 px-2 pt-1.5">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-oat-50/95 backdrop-blur-lg border-t border-oat-300 pb-safe shadow-cozy-lg">
+        <div className="grid grid-cols-5 px-1.5 pt-1.5">
           {navItems.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
+                type="button"
                 onClick={() => {
                   setIsBentoMode(false);
                   setActiveTab(tab.id);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`relative flex flex-col items-center justify-center py-1.5 rounded-2xl transition cursor-pointer ${
+                className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition cursor-pointer min-w-0 ${
                   isActive ? 'text-maldives-700 font-extrabold' : 'text-espresso-500'
                 }`}
               >
@@ -1335,13 +1377,13 @@ export const App: React.FC = () => {
                   <motion.div
                     layoutId="mobileActiveTab"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    className="absolute inset-x-2 top-0.5 h-8 bg-maldives-100/90 rounded-xl -z-10"
+                    className="absolute inset-x-1.5 top-0.5 h-8 bg-maldives-100/90 rounded-xl -z-10"
                   />
                 )}
-                <span className="material-symbols-outlined text-[21px]">
+                <span className="material-symbols-outlined text-[20px]">
                   {tab.icon}
                 </span>
-                <span className="text-[10px] mt-0.5 tracking-tight">
+                <span className="text-[10px] mt-0.5 tracking-tight truncate w-full text-center">
                   {tab.shortLabel}
                 </span>
               </button>

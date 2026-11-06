@@ -46,16 +46,16 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
   const yearsToFireEssencial = (monthsToFireEssencial / 12).toFixed(1);
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-5 sm:p-6 shadow-cozy">
+    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-maldives-600 text-xl">
               sailing
             </span>
           </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-display font-bold text-espresso-900">
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-xl font-display font-bold text-espresso-900">
               Simulador de Liberdade Financeira & Reserva
             </h2>
             <p className="text-xs text-espresso-600">
@@ -73,15 +73,15 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
         {/* 1. Reserva de Segurança */}
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-oat-100/70 p-5 rounded-3xl border-2 border-sage-300 flex flex-col justify-between shadow-sm"
+          className="bg-oat-100/70 p-4 sm:p-5 rounded-3xl border-2 border-sage-300 flex flex-col justify-between shadow-sm"
         >
           <div>
             <div className="flex items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <span className="text-xs font-bold uppercase text-sage-600 tracking-wider block">
                   1. Reserva da Despensa
                 </span>
-                <div className="text-2xl font-mono font-extrabold text-espresso-900 mt-1.5">
+                <div className="text-xl sm:text-2xl font-mono font-extrabold text-espresso-900 mt-1.5 truncate">
                   {formatCurrency(emergencyFundTarget)}
                 </div>
               </div>
@@ -104,9 +104,9 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
             </p>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-oat-200 text-xs text-espresso-600 flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-oat-200 text-xs text-espresso-600 flex items-center justify-between gap-2">
             <span>Tempo p/ formar do zero:</span>
-            <span className="font-bold text-sage-600 font-mono bg-sage-100 px-2.5 py-0.5 rounded-lg border border-sage-200">
+            <span className="font-bold text-sage-600 font-mono bg-sage-100 px-2.5 py-0.5 rounded-lg border border-sage-200 shrink-0">
               {monthlyInvestment > 0
                 ? `${Math.ceil(emergencyFundTarget / monthlyInvestment)} meses`
                 : 'Defina aportes'}
@@ -117,15 +117,15 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
         {/* 2. Liberdade Básica */}
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-oat-100/70 p-5 rounded-3xl border-2 border-terracotta-200 flex flex-col justify-between shadow-sm"
+          className="bg-oat-100/70 p-4 sm:p-5 rounded-3xl border-2 border-terracotta-200 flex flex-col justify-between shadow-sm"
         >
           <div>
             <div className="flex items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <span className="text-xs font-bold uppercase text-terracotta-600 tracking-wider block">
                   2. Liberdade Essencial
                 </span>
-                <div className="text-2xl font-mono font-extrabold text-espresso-900 mt-1.5">
+                <div className="text-xl sm:text-2xl font-mono font-extrabold text-espresso-900 mt-1.5 truncate">
                   {formatCurrency(fireEssencial)}
                 </div>
               </div>
@@ -147,9 +147,9 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
             </p>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-oat-200 text-xs text-espresso-600 flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-oat-200 text-xs text-espresso-600 flex items-center justify-between gap-2">
             <span>Horizonte estimado:</span>
-            <span className="font-bold text-terracotta-700 font-mono bg-terracotta-100 px-2.5 py-0.5 rounded-lg border border-terracotta-200">
+            <span className="font-bold text-terracotta-700 font-mono bg-terracotta-100 px-2.5 py-0.5 rounded-lg border border-terracotta-200 shrink-0">
               {monthlyInvestment > 0 ? `~${yearsToFireEssencial} anos` : 'Sem aportes'}
             </span>
           </div>
@@ -158,15 +158,15 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
         {/* 3. Liberdade Plena (Maldivas Life) */}
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-gradient-to-b from-maldives-50/90 to-oat-50 p-5 rounded-3xl border-2 border-maldives-400 flex flex-col justify-between shadow-cozy"
+          className="bg-gradient-to-b from-maldives-50/90 to-oat-50 p-4 sm:p-5 rounded-3xl border-2 border-maldives-400 flex flex-col justify-between shadow-cozy"
         >
           <div>
             <div className="flex items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <span className="text-xs font-bold uppercase text-maldives-700 tracking-wider block">
                   3. Liberdade Plena (Maldivas)
                 </span>
-                <div className="text-2xl font-mono font-extrabold text-maldives-700 mt-1.5">
+                <div className="text-xl sm:text-2xl font-mono font-extrabold text-maldives-700 mt-1.5 truncate">
                   {formatCurrency(firePleno)}
                 </div>
               </div>
