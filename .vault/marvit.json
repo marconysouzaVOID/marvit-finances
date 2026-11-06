@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:16:40.958Z",
+  "updatedAt": "2026-11-06T23:17:31.501Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:16:39.123Z",
+    "exportedAt": "2026-11-06T23:17:29.635Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -216,15 +216,15 @@
     "customLongTermGoals": [
       {
         "id": "goal-2",
-        "title": "Reforma da Cozinha Comfy",
-        "icon": "countertops",
-        "targetAmount": 35000,
+        "title": "Moto Eletrica",
+        "icon": "directions_car",
+        "targetAmount": 5000,
         "currentAmount": 12000,
         "monthlyContribution": 850,
-        "annualInterestRate": 11,
+        "annualInterestRate": 0,
         "syncWithBudget": true,
-        "budgetCategory": "investimento",
-        "notes": "Marcenaria verde sálvia, bancada de quartzo creme e ilha gourmet."
+        "budgetCategory": "estilo",
+        "notes": "Moto Comprada"
       }
     ],
     "history": []
