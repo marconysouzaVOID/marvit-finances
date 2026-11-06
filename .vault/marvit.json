@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:06:15.519Z",
+  "updatedAt": "2026-11-06T23:06:23.080Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:06:13.678Z",
+    "exportedAt": "2026-11-06T23:06:21.275Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -92,7 +92,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-06T23:06:13.678Z",
+        "updatedAt": "2026-11-06T23:06:21.275Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -107,7 +107,7 @@
         "expenses": [
           {
             "name": "Contas (Luz)",
-            "amount": 200,
+            "amount": 144.12,
             "category": "essencial",
             "isCustom": true,
             "id": "exp-1794006373678"
@@ -196,7 +196,7 @@
     "expenses": [
       {
         "name": "Contas (Luz)",
-        "amount": 200,
+        "amount": 144.12,
         "category": "essencial",
         "isCustom": true,
         "id": "exp-1794006373678"
