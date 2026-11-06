@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AUVP_GOALS } from '../constants';
-import { ExpenseCategory, ExpenseItem } from '../types';
+import { ExpenseCategory, ExpenseItem, LifestyleSubcategory } from '../types';
 import { formatCurrency } from '../utils/formatters';
 
 interface ExpenseManagerProps {
@@ -9,6 +9,7 @@ interface ExpenseManagerProps {
   onAddExpense: (item: Omit<ExpenseItem, 'id'>) => void;
   onDeleteExpense: (id: string) => void;
   onUpdateExpense: (id: string, updated: Partial<ExpenseItem>) => void;
+  onOpenCardsTab?: (cardId?: string) => void;
 }
 
 export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
@@ -16,11 +17,14 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
   onAddExpense,
   onDeleteExpense,
   onUpdateExpense,
+  onOpenCardsTab,
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | ExpenseCategory>('all');
   const [newName, setNewName] = useState('');
   const [newAmount, setNewAmount] = useState<number | ''>('');
   const [newCategory, setNewCategory] = useState<ExpenseCategory>('essencial');
+  const [newSubcategory, setNewSubcategory] =
+    useState<LifestyleSubcategory>('cartao');
 
   const filteredExpenses =
     selectedFilter === 'all'
@@ -28,11 +32,16 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
       : expenses.filter((e) => e.category === selectedFilter);
 
   const handleCreate = () => {
-    if (!newName.trim() || !newAmount || Number(newAmount) <= 0) return;
+    const isCardCreation = newCategory === 'estilo' && newSubcategory === 'cartao';
+    if (!newName.trim()) return;
+    if (!isCardCreation && (!newAmount || Number(newAmount) <= 0)) return;
+
     onAddExpense({
       name: newName.trim(),
-      amount: Number(newAmount),
+      amount: Math.max(0, Number(newAmount) || 0),
       category: newCategory,
+      subcategory: newCategory === 'estilo' ? newSubcategory : undefined,
+      cardTransactions: isCardCreation ? [] : undefined,
       isCustom: true,
     });
     setNewName('');
@@ -89,65 +98,134 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
       </div>
 
       {/* Formulário de Novo Gasto/Aporte */}
-      <div className="bg-oat-100/90 border border-oat-300 rounded-2xl p-4 mt-5 grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-        <div className="sm:col-span-5">
-          <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-            Descrição do gasto ou aporte
-          </label>
-          <input
-            type="text"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-            placeholder="Ex: Feira Orgânica, Jantar, Tesouro IPCA..."
-            className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 placeholder-espresso-400 focus:outline-none focus:border-maldives-500"
-          />
+      <div className="bg-oat-100/90 border border-oat-300 rounded-2xl p-4 mt-5 space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+          <div className="sm:col-span-5">
+            <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+              {newCategory === 'estilo' && newSubcategory === 'cartao'
+                ? 'Nome do Cartão de Crédito'
+                : 'Descrição do gasto ou aporte'}
+            </label>
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+              placeholder={
+                newCategory === 'estilo' && newSubcategory === 'cartao'
+                  ? 'Ex: Cartão Nubank, Cartão Inter, Itaú...'
+                  : 'Ex: Feira Orgânica, Jantar, Tesouro IPCA...'
+              }
+              className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 placeholder-espresso-400 focus:outline-none focus:border-maldives-500"
+            />
+          </div>
+
+          <div className="sm:col-span-3">
+            <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+              {newCategory === 'estilo' && newSubcategory === 'cartao'
+                ? 'Fatura Inicial (Opcional R$)'
+                : 'Valor Mensal (R$)'}
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="10"
+              value={newAmount}
+              onChange={(e) =>
+                setNewAmount(e.target.value === '' ? '' : Number(e.target.value))
+              }
+              onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+              placeholder="0,00"
+              className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 font-mono font-bold focus:outline-none focus:border-maldives-500"
+            />
+          </div>
+
+          <div className="sm:col-span-3">
+            <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+              Pilar de Destino
+            </label>
+            <select
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value as ExpenseCategory)}
+              className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2.5 text-sm font-semibold text-espresso-900 focus:outline-none focus:border-maldives-500"
+            >
+              <option value="essencial">🌿 Custos Essenciais</option>
+              <option value="estilo">☕ Estilo de Vida</option>
+              <option value="investimento">💎 Investimentos</option>
+            </select>
+          </div>
+
+          <div className="sm:col-span-1">
+            <button
+              onClick={handleCreate}
+              disabled={
+                !newName.trim() ||
+                (!(newCategory === 'estilo' && newSubcategory === 'cartao') &&
+                  !newAmount)
+              }
+              className="w-full h-[42px] flex items-center justify-center gap-1.5 bg-maldives-500 hover:bg-maldives-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition shadow-sm cursor-pointer"
+              title="Adicionar à planilha"
+            >
+              <span className="material-symbols-outlined text-[20px]">add</span>
+              <span className="sm:hidden">Adicionar Item</span>
+            </button>
+          </div>
         </div>
 
-        <div className="sm:col-span-3">
-          <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-            Valor Mensal (R$)
-          </label>
-          <input
-            type="number"
-            min="0"
-            step="10"
-            value={newAmount}
-            onChange={(e) =>
-              setNewAmount(e.target.value === '' ? '' : Number(e.target.value))
-            }
-            onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-            placeholder="0,00"
-            className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 font-mono font-bold focus:outline-none focus:border-maldives-500"
-          />
-        </div>
+        {/* Subcategoria do Pilar Estilo de Vida (Cartão de Crédito vs Gasto Direto) */}
+        <AnimatePresence>
+          {newCategory === 'estilo' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="pt-2 border-t border-oat-300/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-terracotta-600 text-[18px]">
+                    credit_card
+                  </span>
+                  <span className="text-xs font-bold text-espresso-800">
+                    Subcategoria de Estilo de Vida:
+                  </span>
+                </div>
 
-        <div className="sm:col-span-3">
-          <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-            Pilar de Destino
-          </label>
-          <select
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value as ExpenseCategory)}
-            className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2.5 text-sm font-semibold text-espresso-900 focus:outline-none focus:border-maldives-500"
-          >
-            <option value="essencial">🌿 Custos Essenciais</option>
-            <option value="estilo">☕ Estilo de Vida</option>
-            <option value="investimento">💎 Investimentos</option>
-          </select>
-        </div>
+                <div className="grid grid-cols-2 sm:flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewSubcategory('cartao')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                      newSubcategory === 'cartao'
+                        ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-xs'
+                        : 'bg-oat-50 text-espresso-700 border-oat-300 hover:border-terracotta-400'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">
+                      credit_card
+                    </span>
+                    <span>Cartão de Crédito</span>
+                  </button>
 
-        <div className="sm:col-span-1">
-          <button
-            onClick={handleCreate}
-            disabled={!newName.trim() || !newAmount}
-            className="w-full h-[42px] flex items-center justify-center gap-1.5 bg-maldives-500 hover:bg-maldives-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition shadow-sm cursor-pointer"
-            title="Adicionar à planilha"
-          >
-            <span className="material-symbols-outlined text-[20px]">add</span>
-            <span className="sm:hidden">Adicionar Item</span>
-          </button>
-        </div>
+                  <button
+                    type="button"
+                    onClick={() => setNewSubcategory('direto')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                      newSubcategory === 'direto'
+                        ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-xs'
+                        : 'bg-oat-50 text-espresso-700 border-oat-300 hover:border-terracotta-400'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">
+                      payments
+                    </span>
+                    <span>Gasto Direto / Pix</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Lista de Itens */}
@@ -203,12 +281,61 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                             />
                           )}
                         </div>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-1.5 flex-wrap mt-1">
                           <span
                             className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${goal.badgeBg}`}
                           >
                             {goal.shortName}
                           </span>
+
+                          {item.category === 'estilo' && !isGoalLinked && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                onUpdateExpense(item.id, {
+                                  subcategory:
+                                    item.subcategory === 'cartao' ? 'direto' : 'cartao',
+                                })
+                              }
+                              title="Clique para alternar a subcategoria entre Cartão de Crédito e Gasto Direto"
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1 transition cursor-pointer ${
+                                item.subcategory === 'cartao'
+                                  ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-2xs'
+                                  : 'bg-oat-100 text-espresso-600 border-oat-300 hover:border-terracotta-400'
+                              }`}
+                            >
+                              <span className="material-symbols-outlined text-[12px]">
+                                {item.subcategory === 'cartao'
+                                  ? 'credit_card'
+                                  : 'payments'}
+                              </span>
+                              <span>
+                                {item.subcategory === 'cartao'
+                                  ? 'Cartão de Crédito'
+                                  : 'Gasto Direto'}
+                              </span>
+                            </button>
+                          )}
+
+                          {item.category === 'estilo' &&
+                            item.subcategory === 'cartao' &&
+                            onOpenCardsTab && (
+                              <button
+                                type="button"
+                                onClick={() => onOpenCardsTab(item.id)}
+                                className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-maldives-50 text-maldives-800 border border-maldives-300 hover:bg-maldives-100 flex items-center gap-1 transition cursor-pointer"
+                                title="Abrir aba Cartões para gerir os gastos individualizados deste cartão"
+                              >
+                                <span className="material-symbols-outlined text-[12px]">
+                                  receipt_long
+                                </span>
+                                <span>
+                                  Detalhar Fatura (
+                                  {item.cardTransactions?.length || 0})
+                                </span>
+                              </button>
+                            )}
+
                           <span className="text-[11px] text-espresso-500 font-mono sm:hidden">
                             {formatCurrency(item.amount)}
                           </span>

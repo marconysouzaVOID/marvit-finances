@@ -1,5 +1,29 @@
 export type ExpenseCategory = 'essencial' | 'estilo' | 'investimento';
 
+/** Subcategoria dentro do pilar Estilo de Vida */
+export type LifestyleSubcategory = 'direto' | 'cartao';
+
+/** Categoria temática de cada compra individualizada dentro de um Cartão de Crédito */
+export type CardPurchaseTag =
+  | 'gastronomia'
+  | 'assinaturas'
+  | 'compras'
+  | 'mobilidade'
+  | 'lazer'
+  | 'autocuidado'
+  | 'outros';
+
+/** Gasto individualizado lançado na fatura de um Cartão de Crédito de Estilo de Vida */
+export interface CreditCardTransaction {
+  id: string;
+  description: string;
+  amount: number;
+  tag: CardPurchaseTag;
+  purchaseDate?: string; // Ex: "12/11" ou "2026-11-12"
+  installment?: string; // Ex: "À vista", "2/6", "1/3"
+  notes?: string;
+}
+
 export interface ExpenseItem {
   id: string;
   name: string;
@@ -7,6 +31,14 @@ export interface ExpenseItem {
   category: ExpenseCategory;
   isCustom?: boolean;
   linkedGoalId?: string;
+  /** Subcategoria para itens do pilar 'estilo': 'cartao' (Cartão de Crédito) ou 'direto' (Gasto Direto/Pix) */
+  subcategory?: LifestyleSubcategory;
+  /** Lista de gastos individualizados quando subcategory === 'cartao' */
+  cardTransactions?: CreditCardTransaction[];
+  /** Dia de vencimento opcional do cartão */
+  cardDueDay?: number;
+  /** Limite ou teto planejado para este cartão no mês */
+  cardLimit?: number;
 }
 
 export interface BudgetGoal {

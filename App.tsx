@@ -16,6 +16,7 @@ import {
   VaultCredentials,
 } from './types';
 import { AdvicePanel } from './components/AdvicePanel';
+import { CreditCardsManager } from './components/CreditCardsManager';
 import { ExpenseManager } from './components/ExpenseManager';
 import { FinancialOverview } from './components/FinancialOverview';
 import { FreedomSimulator } from './components/FreedomSimulator';
@@ -51,7 +52,13 @@ import {
   unlockWithBiometrics,
 } from './utils/biometricAuth';
 
-type ActiveTab = 'budget' | 'goals' | 'freedom' | 'advice' | 'history';
+type ActiveTab =
+  | 'budget'
+  | 'cards'
+  | 'goals'
+  | 'freedom'
+  | 'advice'
+  | 'history';
 
 const STORAGE_KEY = 'marvit_finances_state_v2';
 const VAULT_SESSION_KEY = 'marvit_vault_session_v2';
@@ -95,6 +102,7 @@ export const App: React.FC = () => {
   const [history, setHistory] = useState<MonthSnapshot[]>([]);
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('budget');
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isBentoMode, setIsBentoMode] = useState(false);
   const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
@@ -198,7 +206,9 @@ export const App: React.FC = () => {
     const tabParam = params.get('tab') as ActiveTab | null;
     if (
       tabParam &&
-      ['budget', 'goals', 'freedom', 'advice', 'history'].includes(tabParam)
+      ['budget', 'cards', 'goals', 'freedom', 'advice', 'history'].includes(
+        tabParam
+      )
     ) {
       setActiveTab(tabParam);
     }
@@ -416,11 +426,24 @@ export const App: React.FC = () => {
 
   // Handlers de Despesas
   const handleAddExpense = (newItem: Omit<ExpenseItem, 'id'>) => {
+    const newId = `exp-${Date.now()}`;
     setExpenses((prev) => [
-      { ...newItem, id: `exp-${Date.now()}` },
+      { ...newItem, id: newId },
       ...prev,
     ]);
-    showToast('Item adicionado ao mês!');
+    if (newItem.category === 'estilo' && newItem.subcategory === 'cartao') {
+      setSelectedCardId(newId);
+      showToast('Cartão de Crédito adicionado ao Estilo de Vida!');
+    } else {
+      showToast('Item adicionado ao mês!');
+    }
+  };
+
+  const handleOpenCardsTab = (cardId?: string) => {
+    if (cardId) setSelectedCardId(cardId);
+    setIsBentoMode(false);
+    setActiveTab('cards');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteExpense = (id: string) => {
@@ -743,6 +766,20 @@ export const App: React.FC = () => {
     showToast('Você pode alterar seu PIN a qualquer momento em "Cofre & PIN".');
   };
 
+  const creditCardsCount = useMemo(
+    () =>
+      expenses.filter(
+        (e) =>
+          e.category === 'estilo' &&
+          !e.linkedGoalId &&
+          e.subcategory === 'cartao'
+      ).length,
+    [expenses]
+  );
+
+  const lifestyleIdealAmount =
+    (totalIncome * (customGoals.estilo ?? AUVP_GOALS.estilo.idealPercent)) / 100;
+
   const navItems: {
     id: ActiveTab;
     label: string;
@@ -755,6 +792,13 @@ export const App: React.FC = () => {
       label: 'Orçamento & Planilha',
       shortLabel: 'Orçamento',
       icon: 'pie_chart',
+    },
+    {
+      id: 'cards',
+      label: 'Cartões (Estilo)',
+      shortLabel: 'Cartões',
+      icon: 'credit_card',
+      badge: creditCardsCount || undefined,
     },
     {
       id: 'goals',
@@ -1251,6 +1295,17 @@ export const App: React.FC = () => {
               onAddExpense={handleAddExpense}
               onDeleteExpense={handleDeleteExpense}
               onUpdateExpense={handleUpdateExpense}
+              onOpenCardsTab={handleOpenCardsTab}
+            />
+            <CreditCardsManager
+              expenses={combinedExpenses}
+              lifestyleIdealAmount={lifestyleIdealAmount}
+              lifestyleTotalSpent={categoryTotals.estilo}
+              selectedCardId={selectedCardId}
+              onSelectCardId={setSelectedCardId}
+              onAddCardExpense={handleAddExpense}
+              onUpdateExpense={handleUpdateExpense}
+              onDeleteExpense={handleDeleteExpense}
             />
             <GoalsManager
               goals={longTermGoals}
@@ -1312,8 +1367,22 @@ export const App: React.FC = () => {
                     onAddExpense={handleAddExpense}
                     onDeleteExpense={handleDeleteExpense}
                     onUpdateExpense={handleUpdateExpense}
+                    onOpenCardsTab={handleOpenCardsTab}
                   />
                 </>
+              )}
+
+              {activeTab === 'cards' && (
+                <CreditCardsManager
+                  expenses={combinedExpenses}
+                  lifestyleIdealAmount={lifestyleIdealAmount}
+                  lifestyleTotalSpent={categoryTotals.estilo}
+                  selectedCardId={selectedCardId}
+                  onSelectCardId={setSelectedCardId}
+                  onAddCardExpense={handleAddExpense}
+                  onUpdateExpense={handleUpdateExpense}
+                  onDeleteExpense={handleDeleteExpense}
+                />
               )}
 
               {activeTab === 'goals' && (
@@ -1359,7 +1428,7 @@ export const App: React.FC = () => {
 
       {/* Bottom Navigation Bar Responsiva para Mobile & PWA (iOS e Android) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-oat-50/95 backdrop-blur-lg border-t border-oat-300 pb-safe shadow-cozy-lg">
-        <div className="grid grid-cols-5 px-1.5 pt-1.5">
+        <div className="grid grid-cols-6 px-1 pt-1.5">
           {navItems.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -1371,7 +1440,7 @@ export const App: React.FC = () => {
                   setActiveTab(tab.id);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition cursor-pointer min-w-0 ${
+                className={`relative flex flex-col items-center justify-center py-1.5 px-0.5 rounded-2xl transition cursor-pointer min-w-0 ${
                   isActive ? 'text-maldives-700 font-extrabold' : 'text-espresso-500'
                 }`}
               >
@@ -1379,13 +1448,13 @@ export const App: React.FC = () => {
                   <motion.div
                     layoutId="mobileActiveTab"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    className="absolute inset-x-1.5 top-0.5 h-8 bg-maldives-100/90 rounded-xl -z-10"
+                    className="absolute inset-x-1 top-0.5 h-8 bg-maldives-100/90 rounded-xl -z-10"
                   />
                 )}
-                <span className="material-symbols-outlined text-[20px]">
+                <span className="material-symbols-outlined text-[19px]">
                   {tab.icon}
                 </span>
-                <span className="text-[10px] mt-0.5 tracking-tight truncate w-full text-center">
+                <span className="text-[9.5px] sm:text-[10px] mt-0.5 tracking-tight truncate w-full text-center">
                   {tab.shortLabel}
                 </span>
               </button>

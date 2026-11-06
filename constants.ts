@@ -1,4 +1,50 @@
-import { BudgetGoal, CustomGoalItem, ExpenseItem } from './types';
+import {
+  BudgetGoal,
+  CardPurchaseTag,
+  CustomGoalItem,
+  ExpenseItem,
+} from './types';
+
+export const CARD_PURCHASE_TAGS: Record<
+  CardPurchaseTag,
+  { label: string; icon: string; badgeClass: string }
+> = {
+  gastronomia: {
+    label: 'Gastronomia & Delivery',
+    icon: 'restaurant',
+    badgeClass: 'bg-terracotta-100 text-terracotta-700 border-terracotta-300',
+  },
+  assinaturas: {
+    label: 'Streaming & Assinaturas',
+    icon: 'smart_display',
+    badgeClass: 'bg-maldives-100 text-maldives-800 border-maldives-300',
+  },
+  compras: {
+    label: 'Compras & Mimos',
+    icon: 'shopping_bag',
+    badgeClass: 'bg-oat-200 text-espresso-800 border-oat-300',
+  },
+  mobilidade: {
+    label: 'Apps de Transporte',
+    icon: 'local_taxi',
+    badgeClass: 'bg-sage-100 text-sage-600 border-sage-300',
+  },
+  lazer: {
+    label: 'Passeios & Viagens',
+    icon: 'Confirmation_number',
+    badgeClass: 'bg-maldives-50 text-maldives-700 border-maldives-200',
+  },
+  autocuidado: {
+    label: 'Bem-estar & Estética',
+    icon: 'spa',
+    badgeClass: 'bg-terracotta-50 text-terracotta-600 border-terracotta-200',
+  },
+  outros: {
+    label: 'Outros Gastos',
+    icon: 'receipt',
+    badgeClass: 'bg-oat-100 text-espresso-600 border-oat-300',
+  },
+};
 
 export const AUVP_GOALS: Record<string, BudgetGoal> = {
   essencial: {
@@ -54,10 +100,70 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
   { id: '5', name: 'Transporte / Combustível', amount: 450, category: 'essencial' },
 
   // Estilo de Vida
-  { id: '6', name: 'Cafeterias, Restaurantes & Delivery', amount: 650, category: 'estilo' },
-  { id: '7', name: 'Assinaturas (Streaming, Música)', amount: 110, category: 'estilo' },
-  { id: '8', name: 'Academia & Autocuidado', amount: 160, category: 'estilo' },
-  { id: '9', name: 'Passeios, Lazer & Compras', amount: 480, category: 'estilo' },
+  {
+    id: '6',
+    name: 'Cartão Nubank / Ultravioleta',
+    amount: 760,
+    category: 'estilo',
+    subcategory: 'cartao',
+    cardDueDay: 10,
+    cardLimit: 1500,
+    cardTransactions: [
+      {
+        id: 'tx-1',
+        description: 'Jantar Especial & Cafeterias',
+        amount: 340,
+        tag: 'gastronomia',
+        installment: 'À vista',
+      },
+      {
+        id: 'tx-2',
+        description: 'Streaming (Netflix, Spotify, Apple)',
+        amount: 110,
+        tag: 'assinaturas',
+        installment: 'Recorrente',
+      },
+      {
+        id: 'tx-3',
+        description: 'Compras Online & Livros',
+        amount: 310,
+        tag: 'compras',
+        installment: '1/2',
+      },
+    ],
+  },
+  {
+    id: '7',
+    name: 'Cartão Inter / Pontos',
+    amount: 480,
+    category: 'estilo',
+    subcategory: 'cartao',
+    cardDueDay: 15,
+    cardLimit: 1000,
+    cardTransactions: [
+      {
+        id: 'tx-4',
+        description: 'iFood & Delivery Fim de Semana',
+        amount: 260,
+        tag: 'gastronomia',
+        installment: 'À vista',
+      },
+      {
+        id: 'tx-5',
+        description: 'Passeios, Cinema & Lazer',
+        amount: 220,
+        tag: 'lazer',
+        installment: 'À vista',
+      },
+    ],
+  },
+  {
+    id: '8',
+    name: 'Academia & Autocuidado (Pix/Direto)',
+    amount: 160,
+    category: 'estilo',
+    subcategory: 'direto',
+  },
 
   // Investimentos
   { id: '10', name: 'Aportes em Renda Variável (Ações/FIIs)', amount: 1000, category: 'investimento' },
