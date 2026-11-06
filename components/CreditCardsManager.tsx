@@ -1128,11 +1128,11 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
               {/* Busca + Filtros por Tag / Subcategoria da Fatura */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                <div className="flex flex-wrap items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => setSelectedTagFilter('all')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border shrink-0 transition cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer ${
                       selectedTagFilter === 'all'
                         ? 'bg-espresso-900 text-oat-50 border-espresso-900'
                         : 'bg-oat-100 text-espresso-700 border-oat-300 hover:border-terracotta-300'
@@ -1153,17 +1153,17 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           key={tagKey}
                           type="button"
                           onClick={() => setSelectedTagFilter(tagKey)}
-                          className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border shrink-0 flex items-center gap-1.5 transition cursor-pointer ${
+                          className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border flex items-center gap-1 transition cursor-pointer max-w-full ${
                             selectedTagFilter === tagKey
                               ? 'bg-terracotta-500 text-white border-terracotta-600'
                               : 'bg-oat-100 text-espresso-700 border-oat-300 hover:border-terracotta-300'
                           }`}
                         >
-                          <span className="material-symbols-outlined text-[14px]">
+                          <span className="material-symbols-outlined text-[14px] shrink-0">
                             {tagMeta.icon}
                           </span>
-                          <span>{tagMeta.label}</span>
-                          <span className="font-mono opacity-85">
+                          <span className="truncate">{tagMeta.label}</span>
+                          <span className="font-mono opacity-85 shrink-0">
                             ({formatCurrency(totalTag)})
                           </span>
                         </button>
