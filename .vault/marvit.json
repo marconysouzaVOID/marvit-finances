@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:33:32.153Z",
+  "updatedAt": "2026-11-06T23:34:16.796Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:33:30.285Z",
+    "exportedAt": "2026-11-06T23:34:14.946Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-06T23:33:30.285Z",
+        "updatedAt": "2026-11-06T23:34:14.946Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -24,7 +24,7 @@
         "expenses": [
           {
             "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-            "amount": 9000,
+            "amount": 9392,
             "category": "investimento",
             "isCustom": true,
             "id": "exp-1794007990084"
@@ -149,7 +149,7 @@
     "expenses": [
       {
         "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-        "amount": 9000,
+        "amount": 9392,
         "category": "investimento",
         "isCustom": true,
         "id": "exp-1794007990084"
