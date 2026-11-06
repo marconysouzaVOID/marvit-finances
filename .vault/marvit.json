@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:04:19.773Z",
+  "updatedAt": "2026-11-06T23:05:52.420Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:04:17.966Z",
+    "exportedAt": "2026-11-06T23:05:50.566Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -92,7 +92,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-06T23:04:17.966Z",
+        "updatedAt": "2026-11-06T23:05:50.566Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -113,7 +113,7 @@
           },
           {
             "id": "3",
-            "name": "Contas (Água, Luz, Internet)",
+            "name": "Contas (Internet)",
             "amount": 420,
             "category": "essencial"
           },
@@ -188,7 +188,7 @@
       },
       {
         "id": "3",
-        "name": "Contas (Água, Luz, Internet)",
+        "name": "Contas (Internet)",
         "amount": 420,
         "category": "essencial"
       },
