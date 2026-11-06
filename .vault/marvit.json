@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:33:07.936Z",
+  "updatedAt": "2026-11-06T23:33:11.878Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:33:06.165Z",
+    "exportedAt": "2026-11-06T23:33:10.084Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-06T23:33:06.165Z",
+        "updatedAt": "2026-11-06T23:33:10.084Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -22,6 +22,13 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
+            "amount": 9000,
+            "category": "investimento",
+            "isCustom": true,
+            "id": "exp-1794007990084"
+          },
           {
             "name": "Cartões (Inter, Nubank, Itau)",
             "amount": 7500,
@@ -140,6 +147,13 @@
       "investimento": 25
     },
     "expenses": [
+      {
+        "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
+        "amount": 9000,
+        "category": "investimento",
+        "isCustom": true,
+        "id": "exp-1794007990084"
+      },
       {
         "name": "Cartões (Inter, Nubank, Itau)",
         "amount": 7500,
