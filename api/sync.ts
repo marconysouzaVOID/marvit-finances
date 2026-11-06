@@ -1,8 +1,8 @@
 // Vercel Serverless Function (/api/sync)
-// Suporta persistência gratuita via:
-// 1. Vercel KV / Upstash Redis (KV_REST_API_URL + KV_REST_API_TOKEN / UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN)
-// 2. GitHub Cloud Storage (GITHUB_VAULT_TOKEN + GITHUB_VAULT_REPO, ex: "marconysouzaVOID/marvit-finances")
-// 3. Memória de sessão + espelhamento local seguro no navegador/PWA
+// Sistema de PIN obrigatório desde o 1º acesso (PIN padrão inicial: "2026")
+// Permite alterar o PIN após o primeiro acesso e sincroniza automaticamente na nuvem.
+
+import crypto from 'crypto';
 
 interface StoredVaultRecord {
   pinHash: string;
@@ -11,6 +11,14 @@ interface StoredVaultRecord {
 }
 
 const memoryStore = new Map<string, StoredVaultRecord>();
+
+export const DEFAULT_VAULT_ID = 'marvit';
+export const DEFAULT_INITIAL_PIN = '2026';
+
+function computePinHashServer(vaultId: string, pin: string): string {
+  const normalized = `${vaultId.trim().toLowerCase()}::${pin.trim()}::marvit_salt_v2`;
+  return crypto.createHash('sha256').update(normalized, 'utf8').digest('hex');
+}
 
 function getEnv(): Record<string, string | undefined> {
   return (
@@ -168,28 +176,36 @@ export default async function handler(req: any, res: any) {
 
   try {
     if (req.method === 'GET') {
-      const vaultId = String(req.query?.vaultId || '')
+      const vaultId = String(req.query?.vaultId || DEFAULT_VAULT_ID)
         .trim()
         .toLowerCase();
       const pinHash = String(req.query?.pinHash || '').trim();
 
       if (!vaultId || !pinHash) {
-        return res.status(400).json({ error: 'Informe vaultId e pinHash.' });
+        return res.status(400).json({ error: 'Informe o PIN de acesso.' });
       }
 
       const existing = await storageGet(vaultId);
+      const defaultHash = computePinHashServer(vaultId, DEFAULT_INITIAL_PIN);
 
+      // Se o cofre ainda não existe na nuvem, aceita apenas o PIN padrão ("2026") no primeiro acesso do cofre padrão
       if (!existing) {
+        if (vaultId === DEFAULT_VAULT_ID && pinHash !== defaultHash) {
+          return res.status(401).json({
+            error: 'PIN incorreto. No primeiro acesso, utilize o PIN padrão (2026).',
+          });
+        }
         return res.status(200).json({
           ok: true,
           data: null,
+          isDefaultPin: pinHash === defaultHash,
           mode: hasCloudDriver ? 'cloud' : 'local-fallback',
         });
       }
 
       if (existing.pinHash !== pinHash) {
         return res.status(401).json({
-          error: 'PIN incorreto para este Cofre Marvit.',
+          error: 'PIN incorreto. Tente novamente.',
         });
       }
 
@@ -197,16 +213,18 @@ export default async function handler(req: any, res: any) {
         ok: true,
         data: existing.data,
         updatedAt: existing.updatedAt,
+        isDefaultPin: existing.pinHash === defaultHash,
         mode: hasCloudDriver ? 'cloud' : 'local-fallback',
       });
     }
 
     if (req.method === 'POST') {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const vaultId = String(body?.vaultId || '')
+      const vaultId = String(body?.vaultId || DEFAULT_VAULT_ID)
         .trim()
         .toLowerCase();
       const pinHash = String(body?.pinHash || '').trim();
+      const newPinHash = body?.newPinHash ? String(body.newPinHash).trim() : '';
       const payload = body?.payload;
 
       if (!vaultId || !pinHash || !payload) {
@@ -214,16 +232,24 @@ export default async function handler(req: any, res: any) {
       }
 
       const existing = await storageGet(vaultId);
+      const defaultHash = computePinHashServer(vaultId, DEFAULT_INITIAL_PIN);
 
       if (existing && existing.pinHash !== pinHash) {
         return res.status(401).json({
-          error: 'Este nome de Cofre já pertence a outro PIN/Senha.',
+          error: 'PIN atual incorreto para este Cofre.',
         });
       }
 
+      if (!existing && vaultId === DEFAULT_VAULT_ID && pinHash !== defaultHash && !newPinHash) {
+        return res.status(401).json({
+          error: 'PIN incorreto.',
+        });
+      }
+
+      const finalPinHashToStore = newPinHash || pinHash;
       const updatedAt = new Date().toISOString();
       const mode = await storageSet(vaultId, {
-        pinHash,
+        pinHash: finalPinHashToStore,
         updatedAt,
         data: payload,
       });
@@ -232,10 +258,12 @@ export default async function handler(req: any, res: any) {
         ok: true,
         mode,
         updatedAt,
-        message:
-          mode === 'cloud'
-            ? 'Sincronizado permanentemente na nuvem!'
-            : 'Sincronizado na sessão (conecte Vercel KV ou GITHUB_VAULT_TOKEN para persistência remota).',
+        isDefaultPin: finalPinHashToStore === defaultHash,
+        message: newPinHash
+          ? 'Novo PIN salvo e sincronizado na nuvem com sucesso!'
+          : mode === 'cloud'
+          ? 'Sincronizado permanentemente na nuvem!'
+          : 'Sincronizado na sessão.',
       });
     }
 

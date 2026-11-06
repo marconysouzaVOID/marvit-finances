@@ -29,10 +29,18 @@ import {
   exportBackupJson,
   exportMarkdownReport,
 } from './utils/sourceExporter';
-import { hashPin, pullVaultFromCloud, pushVaultToCloud } from './utils/cloudSync';
+import {
+  DEFAULT_INITIAL_PIN,
+  DEFAULT_VAULT_ID,
+  hashPin,
+  pullVaultFromCloud,
+  pushVaultToCloud,
+} from './utils/cloudSync';
 import {
   hasRegisteredBiometrics,
+  isBiometricsSupported,
   isRunningAsPwa,
+  registerBiometricVault,
   unlockWithBiometrics,
 } from './utils/biometricAuth';
 
@@ -40,6 +48,7 @@ type ActiveTab = 'budget' | 'goals' | 'freedom' | 'advice' | 'history';
 
 const STORAGE_KEY = 'marvit_finances_state_v2';
 const VAULT_SESSION_KEY = 'marvit_vault_session_v2';
+const SESSION_UNLOCKED_KEY = 'marvit_pin_unlocked_session_v2';
 const THEME_STORAGE_KEY = 'marvit_theme_mode';
 
 export const App: React.FC = () => {
@@ -75,9 +84,25 @@ export const App: React.FC = () => {
   const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [vault, setVault] = useState<VaultCredentials | null>(null);
-  const [isAppLocked, setIsAppLocked] = useState(false);
+
+  // PIN obrigatório desde o primeiro acesso!
+  const [isAppLocked, setIsAppLocked] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem(SESSION_UNLOCKED_KEY) !== 'true';
+    } catch {
+      return true;
+    }
+  });
+
   const [lockPinInput, setLockPinInput] = useState('');
   const [lockError, setLockError] = useState('');
+  const [lockLoading, setLockLoading] = useState(false);
+
+  // Passo opcional após desbloquear com o PIN padrão ("2026") no primeiro acesso
+  const [showFirstAccessChangePin, setShowFirstAccessChangePin] = useState(false);
+  const [firstAccessNewPin, setFirstAccessNewPin] = useState('');
+  const [firstAccessConfirmPin, setFirstAccessConfirmPin] = useState('');
+
   const [toast, setToast] = useState<string | null>(null);
   const [deferredPwaPrompt, setDeferredPwaPrompt] = useState<any>(null);
 
@@ -114,7 +139,6 @@ export const App: React.FC = () => {
 
   // Carregar estado salvo no LocalStorage e checar parâmetros de atalho PWA
   useEffect(() => {
-    const pwa = isRunningAsPwa();
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -130,12 +154,6 @@ export const App: React.FC = () => {
       if (savedVault) {
         const parsedVault = JSON.parse(savedVault) as VaultCredentials;
         setVault(parsedVault);
-        // Comportamento de bloqueio biométrico automático apenas em modo PWA!
-        if (pwa && (parsedVault.appLockEnabled || hasRegisteredBiometrics())) {
-          setIsAppLocked(true);
-        }
-      } else if (pwa && hasRegisteredBiometrics()) {
-        setIsAppLocked(true);
       }
     } catch {
       // Ignora erro de parse
@@ -159,7 +177,7 @@ export const App: React.FC = () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
 
-  // Quando o App Lock abre no PWA e há biometria cadastrada, dispara a leitura biométrica automaticamente
+  // No PWA, se já houver biometria cadastrada, aciona automaticamente a leitura biométrica na tela de bloqueio!
   useEffect(() => {
     if (isAppLocked && isRunningAsPwa() && hasRegisteredBiometrics()) {
       handleUnlockAppWithBiometrics(true);
@@ -207,7 +225,7 @@ export const App: React.FC = () => {
       // Ignora quota error
     }
 
-    if (vault && vault.autoSync) {
+    if (!isAppLocked && vault && vault.autoSync) {
       const timer = setTimeout(() => {
         pushVaultToCloud(vault.vaultId, vault.pinHash, currentBackupPayload).catch(
           () => {}
@@ -215,7 +233,7 @@ export const App: React.FC = () => {
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [currentBackupPayload, vault]);
+  }, [currentBackupPayload, vault, isAppLocked]);
 
   const handleUpdateVault = (nextVault: VaultCredentials | null) => {
     setVault(nextVault);
@@ -340,7 +358,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleRestorePayload = (payload: MarvitBackupData) => {
+  const handleRestorePayload = (payload: MarvitBackupData, silent = false) => {
     if (payload.profile) setProfile(payload.profile);
     if (payload.customGoals) setCustomGoals(payload.customGoals);
     if (payload.expenses) setExpenses(payload.expenses);
@@ -348,7 +366,9 @@ export const App: React.FC = () => {
       setLongTermGoals(payload.customLongTermGoals);
     }
     if (payload.history) setHistory(payload.history);
-    showToast('Backup restaurado com sucesso!');
+    if (!silent) {
+      showToast('Backup restaurado com sucesso!');
+    }
   };
 
   const handleImportJsonFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -379,37 +399,176 @@ export const App: React.FC = () => {
     }
   };
 
-  // Desbloqueio de App Lock Biométrico ou PIN (automático no PWA)
+  // Desbloqueio via Biometria (exclusivo/automático no PWA)
   const handleUnlockAppWithBiometrics = async (silent = false) => {
     try {
+      setLockLoading(true);
       setLockError('');
       const creds = await unlockWithBiometrics();
       const cloudRes = await pullVaultFromCloud(creds.vaultId, creds.pinHash);
       if (cloudRes.ok && cloudRes.data) {
-        handleRestorePayload(cloudRes.data);
+        handleRestorePayload(cloudRes.data, true);
       }
+      const nextVault: VaultCredentials = {
+        vaultId: creds.vaultId,
+        pinHash: creds.pinHash,
+        autoSync: true,
+        appLockEnabled: true,
+        biometricEnabled: true,
+        lastSyncedAt: cloudRes.updatedAt || new Date().toISOString(),
+      };
+      handleUpdateVault(nextVault);
+      sessionStorage.setItem(SESSION_UNLOCKED_KEY, 'true');
       setIsAppLocked(false);
     } catch (err: any) {
       if (!silent) {
         setLockError(err?.message || 'Falha na leitura biométrica.');
       }
+    } finally {
+      setLockLoading(false);
     }
   };
 
+  // Desbloqueio obrigatório via PIN (desde o 1º acesso)
   const handleUnlockAppWithPin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!vault) {
-      setIsAppLocked(false);
+    const cleanPin = lockPinInput.trim();
+    if (!cleanPin) {
+      setLockError('Digite o PIN para acessar a aplicação.');
       return;
     }
-    const candidateHash = await hashPin(vault.vaultId, lockPinInput);
-    if (candidateHash === vault.pinHash) {
-      setIsAppLocked(false);
+
+    setLockLoading(true);
+    setLockError('');
+
+    try {
+      const targetVaultId = vault?.vaultId || DEFAULT_VAULT_ID;
+      const candidateHash = await hashPin(targetVaultId, cleanPin);
+      const defaultHash = await hashPin(targetVaultId, DEFAULT_INITIAL_PIN);
+
+      const res = await pullVaultFromCloud(targetVaultId, candidateHash);
+      if (!res.ok) {
+        setLockError(res.message || 'PIN incorreto. Tente novamente.');
+        setLockLoading(false);
+        return;
+      }
+
+      if (res.data) {
+        handleRestorePayload(res.data, true);
+      }
+
+      // Se estiver em modo PWA, registra automaticamente a biometria no primeiro login!
+      let bioRegistered = Boolean(hasRegisteredBiometrics());
+      if (isRunningAsPwa() && !bioRegistered) {
+        const supported = await isBiometricsSupported();
+        if (supported) {
+          try {
+            await registerBiometricVault(targetVaultId, candidateHash);
+            bioRegistered = true;
+          } catch {
+            // Usuário pode vincular depois se cancelar o prompt nativo
+          }
+        }
+      }
+
+      const nextVault: VaultCredentials = {
+        vaultId: targetVaultId,
+        pinHash: candidateHash,
+        autoSync: true,
+        appLockEnabled: true,
+        biometricEnabled: bioRegistered,
+        lastSyncedAt: res.updatedAt || new Date().toISOString(),
+      };
+      handleUpdateVault(nextVault);
       setLockPinInput('');
-      setLockError('');
-    } else {
-      setLockError('PIN incorreto. Tente novamente.');
+
+      // Se o usuário entrou usando o PIN padrão ("2026"), oferece a troca imediata do PIN!
+      if (res.isDefaultPin || candidateHash === defaultHash) {
+        setShowFirstAccessChangePin(true);
+      } else {
+        sessionStorage.setItem(SESSION_UNLOCKED_KEY, 'true');
+        setIsAppLocked(false);
+      }
+    } finally {
+      setLockLoading(false);
     }
+  };
+
+  // Salvar o novo PIN escolhido logo após o primeiro acesso
+  const handleSaveFirstAccessNewPin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanNew = firstAccessNewPin.trim();
+    const cleanConfirm = firstAccessConfirmPin.trim();
+
+    if (!cleanNew || cleanNew.length < 4) {
+      setLockError('Escolha um novo PIN com pelo menos 4 dígitos ou caracteres.');
+      return;
+    }
+    if (cleanNew !== cleanConfirm) {
+      setLockError('A confirmação do novo PIN não confere.');
+      return;
+    }
+
+    setLockLoading(true);
+    setLockError('');
+
+    try {
+      const targetVaultId = vault?.vaultId || DEFAULT_VAULT_ID;
+      const currentPinHash =
+        vault?.pinHash || (await hashPin(targetVaultId, DEFAULT_INITIAL_PIN));
+      const newPinHash = await hashPin(targetVaultId, cleanNew);
+
+      const res = await pushVaultToCloud(
+        targetVaultId,
+        currentPinHash,
+        currentBackupPayload,
+        newPinHash
+      );
+
+      if (!res.ok) {
+        setLockError(res.message || 'Erro ao salvar novo PIN.');
+        setLockLoading(false);
+        return;
+      }
+
+      let bioRegistered = Boolean(hasRegisteredBiometrics());
+      if (isRunningAsPwa()) {
+        const supported = await isBiometricsSupported();
+        if (supported) {
+          try {
+            await registerBiometricVault(targetVaultId, newPinHash);
+            bioRegistered = true;
+          } catch {
+            // ignore
+          }
+        }
+      }
+
+      handleUpdateVault({
+        vaultId: targetVaultId,
+        pinHash: newPinHash,
+        autoSync: true,
+        appLockEnabled: true,
+        biometricEnabled: bioRegistered,
+        lastSyncedAt: res.updatedAt || new Date().toISOString(),
+      });
+
+      setShowFirstAccessChangePin(false);
+      setFirstAccessNewPin('');
+      setFirstAccessConfirmPin('');
+      sessionStorage.setItem(SESSION_UNLOCKED_KEY, 'true');
+      setIsAppLocked(false);
+      showToast('Novo PIN pessoal configurado e sincronizado com sucesso!');
+    } finally {
+      setLockLoading(false);
+    }
+  };
+
+  const handleSkipFirstAccessPinChange = () => {
+    setShowFirstAccessChangePin(false);
+    sessionStorage.setItem(SESSION_UNLOCKED_KEY, 'true');
+    setIsAppLocked(false);
+    showToast('Você pode alterar seu PIN a qualquer momento em "Cofre & Biometria".');
   };
 
   const navItems: {
@@ -453,9 +612,11 @@ export const App: React.FC = () => {
     },
   ];
 
-  // Tela de App Lock Biométrico (ativada automaticamente em PWA após o primeiro login no Cofre)
+  // Tela Obrigatória de PIN (e Biometria Automática no PWA) desde o 1º Acesso
   if (isAppLocked) {
-    const hasBio = Boolean(hasRegisteredBiometrics());
+    const pwa = isRunningAsPwa();
+    const hasBio = pwa && Boolean(hasRegisteredBiometrics());
+
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-oat-100 relative">
         <div className="fixed top-4 right-4 z-30">
@@ -486,48 +647,111 @@ export const App: React.FC = () => {
             />
           </div>
 
-          <div>
-            <h1 className="text-2xl font-display font-bold text-espresso-900">
-              Cofre Marvit Protegido
-            </h1>
-            <p className="text-xs text-espresso-600 mt-1">
-              Desbloqueie com sua Biometria ou PIN para abrir seu planejamento financeiro.
-            </p>
-          </div>
+          {showFirstAccessChangePin ? (
+            <div className="space-y-4">
+              <div>
+                <span className="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 mb-2">
+                  Primeiro Acesso Concluído
+                </span>
+                <h1 className="text-xl sm:text-2xl font-display font-bold text-espresso-900">
+                  Personalize seu PIN Secreto
+                </h1>
+                <p className="text-xs text-espresso-600 mt-1">
+                  Você entrou com o PIN padrão (<strong>2026</strong>). Escolha agora seu próprio PIN pessoal para proteger seu planejamento.
+                </p>
+              </div>
 
-          {hasBio && (
-            <button
-              type="button"
-              onClick={() => handleUnlockAppWithBiometrics(false)}
-              className="w-full py-3.5 px-4 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-xl">
-                fingerprint
-              </span>
-              <span>Desbloquear com FaceID / Biometria</span>
-            </button>
-          )}
+              <form onSubmit={handleSaveFirstAccessNewPin} className="space-y-3">
+                <input
+                  type="password"
+                  value={firstAccessNewPin}
+                  onChange={(e) => setFirstAccessNewPin(e.target.value)}
+                  placeholder="Digite seu novo PIN (mín. 4 dígitos)"
+                  className="w-full bg-oat-100 border border-oat-300 rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                />
+                <input
+                  type="password"
+                  value={firstAccessConfirmPin}
+                  onChange={(e) => setFirstAccessConfirmPin(e.target.value)}
+                  placeholder="Confirme seu novo PIN"
+                  className="w-full bg-oat-100 border border-oat-300 rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                />
+                {lockError && (
+                  <p className="text-xs text-terracotta-600 font-semibold">
+                    {lockError}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={lockLoading}
+                  className="w-full py-3 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white text-xs sm:text-sm font-bold transition shadow-md cursor-pointer"
+                >
+                  {lockLoading ? 'Salvando Novo PIN...' : 'Salvar Meu Novo PIN'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSkipFirstAccessPinChange}
+                  className="w-full py-2 rounded-xl text-espresso-600 hover:text-espresso-900 text-xs font-semibold transition cursor-pointer"
+                >
+                  Manter PIN atual e alterar depois
+                </button>
+              </form>
+            </div>
+          ) : (
+            <>
+              <div>
+                <h1 className="text-2xl font-display font-bold text-espresso-900">
+                  Cofre Marvit Protegido
+                </h1>
+                <p className="text-xs text-espresso-600 mt-1">
+                  {hasBio
+                    ? 'Valide sua Biometria ou digite seu PIN para abrir seu planejamento financeiro.'
+                    : 'Digite seu PIN de acesso para abrir seu planejamento financeiro.'}
+                </p>
+              </div>
 
-          <form onSubmit={handleUnlockAppWithPin} className="space-y-3">
-            <input
-              type="password"
-              value={lockPinInput}
-              onChange={(e) => setLockPinInput(e.target.value)}
-              placeholder="Ou digite seu PIN secreto..."
-              className="w-full bg-oat-100 border border-oat-300 rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
-            />
-            {lockError && (
-              <p className="text-xs text-terracotta-600 font-semibold">
-                {lockError}
+              {hasBio && (
+                <button
+                  type="button"
+                  disabled={lockLoading}
+                  onClick={() => handleUnlockAppWithBiometrics(false)}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-xl">
+                    fingerprint
+                  </span>
+                  <span>Desbloquear com FaceID / Biometria</span>
+                </button>
+              )}
+
+              <form onSubmit={handleUnlockAppWithPin} className="space-y-3">
+                <input
+                  type="password"
+                  value={lockPinInput}
+                  onChange={(e) => setLockPinInput(e.target.value)}
+                  placeholder="Digite seu PIN secreto..."
+                  className="w-full bg-oat-100 border border-oat-300 rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                />
+                {lockError && (
+                  <p className="text-xs text-terracotta-600 font-semibold">
+                    {lockError}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={lockLoading}
+                  className="w-full py-3 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white text-xs sm:text-sm font-bold transition shadow-sm cursor-pointer"
+                >
+                  {lockLoading ? 'Verificando PIN...' : 'Entrar com PIN'}
+                </button>
+              </form>
+
+              <p className="text-[11px] text-espresso-500 pt-1">
+                Primeiro acesso? Utilize o PIN padrão inicial:{' '}
+                <strong className="font-mono text-maldives-700">2026</strong>
               </p>
-            )}
-            <button
-              type="submit"
-              className="w-full py-2.5 rounded-xl bg-oat-200 hover:bg-oat-300 text-espresso-800 text-xs font-bold transition cursor-pointer"
-            >
-              Entrar com PIN
-            </button>
-          </form>
+            </>
+          )}
         </motion.div>
       </div>
     );
@@ -614,7 +838,7 @@ export const App: React.FC = () => {
               <span className="hidden lg:inline">App PWA</span>
             </button>
 
-            {/* Botão Cofre & Biometria */}
+            {/* Botão Cofre & PIN */}
             <button
               onClick={() => setIsVaultModalOpen(true)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 cursor-pointer ${
@@ -622,13 +846,13 @@ export const App: React.FC = () => {
                   ? 'bg-maldives-50 border-maldives-300 text-maldives-800'
                   : 'bg-oat-50 border-oat-300 text-espresso-800 hover:border-maldives-400'
               }`}
-              title="Sincronização na Nuvem e Login Biométrico"
+              title="Alterar PIN, Sincronização na Nuvem e Biometria"
             >
               <span className="material-symbols-outlined text-[17px] text-maldives-600">
-                {vault ? 'cloud_done' : 'fingerprint'}
+                {vault ? 'cloud_done' : 'passkey'}
               </span>
               <span className="hidden sm:inline">
-                {vault ? `Cofre: ${vault.vaultId}` : 'Cofre & Biometria'}
+                {vault ? `Cofre & PIN (${vault.vaultId})` : 'Cofre & PIN'}
               </span>
             </button>
 
@@ -717,6 +941,20 @@ export const App: React.FC = () => {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Botão Bloquear Tela (PIN) */}
+            <button
+              onClick={() => {
+                sessionStorage.removeItem(SESSION_UNLOCKED_KEY);
+                setIsAppLocked(true);
+              }}
+              className="p-1.5 rounded-xl bg-oat-50 hover:bg-terracotta-50 text-espresso-600 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
+              title="Bloquear aplicação com PIN"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                lock
+              </span>
+            </button>
           </div>
         </div>
       </header>
@@ -961,7 +1199,7 @@ export const App: React.FC = () => {
         </div>
       </nav>
 
-      {/* Modal de Cofre na Nuvem & Biometria */}
+      {/* Modal de Cofre na Nuvem, Troca de PIN & Biometria */}
       <VaultAuthModal
         isOpen={isVaultModalOpen}
         onClose={() => setIsVaultModalOpen(false)}
