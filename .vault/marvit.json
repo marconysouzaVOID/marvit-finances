@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:06:32.624Z",
+  "updatedAt": "2026-11-06T23:06:35.021Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:06:30.677Z",
+    "exportedAt": "2026-11-06T23:06:33.206Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -92,7 +92,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-06T23:06:30.677Z",
+        "updatedAt": "2026-11-06T23:06:33.206Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -129,12 +129,6 @@
             "id": "3",
             "name": "Contas (Internet)",
             "amount": 117.8,
-            "category": "essencial"
-          },
-          {
-            "id": "4",
-            "name": "Plano de Saúde & Farmácia",
-            "amount": 380,
             "category": "essencial"
           },
           {
@@ -218,12 +212,6 @@
         "id": "3",
         "name": "Contas (Internet)",
         "amount": 117.8,
-        "category": "essencial"
-      },
-      {
-        "id": "4",
-        "name": "Plano de Saúde & Farmácia",
-        "amount": 380,
         "category": "essencial"
       },
       {
