@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CARD_PURCHASE_TAGS } from '../constants';
 import {
@@ -20,6 +20,131 @@ interface CreditCardsManagerProps {
   onDeleteExpense: (id: string) => void;
 }
 
+/** Detecta automaticamente a tag da compra pelo nome do estabelecimento */
+export function inferCardPurchaseTag(title: string): CardPurchaseTag {
+  const lower = title.toLowerCase();
+  if (
+    /ifd|ifood|doceria|bolo|buffet|chocol|adega|florybal|supermercado|backerei|padaria|delicatessen|doce|laticinio|salchpao|sucao|acaiteria|restaurante|cafe|lanch|bar\b|pizza|burger|sushi|atacadao/i.test(
+      lower
+    )
+  ) {
+    return 'gastronomia';
+  }
+  if (
+    /apple\.com|spotify|openai|chatgpt|iof de|netflix|prime|disney|hbo|youtube|conta vivo|claro|tim\b|assinatura/i.test(
+      lower
+    )
+  ) {
+    return 'assinaturas';
+  }
+  if (
+    /uber|99app|99\*|parking|estacionamento|petrox|posto|combustivel|pedagio/i.test(
+      lower
+    )
+  ) {
+    return 'mobilidade';
+  }
+  if (
+    /boticario|farmacia|escovaria|wellhub|gympass|pague menos|redemed|beauty|estetica|salao|academia|drogaria/i.test(
+      lower
+    )
+  ) {
+    return 'autocuidado';
+  }
+  if (
+    /shein|riachuelo|modas|decathlon|amazon|outlet|baga|shopee|mercado livre|mp \*|porto seguro|loja|roupa|calcado/i.test(
+      lower
+    )
+  ) {
+    return 'compras';
+  }
+  if (/evento|cantoverde|cinema|ingresso|viagem|hotel|passeio|turismo/i.test(lower)) {
+    return 'lazer';
+  }
+  return 'outros';
+}
+
+/** Faz o parse de arquivos CSV de fatura de cartão (ex: Nubank date,title,amount) */
+export function parseCreditCardCsvText(csvText: string): CreditCardTransaction[] {
+  const lines = csvText
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  if (lines.length <= 1) return [];
+
+  const result: CreditCardTransaction[] = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    // Parse CSV respeitando aspas (ex: 2026-10-24,Hna*Oboticario - Parcela 1/5,"87,86")
+    const cols: string[] = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let c = 0; c < line.length; c++) {
+      const ch = line[c];
+      if (ch === '"') {
+        if (inQuotes && line[c + 1] === '"') {
+          current += '"';
+          c++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes) {
+        cols.push(current.trim());
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    cols.push(current.trim());
+
+    if (cols.length < 3) continue;
+
+    const rawDate = cols[0];
+    let rawTitle = cols[1];
+    const rawAmountStr = cols[cols.length - 1];
+
+    // Ignorar pagamentos recebidos ou estornos negativos
+    if (/pagamento recebido/i.test(rawTitle)) continue;
+
+    const normalizedNum = rawAmountStr
+      .replace(/\s+/g, '')
+      .replace(/\.(?=\d{3}(?:,|$))/g, '')
+      .replace(',', '.');
+    const numericAmount = Number(normalizedNum);
+
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) continue;
+
+    // Extrair "Parcela X/Y" se presente no título
+    let installment = 'À vista';
+    const parcelaMatch = rawTitle.match(/(?:-\s*)?Parcela\s+(\d+\/\d+)/i);
+    if (parcelaMatch) {
+      installment = `Parcela ${parcelaMatch[1]}`;
+      rawTitle = rawTitle.replace(parcelaMatch[0], '').trim();
+    }
+
+    // Formatar data YYYY-MM-DD -> DD/MM
+    let formattedDate = rawDate;
+    const dateParts = rawDate.split('-');
+    if (dateParts.length === 3) {
+      formattedDate = `${dateParts[2]}/${dateParts[1]}`;
+    }
+
+    result.push({
+      id: `csv-tx-${Date.now()}-${i}`,
+      description: rawTitle,
+      amount: Math.round(numericAmount * 100) / 100,
+      tag: inferCardPurchaseTag(rawTitle),
+      installment,
+      purchaseDate: formattedDate,
+    });
+  }
+
+  return result;
+}
+
 export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   expenses,
   lifestyleIdealAmount,
@@ -30,6 +155,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   onUpdateExpense,
   onDeleteExpense,
 }) => {
+  const csvFileInputRef = useRef<HTMLInputElement | null>(null);
+
   // Todos os itens do pilar Estilo de Vida que pertencem à subcategoria 'cartao'
   const creditCards = useMemo(
     () =>
@@ -42,7 +169,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     [expenses]
   );
 
-  // Outros itens do pilar Estilo de Vida que ainda estão como 'direto' (ou sem subcategoria)
+  // Outros itens do pilar Estilo de Vida que estão na subcategoria 'direto'
   const directLifestyleItems = useMemo(
     () =>
       expenses.filter(
@@ -97,6 +224,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   const [selectedTagFilter, setSelectedTagFilter] = useState<
     'all' | CardPurchaseTag
   >('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const totalCardsInvoice = useMemo(
     () => creditCards.reduce((acc, c) => acc + c.amount, 0),
@@ -177,14 +305,17 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     const newTx: CreditCardTransaction = {
       id: `tx-${Date.now()}`,
       description: txDesc.trim(),
-      amount: Math.max(0, Number(txAmount)),
+      amount: Math.round(Math.max(0, Number(txAmount)) * 100) / 100,
       tag: txTag,
       installment: txInstallment.trim() || 'À vista',
       purchaseDate: txDate.trim() || undefined,
     };
 
     const nextTransactions = [newTx, ...currentList];
-    const nextTotal = nextTransactions.reduce((acc, t) => acc + t.amount, 0);
+    const nextTotal =
+      Math.round(
+        nextTransactions.reduce((acc, t) => acc + t.amount, 0) * 100
+      ) / 100;
 
     onUpdateExpense(activeCard.id, {
       cardTransactions: nextTransactions,
@@ -205,7 +336,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     const nextTransactions = currentList.map((t) =>
       t.id === txId ? { ...t, ...updated } : t
     );
-    const nextTotal = nextTransactions.reduce((acc, t) => acc + t.amount, 0);
+    const nextTotal =
+      Math.round(
+        nextTransactions.reduce((acc, t) => acc + t.amount, 0) * 100
+      ) / 100;
 
     onUpdateExpense(activeCard.id, {
       cardTransactions: nextTransactions,
@@ -217,7 +351,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     if (!activeCard) return;
     const currentList = activeCard.cardTransactions || [];
     const nextTransactions = currentList.filter((t) => t.id !== txId);
-    const nextTotal = nextTransactions.reduce((acc, t) => acc + t.amount, 0);
+    const nextTotal =
+      Math.round(
+        nextTransactions.reduce((acc, t) => acc + t.amount, 0) * 100
+      ) / 100;
 
     onUpdateExpense(activeCard.id, {
       cardTransactions: nextTransactions,
@@ -225,36 +362,62 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     });
   };
 
-  // Converter um item existente de Estilo de Vida em Cartão de Crédito já com 1 lançamento inicial se tinha saldo > 0
-  const handleConvertDirectToCard = (item: ExpenseItem) => {
-    const initialTransactions: CreditCardTransaction[] =
-      item.amount > 0
-        ? [
-            {
-              id: `tx-init-${Date.now()}`,
-              description: `${item.name} (Saldo inicial)`,
-              amount: item.amount,
-              tag: 'outros',
-              installment: 'À vista',
-            },
-          ]
-        : [];
+  const handleImportCsvFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeCard) return;
 
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const content = String(ev.target?.result || '');
+      const parsed = parseCreditCardCsvText(content);
+      if (parsed.length > 0) {
+        const currentList = activeCard.cardTransactions || [];
+        const merged = [...parsed, ...currentList];
+        const nextTotal =
+          Math.round(merged.reduce((acc, t) => acc + t.amount, 0) * 100) / 100;
+        onUpdateExpense(activeCard.id, {
+          cardTransactions: merged,
+          amount: nextTotal,
+        });
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleConvertDirectToCard = (item: ExpenseItem) => {
     onUpdateExpense(item.id, {
       subcategory: 'cartao',
-      cardTransactions:
-        item.cardTransactions && item.cardTransactions.length > 0
-          ? item.cardTransactions
-          : initialTransactions,
+      cardTransactions: item.cardTransactions || [],
     });
     handleSelectCard(item.id);
   };
 
+  const handleConvertCardToDirect = (card: ExpenseItem) => {
+    onUpdateExpense(card.id, {
+      subcategory: 'direto',
+    });
+  };
+
   const activeCardTransactions = activeCard?.cardTransactions || [];
-  const filteredTransactions =
-    selectedTagFilter === 'all'
-      ? activeCardTransactions
-      : activeCardTransactions.filter((t) => t.tag === selectedTagFilter);
+  const sumOfActiveCardItems = useMemo(
+    () =>
+      Math.round(
+        activeCardTransactions.reduce((acc, t) => acc + t.amount, 0) * 100
+      ) / 100,
+    [activeCardTransactions]
+  );
+
+  const filteredTransactions = useMemo(() => {
+    return activeCardTransactions.filter((t) => {
+      const matchesTag =
+        selectedTagFilter === 'all' || t.tag === selectedTagFilter;
+      const matchesQuery =
+        !searchQuery.trim() ||
+        t.description.toLowerCase().includes(searchQuery.trim().toLowerCase());
+      return matchesTag && matchesQuery;
+    });
+  }, [activeCardTransactions, selectedTagFilter, searchQuery]);
 
   const tagTotalsForActiveCard = useMemo(() => {
     const map: Record<CardPurchaseTag, number> = {
@@ -267,13 +430,22 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
       outros: 0,
     };
     activeCardTransactions.forEach((t) => {
-      map[t.tag] = (map[t.tag] || 0) + t.amount;
+      map[t.tag] = Math.round(((map[t.tag] || 0) + t.amount) * 100) / 100;
     });
     return map;
   }, [activeCardTransactions]);
 
   return (
     <div className="space-y-5">
+      {/* Input oculto para importar CSV de fatura (ex: Nubank) */}
+      <input
+        ref={csvFileInputRef}
+        type="file"
+        accept=".csv,text/csv"
+        onChange={handleImportCsvFile}
+        className="hidden"
+      />
+
       {/* Cabeçalho Principal da Aba de Cartões de Estilo de Vida */}
       <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200">
@@ -295,7 +467,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-espresso-600 mt-1">
-                Gerencie cada compra individualizada nos seus cartões. O total de cada fatura alimenta automaticamente o pilar <strong>Estilo de Vida (30%)</strong> do mês!
+                Gerencie os gastos individualizados de cada cartão adicionado ao pilar{' '}
+                <strong>Estilo de Vida</strong>. A soma das compras atualiza automaticamente a fatura na planilha!
               </p>
             </div>
           </div>
@@ -319,7 +492,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           <div className="p-4 rounded-2xl bg-terracotta-50/90 border border-terracotta-200 flex items-center justify-between">
             <div className="min-w-0">
               <span className="text-[11px] font-bold uppercase text-terracotta-700 tracking-wider block">
-                Total em Faturas (Estilo de Vida)
+                Total em Cartões (Estilo)
               </span>
               <span className="text-xl font-mono font-extrabold text-terracotta-600 mt-0.5 block truncate">
                 {formatCurrency(totalCardsInvoice)}
@@ -354,14 +527,15 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           <div className="p-4 rounded-2xl bg-sage-50 border border-sage-200 flex items-center justify-between">
             <div className="min-w-0">
               <span className="text-[11px] font-bold uppercase text-sage-600 tracking-wider block">
-                Compras Individualizadas
+                Gastos Individualizados
               </span>
               <span className="text-xl font-mono font-extrabold text-espresso-900 mt-0.5 block truncate">
                 {totalIndividualTransactions}{' '}
-                {totalIndividualTransactions === 1 ? 'compra' : 'compras'}
+                {totalIndividualTransactions === 1 ? 'item' : 'itens'}
               </span>
               <span className="text-[11px] text-espresso-600">
-                Gastos Diretos/Pix: {formatCurrency(Math.max(0, lifestyleTotalSpent - totalCardsInvoice))}
+                Outros gastos diretos/Pix:{' '}
+                {formatCurrency(Math.max(0, lifestyleTotalSpent - totalCardsInvoice))}
               </span>
             </div>
             <span className="material-symbols-outlined text-sage-500 text-3xl shrink-0">
@@ -399,7 +573,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       type="text"
                       value={newCardName}
                       onChange={(e) => setNewCardName(e.target.value)}
-                      placeholder="Ex: Cartão Nubank, Itaú Personnalité, XP..."
+                      placeholder="Ex: Cartão Nubank, Itaú, Inter, XP..."
                       className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
@@ -464,15 +638,16 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           )}
         </AnimatePresence>
 
-        {/* Atalho rápido para converter gastos existentes de Estilo de Vida na subcategoria Cartão de Crédito */}
+        {/* Seletor rápido de subcategoria para converter itens existentes de Estilo de Vida em Cartão de Crédito */}
         {directLifestyleItems.length > 0 && (
           <div className="mt-4 pt-3.5 border-t border-oat-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div className="flex items-center gap-2 text-xs text-espresso-600">
               <span className="material-symbols-outlined text-terracotta-500 text-[18px] shrink-0">
-                swap_horiz
+                category
               </span>
               <span>
-                Deseja transformar um item de <strong>Estilo de Vida</strong> já existente em Cartão de Crédito?
+                Marcar gasto de <strong>Estilo de Vida</strong> como subcategoria{' '}
+                <strong>Cartão de Crédito</strong>:
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -482,12 +657,15 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   type="button"
                   onClick={() => handleConvertDirectToCard(item)}
                   className="px-2.5 py-1 rounded-xl bg-oat-100 hover:bg-terracotta-50 text-espresso-700 hover:text-terracotta-700 border border-oat-300 hover:border-terracotta-300 text-[11px] font-bold flex items-center gap-1 transition cursor-pointer"
-                  title="Converter para a subcategoria Cartão de Crédito para detalhar compras"
+                  title="Definir como Cartão de Crédito para detalhar compras individualizadas"
                 >
                   <span className="material-symbols-outlined text-[14px] text-terracotta-600">
-                    credit_card
+                    add_card
                   </span>
-                  <span className="truncate max-w-[160px]">{item.name}</span>
+                  <span className="truncate max-w-[150px]">{item.name}</span>
+                  <span className="font-mono text-[10px] text-espresso-500">
+                    ({formatCurrency(item.amount)})
+                  </span>
                 </button>
               ))}
             </div>
@@ -502,10 +680,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             credit_card
           </span>
           <h3 className="text-base sm:text-lg font-display font-bold text-espresso-900">
-            Nenhum Cartão de Crédito cadastrado na subcategoria Estilo de Vida ainda
+            Nenhum item marcado na subcategoria Cartão de Crédito ainda
           </h3>
           <p className="text-xs text-espresso-600 max-w-md mx-auto">
-            Clique em <strong>“Novo Cartão em Estilo de Vida”</strong> acima ou converta um item existente para começar a lançar seus gastos individualizados de cartão.
+            Toque em um dos seus itens de <strong>Estilo de Vida</strong> acima para marcá-lo como Cartão de Crédito, ou clique em <strong>“Novo Cartão em Estilo de Vida”</strong>.
           </p>
         </div>
       ) : (
@@ -514,10 +692,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           <div className="lg:col-span-4 space-y-3">
             <div className="flex items-center justify-between px-1">
               <span className="text-xs font-bold uppercase tracking-wider text-espresso-600">
-                Seus Cartões ({creditCards.length})
+                Cartões em Estilo de Vida ({creditCards.length})
               </span>
               <span className="text-[11px] text-espresso-500">
-                Toque para abrir a fatura
+                Selecione para detalhar
               </span>
             </div>
 
@@ -573,7 +751,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                       {isSelected && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-terracotta-500 text-white shrink-0">
-                          Ativo
+                          Selecionado
                         </span>
                       )}
                     </div>
@@ -581,7 +759,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     <div className="mt-3.5 flex items-baseline justify-between">
                       <div>
                         <span className="text-[10px] font-bold uppercase text-espresso-500 block">
-                          Fatura Atual
+                          Total na Planilha
                         </span>
                         <span className="text-lg font-mono font-extrabold text-espresso-900">
                           {formatCurrency(card.amount)}
@@ -591,7 +769,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       {card.cardLimit && card.cardLimit > 0 && (
                         <div className="text-right">
                           <span className="text-[10px] text-espresso-500 block">
-                            Teto do Cartão
+                            Teto Planejado
                           </span>
                           <span
                             className={`text-xs font-mono font-bold ${
@@ -638,24 +816,40 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="text-base sm:text-xl font-display font-bold text-espresso-900 truncate">
-                        Fatura: {activeCard.name}
+                        {activeCard.name}
                       </h3>
                       {activeCard.cardDueDay && (
                         <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300">
-                          Vencimento dia {activeCard.cardDueDay}
+                          Venc. dia {activeCard.cardDueDay}
                         </span>
                       )}
                     </div>
                     <p className="text-xs text-espresso-600 mt-0.5">
-                      Total da fatura sincronizado em Estilo de Vida:{' '}
+                      Fatura em Estilo de Vida:{' '}
                       <strong className="font-mono text-terracotta-600">
                         {formatCurrency(activeCard.amount)}
+                      </strong>{' '}
+                      • Soma dos itens:{' '}
+                      <strong className="font-mono text-maldives-700">
+                        {formatCurrency(sumOfActiveCardItems)}
                       </strong>
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => csvFileInputRef.current?.click()}
+                    className="px-3 py-1.5 rounded-xl bg-maldives-50 hover:bg-maldives-100 text-maldives-800 border border-maldives-300 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                    title="Importar compras individualizadas de um arquivo .CSV (ex: Nubank)"
+                  >
+                    <span className="material-symbols-outlined text-[16px] text-maldives-600">
+                      upload_file
+                    </span>
+                    <span>Importar Fatura (.CSV)</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={
@@ -668,8 +862,17 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     <span className="material-symbols-outlined text-[16px]">
                       {isEditingCardMeta ? 'close' : 'settings'}
                     </span>
-                    <span>
-                      {isEditingCardMeta ? 'Fechar Ajuste' : 'Editar Cartão'}
+                    <span>{isEditingCardMeta ? 'Fechar' : 'Ajustar Cartão'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleConvertCardToDirect(activeCard)}
+                    className="p-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-500 hover:text-espresso-800 border border-oat-300 transition flex items-center justify-center cursor-pointer"
+                    title="Voltar este item para Gasto Direto/Pix"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      swap_horiz
                     </span>
                   </button>
 
@@ -685,6 +888,35 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   </button>
                 </div>
               </div>
+
+              {/* Aviso caso o valor manual do cartão esteja diferente da soma dos itens (ex: cartão recém-convertido) */}
+              {activeCardTransactions.length > 0 &&
+                Math.abs(activeCard.amount - sumOfActiveCardItems) > 0.05 && (
+                  <div className="p-3 rounded-2xl bg-maldives-50 border border-maldives-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                    <span className="text-espresso-700">
+                      A soma das compras individualizadas é{' '}
+                      <strong className="font-mono text-maldives-800">
+                        {formatCurrency(sumOfActiveCardItems)}
+                      </strong>
+                      , enquanto o valor na planilha está em{' '}
+                      <strong className="font-mono">
+                        {formatCurrency(activeCard.amount)}
+                      </strong>
+                      .
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onUpdateExpense(activeCard.id, {
+                          amount: sumOfActiveCardItems,
+                        })
+                      }
+                      className="px-3 py-1 rounded-xl bg-maldives-500 text-white font-bold shrink-0 cursor-pointer"
+                    >
+                      Igualar Fatura à Soma
+                    </button>
+                  </div>
+                )}
 
               {/* Painel de Edição de Nome, Limite e Dia de Vencimento do Cartão */}
               <AnimatePresence>
@@ -785,20 +1017,28 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     <span className="material-symbols-outlined text-terracotta-600 text-[18px]">
                       add_shopping_cart
                     </span>
-                    <span>Adicionar Compra Individualizada em {activeCard.name}</span>
+                    <span>
+                      Adicionar Gasto Individualizado em {activeCard.name}
+                    </span>
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
                   <div className="sm:col-span-5">
                     <label className="text-[11px] font-semibold text-espresso-700 mb-1 block">
-                      Estabelecimento / Descrição da Compra
+                      Estabelecimento / Compra
                     </label>
                     <input
                       type="text"
                       value={txDesc}
-                      onChange={(e) => setTxDesc(e.target.value)}
-                      placeholder="Ex: Restaurante, iFood, Uber, Cinema, Roupa..."
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setTxDesc(val);
+                        if (val.trim().length > 2) {
+                          setTxTag(inferCardPurchaseTag(val));
+                        }
+                      }}
+                      placeholder="Ex: Restaurante, iFood, Uber, Spotify, Shein..."
                       className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-sm text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
@@ -824,7 +1064,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                   <div className="sm:col-span-4">
                     <label className="text-[11px] font-semibold text-espresso-700 mb-1 block">
-                      Categoria no Cartão
+                      Subcategoria no Cartão
                     </label>
                     <select
                       value={txTag}
@@ -853,7 +1093,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       type="text"
                       value={txInstallment}
                       onChange={(e) => setTxInstallment(e.target.value)}
-                      placeholder="Ex: À vista, 2/6, Recorrente"
+                      placeholder="Ex: À vista, Parcela 1/3"
                       className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
@@ -866,7 +1106,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       type="text"
                       value={txDate}
                       onChange={(e) => setTxDate(e.target.value)}
-                      placeholder="Ex: 14/Nov"
+                      placeholder="Ex: 24/10"
                       className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-xs text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
@@ -886,61 +1126,79 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 </div>
               </form>
 
-              {/* Filtros por Tag / Subcategoria da Fatura */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                <button
-                  type="button"
-                  onClick={() => setSelectedTagFilter('all')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border shrink-0 transition cursor-pointer ${
-                    selectedTagFilter === 'all'
-                      ? 'bg-espresso-900 text-oat-50 border-espresso-900'
-                      : 'bg-oat-100 text-espresso-700 border-oat-300 hover:border-terracotta-300'
-                  }`}
-                >
-                  Todas ({activeCardTransactions.length})
-                </button>
+              {/* Busca + Filtros por Tag / Subcategoria da Fatura */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTagFilter('all')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border shrink-0 transition cursor-pointer ${
+                      selectedTagFilter === 'all'
+                        ? 'bg-espresso-900 text-oat-50 border-espresso-900'
+                        : 'bg-oat-100 text-espresso-700 border-oat-300 hover:border-terracotta-300'
+                    }`}
+                  >
+                    Todas ({activeCardTransactions.length})
+                  </button>
 
-                {(Object.keys(CARD_PURCHASE_TAGS) as CardPurchaseTag[]).map(
-                  (tagKey) => {
-                    const tagMeta = CARD_PURCHASE_TAGS[tagKey];
-                    const totalTag = tagTotalsForActiveCard[tagKey] || 0;
-                    if (totalTag <= 0 && selectedTagFilter !== tagKey)
-                      return null;
+                  {(Object.keys(CARD_PURCHASE_TAGS) as CardPurchaseTag[]).map(
+                    (tagKey) => {
+                      const tagMeta = CARD_PURCHASE_TAGS[tagKey];
+                      const totalTag = tagTotalsForActiveCard[tagKey] || 0;
+                      if (totalTag <= 0 && selectedTagFilter !== tagKey)
+                        return null;
 
-                    return (
-                      <button
-                        key={tagKey}
-                        type="button"
-                        onClick={() => setSelectedTagFilter(tagKey)}
-                        className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border shrink-0 flex items-center gap-1.5 transition cursor-pointer ${
-                          selectedTagFilter === tagKey
-                            ? 'bg-terracotta-500 text-white border-terracotta-600'
-                            : 'bg-oat-100 text-espresso-700 border-oat-300 hover:border-terracotta-300'
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-[14px]">
-                          {tagMeta.icon}
-                        </span>
-                        <span>{tagMeta.label}</span>
-                        <span className="font-mono opacity-85">
-                          ({formatCurrency(totalTag)})
-                        </span>
-                      </button>
-                    );
-                  }
+                      return (
+                        <button
+                          key={tagKey}
+                          type="button"
+                          onClick={() => setSelectedTagFilter(tagKey)}
+                          className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border shrink-0 flex items-center gap-1.5 transition cursor-pointer ${
+                            selectedTagFilter === tagKey
+                              ? 'bg-terracotta-500 text-white border-terracotta-600'
+                              : 'bg-oat-100 text-espresso-700 border-oat-300 hover:border-terracotta-300'
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-[14px]">
+                            {tagMeta.icon}
+                          </span>
+                          <span>{tagMeta.label}</span>
+                          <span className="font-mono opacity-85">
+                            ({formatCurrency(totalTag)})
+                          </span>
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
+
+                {activeCardTransactions.length > 3 && (
+                  <div className="relative sm:w-48 shrink-0">
+                    <span className="material-symbols-outlined text-espresso-400 text-[16px] absolute left-2.5 top-2">
+                      search
+                    </span>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Buscar na fatura..."
+                      className="w-full bg-oat-100 border border-oat-300 rounded-xl pl-8 pr-2.5 py-1.5 text-xs text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                    />
+                  </div>
                 )}
               </div>
 
               {/* Lista de Gastos Individualizados da Fatura */}
               <div className="overflow-hidden border border-oat-300 rounded-2xl bg-oat-50">
-                <div className="max-h-[420px] overflow-y-auto divide-y divide-oat-200">
+                <div className="max-h-[440px] overflow-y-auto divide-y divide-oat-200">
                   {filteredTransactions.length === 0 ? (
                     <div className="p-8 text-center text-espresso-500 text-xs sm:text-sm space-y-1">
                       <p className="font-bold text-espresso-700">
-                        Nenhuma compra individualizada lançada neste filtro.
+                        Nenhuma compra individualizada neste cartão ainda.
                       </p>
                       <p>
-                        Use o formulário acima para registrar cada gasto deste cartão e manter sua fatura de Estilo de Vida 100% transparente.
+                        Adicione manualmente acima ou clique em{' '}
+                        <strong>“Importar Fatura (.CSV)”</strong> para carregar todos os lançamentos do seu cartão.
                       </p>
                     </div>
                   ) : (
@@ -1018,7 +1276,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                               <input
                                 type="number"
                                 min="0"
-                                step="10"
+                                step="0.01"
                                 value={tx.amount}
                                 onChange={(e) =>
                                   handleUpdateTransaction(tx.id, {
@@ -1056,4 +1314,3 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     </div>
   );
 };
-

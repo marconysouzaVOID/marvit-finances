@@ -65,6 +65,22 @@ const VAULT_SESSION_KEY = 'marvit_vault_session_v2';
 const SESSION_UNLOCKED_KEY = 'marvit_pin_unlocked_session_v2';
 const THEME_STORAGE_KEY = 'marvit_theme_mode';
 
+const CARD_NAME_REGEX =
+  /(cart[aã]o|nubank|nu\b|inter\b|ita[uú]|bradesco|santander|c6\b|xp\b|btg|picpay|neon|next|will|digio|fatura|cr[eé]dito|ultravioleta|black|platinum|infinite|mastercard|visa|elo|amex|sicredi|sicoob|caixa)/i;
+
+function normalizeLifestyleExpenses(items: ExpenseItem[]): ExpenseItem[] {
+  return items.map((item) => {
+    if (item.category !== 'estilo' || item.linkedGoalId) return item;
+    if (item.subcategory) return item;
+    const isLikelyCard = CARD_NAME_REGEX.test(item.name);
+    return {
+      ...item,
+      subcategory: isLikelyCard ? 'cartao' : 'direto',
+      cardTransactions: isLikelyCard ? item.cardTransactions || [] : undefined,
+    };
+  });
+}
+
 export const App: React.FC = () => {
   const [isDark, setIsDark] = useState<boolean>(() => {
     try {
@@ -174,13 +190,14 @@ export const App: React.FC = () => {
           setMonthsData(parsed.monthsData);
           setProfile(monthRec.profile);
           setCustomGoals(monthRec.customGoals);
-          setExpenses(monthRec.expenses);
+          setExpenses(normalizeLifestyleExpenses(monthRec.expenses));
           setCurrentMonthNotes(monthRec.notes || '');
         } else {
           if (parsed.monthsData) setMonthsData(parsed.monthsData);
           if (parsed.profile) setProfile(parsed.profile);
           if (parsed.customGoals) setCustomGoals(parsed.customGoals);
-          if (parsed.expenses) setExpenses(parsed.expenses);
+          if (parsed.expenses)
+            setExpenses(normalizeLifestyleExpenses(parsed.expenses));
         }
 
         if (parsed.customLongTermGoals) {
@@ -290,7 +307,7 @@ export const App: React.FC = () => {
     if (existingTarget) {
       setProfile(existingTarget.profile);
       setCustomGoals(existingTarget.customGoals);
-      setExpenses(existingTarget.expenses);
+      setExpenses(normalizeLifestyleExpenses(existingTarget.expenses));
       setCurrentMonthNotes(existingTarget.notes || '');
       showToast(`Editando ${formatMonthKeyLabel(nextMonthKey)}`);
     } else {
@@ -544,17 +561,19 @@ export const App: React.FC = () => {
       if (activeRec) {
         setProfile(activeRec.profile);
         setCustomGoals(activeRec.customGoals);
-        setExpenses(activeRec.expenses);
+        setExpenses(normalizeLifestyleExpenses(activeRec.expenses));
         setCurrentMonthNotes(activeRec.notes || '');
       } else {
         if (payload.profile) setProfile(payload.profile);
         if (payload.customGoals) setCustomGoals(payload.customGoals);
-        if (payload.expenses) setExpenses(payload.expenses);
+        if (payload.expenses)
+          setExpenses(normalizeLifestyleExpenses(payload.expenses));
       }
     } else {
       if (payload.profile) setProfile(payload.profile);
       if (payload.customGoals) setCustomGoals(payload.customGoals);
-      if (payload.expenses) setExpenses(payload.expenses);
+      if (payload.expenses)
+        setExpenses(normalizeLifestyleExpenses(payload.expenses));
     }
 
     if (payload.customLongTermGoals) {
