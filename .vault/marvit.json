@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:51:48.373Z",
+  "updatedAt": "2026-11-06T23:51:51.503Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:51:46.534Z",
+    "exportedAt": "2026-11-06T23:51:49.687Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -298,73 +298,6 @@
           }
         ],
         "notes": "Compra do primeiro AP"
-      },
-      {
-        "id": "snap-1794008105108",
-        "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-06T23:35:05.108Z",
-        "profile": {
-          "monthlyIncome": 22000,
-          "additionalIncome": 0,
-          "desiredEmergencyMonths": 6,
-          "expectedAnnualReturnRate": 10.5
-        },
-        "customGoals": {
-          "essencial": 40,
-          "estilo": 35,
-          "investimento": 25
-        },
-        "expenses": [
-          {
-            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-            "amount": 9392.3,
-            "category": "investimento",
-            "isCustom": true,
-            "id": "exp-1794007990084"
-          },
-          {
-            "name": "Cartões (Inter, Nubank, Itau)",
-            "amount": 8000,
-            "category": "estilo",
-            "isCustom": true,
-            "id": "exp-1794006938471"
-          },
-          {
-            "name": "Financiamento Veículo",
-            "amount": 1253,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006429901"
-          },
-          {
-            "name": "Contas (Luz)",
-            "amount": 144.12,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006373678"
-          },
-          {
-            "name": "Contas (Água)",
-            "amount": 106.35,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006363575"
-          },
-          {
-            "id": "1",
-            "name": "Aluguel / Parcela Imóvel",
-            "amount": 2986.43,
-            "category": "essencial"
-          },
-          {
-            "id": "3",
-            "name": "Contas (Internet)",
-            "amount": 117.8,
-            "category": "essencial"
-          }
-        ],
-        "customLongTermGoals": [],
-        "notes": "Compra do AP"
       },
       {
         "id": "snap-1794007215994",
