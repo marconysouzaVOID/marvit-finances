@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:57:31.249Z",
+  "updatedAt": "2026-11-06T23:57:40.617Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:57:29.400Z",
+    "exportedAt": "2026-11-06T23:57:38.803Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -74,7 +74,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-06T23:57:29.400Z",
+        "updatedAt": "2026-11-06T23:57:38.803Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -133,8 +133,7 @@
             "amount": 460,
             "category": "essencial"
           }
-        ],
-        "notes": "Compra do AP"
+        ]
       }
     },
     "profile": {
