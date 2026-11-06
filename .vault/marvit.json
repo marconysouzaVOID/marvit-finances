@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:15:40.320Z",
+  "updatedAt": "2026-11-06T23:16:19.235Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:15:38.471Z",
+    "exportedAt": "2026-11-06T23:16:17.373Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -92,7 +92,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-06T23:15:38.471Z",
+        "updatedAt": "2026-11-06T23:16:17.373Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -150,30 +150,6 @@
             "name": "Transporte / Combustível",
             "amount": 460,
             "category": "essencial"
-          },
-          {
-            "id": "6",
-            "name": "Cafeterias, Restaurantes & Delivery",
-            "amount": 650,
-            "category": "estilo"
-          },
-          {
-            "id": "7",
-            "name": "Assinaturas (Streaming, Música)",
-            "amount": 110,
-            "category": "estilo"
-          },
-          {
-            "id": "8",
-            "name": "Academia & Autocuidado",
-            "amount": 160,
-            "category": "estilo"
-          },
-          {
-            "id": "9",
-            "name": "Passeios, Lazer & Compras",
-            "amount": 480,
-            "category": "estilo"
           },
           {
             "id": "10",
@@ -247,30 +223,6 @@
         "name": "Transporte / Combustível",
         "amount": 460,
         "category": "essencial"
-      },
-      {
-        "id": "6",
-        "name": "Cafeterias, Restaurantes & Delivery",
-        "amount": 650,
-        "category": "estilo"
-      },
-      {
-        "id": "7",
-        "name": "Assinaturas (Streaming, Música)",
-        "amount": 110,
-        "category": "estilo"
-      },
-      {
-        "id": "8",
-        "name": "Academia & Autocuidado",
-        "amount": 160,
-        "category": "estilo"
-      },
-      {
-        "id": "9",
-        "name": "Passeios, Lazer & Compras",
-        "amount": 480,
-        "category": "estilo"
       },
       {
         "id": "10",
