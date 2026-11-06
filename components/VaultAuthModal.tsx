@@ -512,13 +512,12 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
 
             {statusMessage && (
               <div
-                className={`p-3 rounded-xl text-xs font-semibold border ${
-                  statusMessage.type === 'success'
+                className={`p-3 rounded-xl text-xs font-semibold border ${statusMessage.type === 'success'
                     ? 'bg-maldives-50 border-maldives-300 text-maldives-800'
                     : statusMessage.type === 'error'
-                    ? 'bg-terracotta-50 border-terracotta-300 text-terracotta-700'
-                    : 'bg-oat-100 border-oat-300 text-espresso-700'
-                }`}
+                      ? 'bg-terracotta-50 border-terracotta-300 text-terracotta-700'
+                      : 'bg-oat-100 border-oat-300 text-espresso-700'
+                  }`}
               >
                 {statusMessage.text}
               </div>

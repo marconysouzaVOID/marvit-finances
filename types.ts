@@ -43,6 +43,15 @@ export interface CustomGoalItem {
   notes?: string;
 }
 
+export interface MonthDataRecord {
+  monthKey: string; // Formato "YYYY-MM", ex: "2026-11"
+  updatedAt: string;
+  profile: FinancialProfile;
+  customGoals: Record<ExpenseCategory, number>;
+  expenses: ExpenseItem[];
+  notes?: string;
+}
+
 export interface MonthSnapshot {
   id: string;
   monthLabel: string; // Ex: "Novembro / 2026"
@@ -59,6 +68,8 @@ export interface MarvitBackupData {
   version: string;
   appName: string;
   exportedAt: string;
+  selectedMonthKey?: string;
+  monthsData?: Record<string, MonthDataRecord>;
   profile: FinancialProfile;
   customGoals: Record<ExpenseCategory, number>;
   expenses: ExpenseItem[];
@@ -74,4 +85,3 @@ export interface VaultCredentials {
   biometricEnabled: boolean;
   lastSyncedAt?: string;
 }
-

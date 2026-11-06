@@ -11,6 +11,7 @@ import {
   ExpenseItem,
   FinancialProfile,
   MarvitBackupData,
+  MonthDataRecord,
   MonthSnapshot,
   VaultCredentials,
 } from './types';
@@ -22,6 +23,12 @@ import { GoalsManager } from './components/GoalsManager';
 import { HistoryManager } from './components/HistoryManager';
 import { IncomeCard } from './components/IncomeCard';
 import { InteractiveAsset } from './components/InteractiveAsset';
+import {
+  formatMonthKeyLabel,
+  getCurrentMonthKey,
+  MonthCalendarBar,
+  shiftMonthKey,
+} from './components/MonthCalendarBar';
 import { VaultAuthModal } from './components/VaultAuthModal';
 import { generateReportImageBase64 } from './utils/exportCanvas';
 import {
@@ -59,6 +66,14 @@ export const App: React.FC = () => {
       return false;
     }
   });
+
+  const [selectedMonthKey, setSelectedMonthKey] = useState<string>(() =>
+    getCurrentMonthKey()
+  );
+  const [monthsData, setMonthsData] = useState<Record<string, MonthDataRecord>>(
+    {}
+  );
+  const [currentMonthNotes, setCurrentMonthNotes] = useState<string>('');
 
   const [profile, setProfile] = useState<FinancialProfile>({
     monthlyIncome: 7500,
@@ -143,10 +158,26 @@ export const App: React.FC = () => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as Partial<MarvitBackupData>;
-        if (parsed.profile) setProfile(parsed.profile);
-        if (parsed.customGoals) setCustomGoals(parsed.customGoals);
-        if (parsed.expenses) setExpenses(parsed.expenses);
-        if (parsed.customLongTermGoals) setLongTermGoals(parsed.customLongTermGoals);
+        const initialKey = parsed.selectedMonthKey || getCurrentMonthKey();
+        setSelectedMonthKey(initialKey);
+
+        if (parsed.monthsData && parsed.monthsData[initialKey]) {
+          const monthRec = parsed.monthsData[initialKey];
+          setMonthsData(parsed.monthsData);
+          setProfile(monthRec.profile);
+          setCustomGoals(monthRec.customGoals);
+          setExpenses(monthRec.expenses);
+          setCurrentMonthNotes(monthRec.notes || '');
+        } else {
+          if (parsed.monthsData) setMonthsData(parsed.monthsData);
+          if (parsed.profile) setProfile(parsed.profile);
+          if (parsed.customGoals) setCustomGoals(parsed.customGoals);
+          if (parsed.expenses) setExpenses(parsed.expenses);
+        }
+
+        if (parsed.customLongTermGoals) {
+          setLongTermGoals(parsed.customLongTermGoals);
+        }
         if (parsed.history) setHistory(parsed.history);
       }
 
@@ -184,7 +215,79 @@ export const App: React.FC = () => {
     }
   }, [isAppLocked]);
 
-  // Combinar despesas manuais + aportes vinculados das Metas Personalizadas
+  // Sempre que os dados do mês atual mudarem (profile, customGoals, expenses, currentMonthNotes), sincroniza em monthsData[selectedMonthKey]
+  const syncedMonthsData = useMemo<Record<string, MonthDataRecord>>(() => {
+    const manualOnly = expenses.filter((e) => !e.linkedGoalId);
+    return {
+      ...monthsData,
+      [selectedMonthKey]: {
+        monthKey: selectedMonthKey,
+        updatedAt: new Date().toISOString(),
+        profile,
+        customGoals,
+        expenses: manualOnly,
+        notes: currentMonthNotes.trim() || undefined,
+      },
+    };
+  }, [
+    monthsData,
+    selectedMonthKey,
+    profile,
+    customGoals,
+    expenses,
+    currentMonthNotes,
+  ]);
+
+  // Transitar entre os meses do calendário
+  const handleSelectMonth = (nextMonthKey: string) => {
+    if (nextMonthKey === selectedMonthKey) return;
+
+    // Salva o estado do mês atual no dicionário antes de trocar
+    const updatedMap = { ...syncedMonthsData };
+    setMonthsData(updatedMap);
+    setSelectedMonthKey(nextMonthKey);
+
+    const existingTarget = updatedMap[nextMonthKey];
+    if (existingTarget) {
+      setProfile(existingTarget.profile);
+      setCustomGoals(existingTarget.customGoals);
+      setExpenses(existingTarget.expenses);
+      setCurrentMonthNotes(existingTarget.notes || '');
+      showToast(`Editando ${formatMonthKeyLabel(nextMonthKey)}`);
+    } else {
+      // Novo mês ainda não preenchido: mantém a renda/metas base e despesas recorrentes para edição
+      const cleanManual = expenses
+        .filter((e) => !e.linkedGoalId)
+        .map((e) => ({ ...e }));
+      setExpenses(cleanManual);
+      setCurrentMonthNotes('');
+      showToast(
+        `${formatMonthKeyLabel(nextMonthKey)} aberto para preenchimento!`
+      );
+    }
+  };
+
+  // Copiar dados do mês imediatamente anterior para o mês atual em edição
+  const handleCopyFromPreviousMonth = () => {
+    const prevKey = shiftMonthKey(selectedMonthKey, -1);
+    const prevRecord = syncedMonthsData[prevKey];
+    if (!prevRecord) {
+      showToast(
+        `O mês anterior (${formatMonthKeyLabel(prevKey)}) ainda não possui dados salvos.`
+      );
+      return;
+    }
+
+    setProfile({ ...prevRecord.profile });
+    setCustomGoals({ ...prevRecord.customGoals });
+    setExpenses(prevRecord.expenses.map((e) => ({ ...e })));
+    setCurrentMonthNotes(prevRecord.notes || '');
+    showToast(
+      `Dados copiados de ${formatMonthKeyLabel(prevKey)} para ${formatMonthKeyLabel(selectedMonthKey)}!`
+    );
+  };
+
+  // Combinar despesas manuais do mês selecionado + aportes vinculados das Metas Personalizadas
   const combinedExpenses = useMemo<ExpenseItem[]>(() => {
     const manualOnly = expenses.filter((e) => !e.linkedGoalId);
     const linkedFromGoals: ExpenseItem[] = longTermGoals
@@ -199,18 +302,36 @@ export const App: React.FC = () => {
     return [...manualOnly, ...linkedFromGoals];
   }, [expenses, longTermGoals]);
 
+  const linkedGoalsMonthlyTotal = useMemo(
+    () =>
+      longTermGoals
+        .filter((g) => g.syncWithBudget && g.monthlyContribution > 0)
+        .reduce((acc, g) => acc + g.monthlyContribution, 0),
+    [longTermGoals]
+  );
+
   const currentBackupPayload = useMemo<MarvitBackupData>(
     () => ({
-      version: '2.0.0',
+      version: '2.2.0',
       appName: 'Marvit&Finances',
       exportedAt: new Date().toISOString(),
+      selectedMonthKey,
+      monthsData: syncedMonthsData,
       profile,
       customGoals,
       expenses: expenses.filter((e) => !e.linkedGoalId),
       customLongTermGoals: longTermGoals,
       history,
     }),
-    [profile, customGoals, expenses, longTermGoals, history]
+    [
+      selectedMonthKey,
+      syncedMonthsData,
+      profile,
+      customGoals,
+      expenses,
+      longTermGoals,
+      history,
+    ]
   );
 
   // Salvar automaticamente no LocalStorage e sincronizar na nuvem com debounce se ativo
@@ -270,7 +391,7 @@ export const App: React.FC = () => {
       { ...newItem, id: `exp-${Date.now()}` },
       ...prev,
     ]);
-    showToast('Item adicionado ao caderno!');
+    showToast('Item adicionado ao mês!');
   };
 
   const handleDeleteExpense = (id: string) => {
@@ -315,7 +436,7 @@ export const App: React.FC = () => {
       customGoals: { ...customGoals },
       expenses: combinedExpenses.map((e) => ({ ...e })),
       customLongTermGoals: longTermGoals.map((g) => ({ ...g })),
-      notes,
+      notes: notes || currentMonthNotes || undefined,
     };
     setHistory((prev) => [snapshot, ...prev]);
     showToast(`Mês "${monthLabel}" salvo no histórico!`);
@@ -327,6 +448,9 @@ export const App: React.FC = () => {
     setExpenses(snapshot.expenses.filter((e) => !e.linkedGoalId));
     if (snapshot.customLongTermGoals) {
       setLongTermGoals(snapshot.customLongTermGoals);
+    }
+    if (snapshot.notes) {
+      setCurrentMonthNotes(snapshot.notes);
     }
     showToast(`Mês "${snapshot.monthLabel}" restaurado para a tela!`);
   };
@@ -359,9 +483,28 @@ export const App: React.FC = () => {
   };
 
   const handleRestorePayload = (payload: MarvitBackupData, silent = false) => {
-    if (payload.profile) setProfile(payload.profile);
-    if (payload.customGoals) setCustomGoals(payload.customGoals);
-    if (payload.expenses) setExpenses(payload.expenses);
+    const targetMonth = payload.selectedMonthKey || selectedMonthKey;
+    setSelectedMonthKey(targetMonth);
+
+    if (payload.monthsData) {
+      setMonthsData(payload.monthsData);
+      const activeRec = payload.monthsData[targetMonth];
+      if (activeRec) {
+        setProfile(activeRec.profile);
+        setCustomGoals(activeRec.customGoals);
+        setExpenses(activeRec.expenses);
+        setCurrentMonthNotes(activeRec.notes || '');
+      } else {
+        if (payload.profile) setProfile(payload.profile);
+        if (payload.customGoals) setCustomGoals(payload.customGoals);
+        if (payload.expenses) setExpenses(payload.expenses);
+      }
+    } else {
+      if (payload.profile) setProfile(payload.profile);
+      if (payload.customGoals) setCustomGoals(payload.customGoals);
+      if (payload.expenses) setExpenses(payload.expenses);
+    }
+
     if (payload.customLongTermGoals) {
       setLongTermGoals(payload.customLongTermGoals);
     }
@@ -568,7 +711,7 @@ export const App: React.FC = () => {
     setShowFirstAccessChangePin(false);
     sessionStorage.setItem(SESSION_UNLOCKED_KEY, 'true');
     setIsAppLocked(false);
-    showToast('Você pode alterar seu PIN a qualquer momento em "Cofre & Biometria".');
+    showToast('Você pode alterar seu PIN a qualquer momento em "Cofre & PIN".');
   };
 
   const navItems: {
@@ -785,7 +928,7 @@ export const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Cabeçalho Principal Cozy Kitchen / Maldives Night */}
+      {/* Cabeçalho Principal */}
       <header className="sticky top-0 z-30 bg-oat-100/85 backdrop-blur-md border-b border-oat-300/80 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -801,9 +944,6 @@ export const App: React.FC = () => {
                 <h1 className="text-lg sm:text-xl font-display font-extrabold text-espresso-900 tracking-tight">
                   Marvit<span className="text-maldives-600">&</span>Finances
                 </h1>
-                <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300">
-                  {isDark ? 'Maldives Night' : 'Cozy Edition'}
-                </span>
               </div>
               <p className="text-[11px] text-espresso-600 hidden sm:block">
                 Orçamento por pilares, Potes dos Sonhos & Liberdade Financeira
@@ -960,7 +1100,18 @@ export const App: React.FC = () => {
       </header>
 
       {/* Conteúdo Principal */}
-      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 pt-5 space-y-6 flex-1">
+      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 pt-5 space-y-5 flex-1">
+        {/* Calendário Interativo de Meses para transitar e preencher/editar qualquer competência */}
+        <MonthCalendarBar
+          selectedMonthKey={selectedMonthKey}
+          onSelectMonth={handleSelectMonth}
+          monthsData={syncedMonthsData}
+          currentMonthNotes={currentMonthNotes}
+          onChangeMonthNotes={setCurrentMonthNotes}
+          onCopyFromPreviousMonth={handleCopyFromPreviousMonth}
+          linkedGoalsMonthlyTotal={linkedGoalsMonthlyTotal}
+        />
+
         {/* Card de Renda Líquida sempre acessível no topo */}
         <IncomeCard
           profile={profile}
