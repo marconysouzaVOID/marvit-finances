@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:57:46.885Z",
+  "updatedAt": "2026-11-06T23:57:56.441Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:57:44.970Z",
-    "selectedMonthKey": "2026-11",
+    "exportedAt": "2026-11-06T23:57:54.595Z",
+    "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -74,7 +74,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-06T23:57:38.803Z",
+        "updatedAt": "2026-11-06T23:57:54.595Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -137,27 +137,20 @@
       }
     },
     "profile": {
-      "monthlyIncome": 22000,
+      "monthlyIncome": 23614.09,
       "additionalIncome": 0,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
     },
     "customGoals": {
-      "essencial": 40,
-      "estilo": 35,
-      "investimento": 25
+      "essencial": 50,
+      "estilo": 30,
+      "investimento": 20
     },
     "expenses": [
       {
-        "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-        "amount": 8791.22,
-        "category": "investimento",
-        "isCustom": true,
-        "id": "exp-1794007990084"
-      },
-      {
         "name": "Cartões (Inter, Nubank, Itau)",
-        "amount": 8000,
+        "amount": 15288.95,
         "category": "estilo",
         "isCustom": true,
         "id": "exp-1794006938471"
@@ -193,6 +186,12 @@
         "id": "3",
         "name": "Contas (Internet)",
         "amount": 117.8,
+        "category": "essencial"
+      },
+      {
+        "id": "5",
+        "name": "Transporte / Combustível",
+        "amount": 460,
         "category": "essencial"
       }
     ],
