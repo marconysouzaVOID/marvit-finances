@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:16:24.234Z",
+  "updatedAt": "2026-11-06T23:16:40.958Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:16:22.309Z",
+    "exportedAt": "2026-11-06T23:16:39.123Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -215,18 +215,6 @@
     ],
     "customLongTermGoals": [
       {
-        "id": "goal-1",
-        "title": "Férias nas Maldivas",
-        "icon": "beach_access",
-        "targetAmount": 24000,
-        "currentAmount": 6500,
-        "monthlyContribution": 600,
-        "annualInterestRate": 10.5,
-        "syncWithBudget": false,
-        "budgetCategory": "estilo",
-        "notes": "Viagem dos sonhos com bangalô sobre as águas cristalinas."
-      },
-      {
         "id": "goal-2",
         "title": "Reforma da Cozinha Comfy",
         "icon": "countertops",
@@ -237,18 +225,6 @@
         "syncWithBudget": true,
         "budgetCategory": "investimento",
         "notes": "Marcenaria verde sálvia, bancada de quartzo creme e ilha gourmet."
-      },
-      {
-        "id": "goal-3",
-        "title": "Entrada do Imóvel Próprio",
-        "icon": "cottage",
-        "targetAmount": 120000,
-        "currentAmount": 38000,
-        "monthlyContribution": 1500,
-        "annualInterestRate": 11.5,
-        "syncWithBudget": false,
-        "budgetCategory": "investimento",
-        "notes": "Fundo dedicado em Tesouro IPCA+ e CDBs de liquidez."
       }
     ],
     "history": []
