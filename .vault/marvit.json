@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:39:15.041Z",
+  "updatedAt": "2026-11-06T23:39:54.640Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:39:13.190Z",
+    "exportedAt": "2026-11-06T23:39:52.800Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -187,7 +187,7 @@
         "title": "Carro",
         "icon": "directions_car",
         "targetAmount": 48032.08,
-        "currentAmount": 18744.160000000003,
+        "currentAmount": 18143,
         "monthlyContribution": 601.08,
         "annualInterestRate": 0,
         "syncWithBudget": true,
