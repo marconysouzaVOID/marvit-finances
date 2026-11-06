@@ -40,14 +40,12 @@ export async function pushVaultToCloud(
           message: errJson.error || 'PIN incorreto para este Cofre na nuvem.',
         };
       }
-      // Se estiver rodando localmente via Vite sem Vercel KV configurado, salva no cofre local espelhado
       saveLocalMirrorVault(vaultId, pinHash, payload);
       return {
         ok: true,
         mode: 'local-fallback',
         updatedAt: new Date().toISOString(),
-        message:
-          'Cofre salvo no armazenamento seguro local (configure Vercel KV na Vercel para nuvem remota).',
+        message: 'Cofre salvo no armazenamento seguro local.',
       };
     }
 
@@ -91,15 +89,13 @@ export async function pullVaultFromCloud(
 
     if (res.ok) {
       const result = await res.json();
-      if (result && 'ok' in result) {
+      if (result && result.data) {
         return {
           ok: true,
           mode: result.mode || 'cloud',
-          data: result.data ?? null,
+          data: result.data,
           updatedAt: result.updatedAt,
-          message: result.data
-            ? 'Dados carregados da nuvem com sucesso!'
-            : 'Conectado à nuvem com sucesso!',
+          message: 'Dados carregados da nuvem com sucesso!',
         };
       }
     }
@@ -107,13 +103,11 @@ export async function pullVaultFromCloud(
     // Fallback para espelho local caso offline ou sem backend ativo
   }
 
-  // Validação offline de segurança para credenciais básicas
-  const defaultExpectedHash = await hashPin('marvit', 'Marvit@2026');
   const localResult = loadLocalMirrorVault(cleanId, pinHash);
   if (localResult.status === 'unauthorized') {
     return {
       ok: false,
-      message: 'Login ou Senha incorretos.',
+      message: 'PIN incorreto para o cofre salvo neste dispositivo.',
     };
   }
   if (localResult.status === 'found' && localResult.data) {
@@ -126,18 +120,11 @@ export async function pullVaultFromCloud(
     };
   }
 
-  if (cleanId !== 'marvit' || pinHash !== defaultExpectedHash) {
-    return {
-      ok: false,
-      message: 'Login ou Senha inválidos.',
-    };
-  }
-
   return {
     ok: true,
     mode: 'local-fallback',
     data: null,
-    message: 'Autenticado! Seus dados atuais serão sincronizados.',
+    message: 'Novo cofre criado! Seus dados atuais serão vinculados a ele.',
   };
 }
 
@@ -178,4 +165,3 @@ function loadLocalMirrorVault(
     return { status: 'not_found' };
   }
 }
-

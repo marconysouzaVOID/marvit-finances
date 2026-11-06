@@ -5,6 +5,7 @@ import {
   clearBiometricRegistration,
   hasRegisteredBiometrics,
   isBiometricsSupported,
+  isRunningAsPwa,
   registerBiometricVault,
   unlockWithBiometrics,
 } from '../utils/biometricAuth';
@@ -30,7 +31,9 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
   const [vaultIdInput, setVaultIdInput] = useState(vault?.vaultId || '');
   const [pinInput, setPinInput] = useState('');
   const [autoSync, setAutoSync] = useState(vault?.autoSync ?? true);
-  const [appLockEnabled, setAppLockEnabled] = useState(vault?.appLockEnabled ?? false);
+  const [appLockEnabled, setAppLockEnabled] = useState(
+    vault?.appLockEnabled ?? isRunningAsPwa()
+  );
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [biometricRegistered, setBiometricRegistered] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,7 +61,7 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
     const cleanVaultId = vaultIdInput.trim().toLowerCase();
     if (!cleanVaultId) {
       setStatusMessage({
-        text: 'Escolha um nome para o seu Cofre (ex: familia-marvit).',
+        text: 'Escolha um nome para o seu Cofre (ex: marvit).',
         type: 'error',
       });
       return;
@@ -81,49 +84,92 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
     setStatusMessage(null);
 
     try {
+      const pwa = isRunningAsPwa();
+      let bioNowRegistered = biometricRegistered;
+
       if (direction === 'pull') {
         const res = await pullVaultFromCloud(cleanVaultId, finalPinHash);
         if (!res.ok) {
-          setStatusMessage({ text: res.message || 'Erro ao acessar cofre.', type: 'error' });
+          setStatusMessage({
+            text: res.message || 'Erro ao acessar cofre.',
+            type: 'error',
+          });
           setLoading(false);
           return;
         }
         if (res.data) {
           onRestorePayload(res.data);
         }
+
+        // Se estiver rodando como PWA e tiver suporte a biometria, vincula automaticamente o cofre biométrico!
+        if (pwa && biometricAvailable && !biometricRegistered) {
+          try {
+            await registerBiometricVault(cleanVaultId, finalPinHash);
+            bioNowRegistered = true;
+            setBiometricRegistered(true);
+          } catch {
+            // Usuário pode vincular no próximo acesso se cancelar o prompt nativo
+          }
+        }
+
         const nextVault: VaultCredentials = {
           vaultId: cleanVaultId,
           pinHash: finalPinHash,
-          autoSync,
-          appLockEnabled,
-          biometricEnabled: biometricRegistered,
+          autoSync: true,
+          appLockEnabled: pwa ? true : appLockEnabled,
+          biometricEnabled: bioNowRegistered,
           lastSyncedAt: res.updatedAt || new Date().toISOString(),
         };
         onUpdateVault(nextVault);
         setPinInput('');
         setStatusMessage({
-          text: res.message || 'Cofre conectado e sincronizado!',
+          text:
+            pwa && bioNowRegistered
+              ? 'Cofre sincronizado e Biometria ativada automaticamente para os próximos acessos no PWA!'
+              : res.message || 'Cofre conectado e sincronizado!',
           type: 'success',
         });
       } else {
-        const res = await pushVaultToCloud(cleanVaultId, finalPinHash, currentBackupPayload);
+        const res = await pushVaultToCloud(
+          cleanVaultId,
+          finalPinHash,
+          currentBackupPayload
+        );
         if (!res.ok) {
-          setStatusMessage({ text: res.message || 'Falha ao salvar na nuvem.', type: 'error' });
+          setStatusMessage({
+            text: res.message || 'Falha ao salvar na nuvem.',
+            type: 'error',
+          });
           setLoading(false);
           return;
         }
+
+        // Se estiver rodando como PWA e tiver suporte a biometria, vincula automaticamente o cofre biométrico!
+        if (pwa && biometricAvailable && !biometricRegistered) {
+          try {
+            await registerBiometricVault(cleanVaultId, finalPinHash);
+            bioNowRegistered = true;
+            setBiometricRegistered(true);
+          } catch {
+            // Usuário pode vincular no próximo acesso se cancelar o prompt nativo
+          }
+        }
+
         const nextVault: VaultCredentials = {
           vaultId: cleanVaultId,
           pinHash: finalPinHash,
-          autoSync,
-          appLockEnabled,
-          biometricEnabled: biometricRegistered,
+          autoSync: true,
+          appLockEnabled: pwa ? true : appLockEnabled,
+          biometricEnabled: bioNowRegistered,
           lastSyncedAt: res.updatedAt || new Date().toISOString(),
         };
         onUpdateVault(nextVault);
         setPinInput('');
         setStatusMessage({
-          text: res.message || 'Dados salvos no Cofre com sucesso!',
+          text:
+            pwa && bioNowRegistered
+              ? 'Dados salvos e Biometria configurada automaticamente para seus próximos acessos no PWA!'
+              : res.message || 'Dados salvos no Cofre com sucesso!',
           type: 'success',
         });
       }
@@ -133,7 +179,8 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
   };
 
   const handleRegisterBiometrics = async () => {
-    const cleanVaultId = vaultIdInput.trim().toLowerCase() || vault?.vaultId || '';
+    const cleanVaultId =
+      vaultIdInput.trim().toLowerCase() || vault?.vaultId || '';
     let finalPinHash = vault?.pinHash || '';
     if (pinInput.trim() && cleanVaultId) {
       finalPinHash = await hashPin(cleanVaultId, pinInput.trim());
@@ -155,7 +202,7 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
         vaultId: cleanVaultId,
         pinHash: finalPinHash,
         autoSync,
-        appLockEnabled,
+        appLockEnabled: isRunningAsPwa() ? true : appLockEnabled,
         biometricEnabled: true,
         lastSyncedAt: vault?.lastSyncedAt || new Date().toISOString(),
       };
@@ -187,7 +234,7 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
         vaultId: creds.vaultId,
         pinHash: creds.pinHash,
         autoSync,
-        appLockEnabled,
+        appLockEnabled: isRunningAsPwa() ? true : appLockEnabled,
         biometricEnabled: true,
         lastSyncedAt: new Date().toISOString(),
       });
@@ -257,13 +304,13 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                  Identificador do Cofre
+                  Identificador do Cofre (Login)
                 </label>
                 <input
                   type="text"
                   value={vaultIdInput}
                   onChange={(e) => setVaultIdInput(e.target.value)}
-                  placeholder="Ex: casa-marco"
+                  placeholder="Ex: marvit"
                   className="w-full bg-oat-100 border border-oat-300 rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                 />
               </div>
@@ -302,31 +349,25 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
                 />
               </label>
 
-              <label className="flex items-center justify-between cursor-pointer pt-2 border-t border-oat-200">
-                <span className="text-xs font-semibold text-espresso-800 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-terracotta-600 text-[18px]">
-                    lock
+              <div className="pt-2 border-t border-oat-200 flex items-center justify-between">
+                <span className="text-xs text-espresso-700 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-maldives-600 text-[17px]">
+                    smartphone
                   </span>
-                  Exigir Biometria / PIN ao abrir o aplicativo (App Lock)
+                  <span>
+                    {isRunningAsPwa()
+                      ? 'Modo PWA detectado: Biometria automática ativa nos próximos acessos'
+                      : 'No aplicativo PWA (celular), o acesso por Biometria é ativado automaticamente ao fazer login'}
+                  </span>
                 </span>
-                <input
-                  type="checkbox"
-                  checked={appLockEnabled}
-                  onChange={(e) => {
-                    setAppLockEnabled(e.target.checked);
-                    if (vault)
-                      onUpdateVault({ ...vault, appLockEnabled: e.target.checked });
-                  }}
-                  className="w-4 h-4 accent-maldives-500 rounded cursor-pointer"
-                />
-              </label>
+              </div>
 
               {biometricAvailable && (
                 <div className="pt-2 border-t border-oat-200 flex items-center justify-between">
                   <span className="text-xs text-espresso-600">
                     {biometricRegistered
-                      ? '✅ FaceID / Impressão Digital ativa neste aparelho'
-                      : 'Ative a biometria para entrar sem digitar PIN'}
+                      ? '✅ FaceID / Impressão Digital vinculada neste aparelho'
+                      : 'Biometria pronta para vínculo automático no login'}
                   </span>
                   {biometricRegistered ? (
                     <button
@@ -345,7 +386,7 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
                       onClick={handleRegisterBiometrics}
                       className="px-3 py-1 rounded-xl bg-maldives-100 text-maldives-800 border border-maldives-300 text-xs font-bold hover:bg-maldives-200 transition cursor-pointer"
                     >
-                      Cadastrar Biometria
+                      Vincular Agora
                     </button>
                   )}
                 </div>
@@ -388,14 +429,15 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
                 <span className="material-symbols-outlined text-[18px]">
                   cloud_download
                 </span>
-                <span>Carregar Dados da Nuvem</span>
+                <span>Entrar / Carregar da Nuvem</span>
               </button>
             </div>
 
             {vault && (
               <div className="flex items-center justify-between text-[11px] text-espresso-500 pt-2 border-t border-oat-200">
                 <span>
-                  Conectado ao cofre: <strong className="text-espresso-800">{vault.vaultId}</strong>
+                  Conectado ao cofre:{' '}
+                  <strong className="text-espresso-800">{vault.vaultId}</strong>
                 </span>
                 <button
                   type="button"
@@ -415,4 +457,3 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
     </AnimatePresence>
   );
 };
-

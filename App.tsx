@@ -15,7 +15,6 @@ import {
   VaultCredentials,
 } from './types';
 import { AdvicePanel } from './components/AdvicePanel';
-import { AuthLoginScreen } from './components/AuthLoginScreen';
 import { ExpenseManager } from './components/ExpenseManager';
 import { FinancialOverview } from './components/FinancialOverview';
 import { FreedomSimulator } from './components/FreedomSimulator';
@@ -23,25 +22,24 @@ import { GoalsManager } from './components/GoalsManager';
 import { HistoryManager } from './components/HistoryManager';
 import { IncomeCard } from './components/IncomeCard';
 import { InteractiveAsset } from './components/InteractiveAsset';
+import { VaultAuthModal } from './components/VaultAuthModal';
 import { generateReportImageBase64 } from './utils/exportCanvas';
 import {
   downloadBase64Png,
   exportBackupJson,
   exportMarkdownReport,
 } from './utils/sourceExporter';
-import { pushVaultToCloud } from './utils/cloudSync';
+import { hashPin, pullVaultFromCloud, pushVaultToCloud } from './utils/cloudSync';
 import {
   hasRegisteredBiometrics,
-  isBiometricsSupported,
   isRunningAsPwa,
-  registerBiometricVault,
+  unlockWithBiometrics,
 } from './utils/biometricAuth';
 
 type ActiveTab = 'budget' | 'goals' | 'freedom' | 'advice' | 'history';
 
 const STORAGE_KEY = 'marvit_finances_state_v2';
 const VAULT_SESSION_KEY = 'marvit_vault_session_v2';
-const AUTH_ACTIVE_SESSION_KEY = 'marvit_auth_active_v2';
 const THEME_STORAGE_KEY = 'marvit_theme_mode';
 
 export const App: React.FC = () => {
@@ -74,12 +72,12 @@ export const App: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('budget');
   const [isBentoMode, setIsBentoMode] = useState(false);
+  const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [vault, setVault] = useState<VaultCredentials | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isSyncingCloud, setIsSyncingCloud] = useState<boolean>(false);
-  const [isPwaMode, setIsPwaMode] = useState<boolean>(false);
-  const [canOfferPwaBio, setCanOfferPwaBio] = useState<boolean>(false);
+  const [isAppLocked, setIsAppLocked] = useState(false);
+  const [lockPinInput, setLockPinInput] = useState('');
+  const [lockError, setLockError] = useState('');
   const [toast, setToast] = useState<string | null>(null);
   const [deferredPwaPrompt, setDeferredPwaPrompt] = useState<any>(null);
 
@@ -93,7 +91,7 @@ export const App: React.FC = () => {
     }, 3400);
   };
 
-  // Sincronizar classe dark no HTML e meta theme-color
+  // Sincronizar Modo Claro / Modo Escuro no HTML e meta theme-color
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) {
@@ -114,11 +112,9 @@ export const App: React.FC = () => {
 
   const toggleTheme = () => setIsDark((prev) => !prev);
 
-  // Carregar estado salvo no LocalStorage e checar sessão e modo PWA
+  // Carregar estado salvo no LocalStorage e checar parâmetros de atalho PWA
   useEffect(() => {
     const pwa = isRunningAsPwa();
-    setIsPwaMode(pwa);
-
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -131,24 +127,18 @@ export const App: React.FC = () => {
       }
 
       const savedVault = localStorage.getItem(VAULT_SESSION_KEY);
-      const sessionActive = sessionStorage.getItem(AUTH_ACTIVE_SESSION_KEY) === 'true';
       if (savedVault) {
         const parsedVault = JSON.parse(savedVault) as VaultCredentials;
         setVault(parsedVault);
-        if (sessionActive) {
-          setIsAuthenticated(true);
+        // Comportamento de bloqueio biométrico automático apenas em modo PWA!
+        if (pwa && (parsedVault.appLockEnabled || hasRegisteredBiometrics())) {
+          setIsAppLocked(true);
         }
+      } else if (pwa && hasRegisteredBiometrics()) {
+        setIsAppLocked(true);
       }
     } catch {
       // Ignora erro de parse
-    }
-
-    if (pwa) {
-      isBiometricsSupported().then((sup) => {
-        if (sup && !hasRegisteredBiometrics()) {
-          setCanOfferPwaBio(true);
-        }
-      });
     }
 
     const params = new URLSearchParams(window.location.search);
@@ -168,6 +158,13 @@ export const App: React.FC = () => {
     return () =>
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
+
+  // Quando o App Lock abre no PWA e há biometria cadastrada, dispara a leitura biométrica automaticamente
+  useEffect(() => {
+    if (isAppLocked && isRunningAsPwa() && hasRegisteredBiometrics()) {
+      handleUnlockAppWithBiometrics(true);
+    }
+  }, [isAppLocked]);
 
   // Combinar despesas manuais + aportes vinculados das Metas Personalizadas
   const combinedExpenses = useMemo<ExpenseItem[]>(() => {
@@ -198,7 +195,7 @@ export const App: React.FC = () => {
     [profile, customGoals, expenses, longTermGoals, history]
   );
 
-  // Salvar automaticamente no LocalStorage e sincronizar automaticamente no Cofre Vercel
+  // Salvar automaticamente no LocalStorage e sincronizar na nuvem com debounce se ativo
   useEffect(() => {
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
@@ -210,102 +207,22 @@ export const App: React.FC = () => {
       // Ignora quota error
     }
 
-    if (isAuthenticated && vault && vault.autoSync) {
+    if (vault && vault.autoSync) {
       const timer = setTimeout(() => {
-        setIsSyncingCloud(true);
-        pushVaultToCloud(vault.vaultId, vault.pinHash, currentBackupPayload)
-          .catch(() => {})
-          .finally(() => setIsSyncingCloud(false));
-      }, 1200);
+        pushVaultToCloud(vault.vaultId, vault.pinHash, currentBackupPayload).catch(
+          () => {}
+        );
+      }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [currentBackupPayload, vault, isAuthenticated]);
+  }, [currentBackupPayload, vault]);
 
-  const handleRestorePayload = (payload: MarvitBackupData, silent = false) => {
-    if (payload.profile) setProfile(payload.profile);
-    if (payload.customGoals) setCustomGoals(payload.customGoals);
-    if (payload.expenses) setExpenses(payload.expenses);
-    if (payload.customLongTermGoals) {
-      setLongTermGoals(payload.customLongTermGoals);
-    }
-    if (payload.history) setHistory(payload.history);
-    if (!silent) {
-      showToast('Dados sincronizados com sucesso!');
-    }
-  };
-
-  // Callback quando o usuário faz Login (ou desbloqueia com Biometria no PWA)
-  const handleAuthenticated = (
-    session: VaultCredentials,
-    cloudData?: MarvitBackupData | null,
-    justLoggedInWithPassword?: boolean
-  ) => {
-    setVault(session);
-    setIsAuthenticated(true);
-    try {
-      localStorage.setItem(VAULT_SESSION_KEY, JSON.stringify(session));
-      sessionStorage.setItem(AUTH_ACTIVE_SESSION_KEY, 'true');
-    } catch {
-      // ignore
-    }
-
-    if (cloudData) {
-      handleRestorePayload(cloudData, true);
-      showToast(`Bem-vindo, ${session.vaultId}! Cofre sincronizado da nuvem.`);
+  const handleUpdateVault = (nextVault: VaultCredentials | null) => {
+    setVault(nextVault);
+    if (nextVault) {
+      localStorage.setItem(VAULT_SESSION_KEY, JSON.stringify(nextVault));
     } else {
-      // Primeira vez dessa conta na nuvem: salva o estado atual automaticamente
-      pushVaultToCloud(session.vaultId, session.pinHash, currentBackupPayload).catch(
-        () => {}
-      );
-      showToast(`Conta "${session.vaultId}" conectada e salva na nuvem!`);
-    }
-
-    if (isRunningAsPwa()) {
-      setCanOfferPwaBio(!hasRegisteredBiometrics());
-      if (justLoggedInWithPassword && hasRegisteredBiometrics()) {
-        showToast('Biometria ativada automaticamente para seus próximos acessos no PWA!');
-      }
-    }
-  };
-
-  const handleManualCloudSync = async () => {
-    if (!vault) return;
-    try {
-      setIsSyncingCloud(true);
-      const res = await pushVaultToCloud(
-        vault.vaultId,
-        vault.pinHash,
-        currentBackupPayload
-      );
-      if (res.ok) {
-        showToast('Cofre sincronizado na nuvem Vercel!');
-      } else {
-        showToast(res.message || 'Falha ao sincronizar.');
-      }
-    } catch {
-      showToast('Erro de conexão ao sincronizar.');
-    } finally {
-      setIsSyncingCloud(false);
-    }
-  };
-
-  const handleEnablePwaBiometricsNow = async () => {
-    if (!vault) return;
-    try {
-      await registerBiometricVault(vault.vaultId, vault.pinHash);
-      setCanOfferPwaBio(false);
-      showToast('Biometria do PWA vinculada com sucesso!');
-    } catch (err: any) {
-      showToast(err?.message || 'Não foi possível ativar a biometria agora.');
-    }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    try {
-      sessionStorage.removeItem(AUTH_ACTIVE_SESSION_KEY);
-    } catch {
-      // ignore
+      localStorage.removeItem(VAULT_SESSION_KEY);
     }
   };
 
@@ -423,6 +340,17 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleRestorePayload = (payload: MarvitBackupData) => {
+    if (payload.profile) setProfile(payload.profile);
+    if (payload.customGoals) setCustomGoals(payload.customGoals);
+    if (payload.expenses) setExpenses(payload.expenses);
+    if (payload.customLongTermGoals) {
+      setLongTermGoals(payload.customLongTermGoals);
+    }
+    if (payload.history) setHistory(payload.history);
+    showToast('Backup restaurado com sucesso!');
+  };
+
   const handleImportJsonFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -448,6 +376,39 @@ export const App: React.FC = () => {
       showToast(
         'No iPhone/Android: toque em Compartilhar (ou menu ⋮) > "Adicionar à Tela de Início"!'
       );
+    }
+  };
+
+  // Desbloqueio de App Lock Biométrico ou PIN (automático no PWA)
+  const handleUnlockAppWithBiometrics = async (silent = false) => {
+    try {
+      setLockError('');
+      const creds = await unlockWithBiometrics();
+      const cloudRes = await pullVaultFromCloud(creds.vaultId, creds.pinHash);
+      if (cloudRes.ok && cloudRes.data) {
+        handleRestorePayload(cloudRes.data);
+      }
+      setIsAppLocked(false);
+    } catch (err: any) {
+      if (!silent) {
+        setLockError(err?.message || 'Falha na leitura biométrica.');
+      }
+    }
+  };
+
+  const handleUnlockAppWithPin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!vault) {
+      setIsAppLocked(false);
+      return;
+    }
+    const candidateHash = await hashPin(vault.vaultId, lockPinInput);
+    if (candidateHash === vault.pinHash) {
+      setIsAppLocked(false);
+      setLockPinInput('');
+      setLockError('');
+    } else {
+      setLockError('PIN incorreto. Tente novamente.');
     }
   };
 
@@ -492,14 +453,83 @@ export const App: React.FC = () => {
     },
   ];
 
-  // Se o usuário não estiver autenticado na sessão atual, exibe a tela de Login (com Biometria automática em PWA)
-  if (!isAuthenticated) {
+  // Tela de App Lock Biométrico (ativada automaticamente em PWA após o primeiro login no Cofre)
+  if (isAppLocked) {
+    const hasBio = Boolean(hasRegisteredBiometrics());
     return (
-      <AuthLoginScreen
-        onAuthenticated={handleAuthenticated}
-        isDark={isDark}
-        onToggleTheme={toggleTheme}
-      />
+      <div className="min-h-screen flex items-center justify-center p-4 bg-oat-100 relative">
+        <div className="fixed top-4 right-4 z-30">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="px-3.5 py-2 rounded-2xl bg-oat-50 border border-oat-300 text-espresso-800 text-xs font-bold flex items-center gap-2 shadow-cozy hover:border-maldives-500 transition cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px] text-maldives-600">
+              {isDark ? 'light_mode' : 'dark_mode'}
+            </span>
+            <span>{isDark ? 'Modo Claro' : 'Modo Escuro'}</span>
+          </button>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-oat-50 border-2 border-oat-300 rounded-3xl max-w-md w-full p-7 shadow-cozy-lg text-center space-y-5"
+        >
+          <div className="flex justify-center">
+            <InteractiveAsset
+              src="/assets/marvit-logo.png"
+              alt="Marvit&Finances Mascote"
+              size="xl"
+              tone="maldives"
+              badgeIcon="lock"
+            />
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-display font-bold text-espresso-900">
+              Cofre Marvit Protegido
+            </h1>
+            <p className="text-xs text-espresso-600 mt-1">
+              Desbloqueie com sua Biometria ou PIN para abrir seu planejamento financeiro.
+            </p>
+          </div>
+
+          {hasBio && (
+            <button
+              type="button"
+              onClick={() => handleUnlockAppWithBiometrics(false)}
+              className="w-full py-3.5 px-4 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-xl">
+                fingerprint
+              </span>
+              <span>Desbloquear com FaceID / Biometria</span>
+            </button>
+          )}
+
+          <form onSubmit={handleUnlockAppWithPin} className="space-y-3">
+            <input
+              type="password"
+              value={lockPinInput}
+              onChange={(e) => setLockPinInput(e.target.value)}
+              placeholder="Ou digite seu PIN secreto..."
+              className="w-full bg-oat-100 border border-oat-300 rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+            />
+            {lockError && (
+              <p className="text-xs text-terracotta-600 font-semibold">
+                {lockError}
+              </p>
+            )}
+            <button
+              type="submit"
+              className="w-full py-2.5 rounded-xl bg-oat-200 hover:bg-oat-300 text-espresso-800 text-xs font-bold transition cursor-pointer"
+            >
+              Entrar com PIN
+            </button>
+          </form>
+        </motion.div>
+      </div>
     );
   }
 
@@ -558,7 +588,7 @@ export const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Alternador de Modo Claro / Escuro */}
+            {/* Alternador de Tema Claro / Escuro */}
             <button
               onClick={toggleTheme}
               className="px-2.5 py-1.5 rounded-xl bg-oat-50 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
@@ -572,50 +602,35 @@ export const App: React.FC = () => {
               </span>
             </button>
 
-            {/* Em modo PWA, caso o usuário tenha pulado o prompt biométrico inicial, permite ativar com 1 toque */}
-            {isPwaMode && canOfferPwaBio && (
-              <button
-                onClick={handleEnablePwaBiometricsNow}
-                className="px-2.5 py-1.5 rounded-xl bg-maldives-50 hover:bg-maldives-100 text-maldives-800 border border-maldives-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
-                title="Ativar desbloqueio biométrico automático no PWA"
-              >
-                <span className="material-symbols-outlined text-[17px] text-maldives-600">
-                  fingerprint
-                </span>
-                <span className="hidden sm:inline">Ativar Biometria</span>
-              </button>
-            )}
+            {/* Botão Instalar App PWA */}
+            <button
+              onClick={handleInstallPwa}
+              className="px-2.5 py-1.5 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-600 border border-sage-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+              title="Instalar aplicativo no celular ou computador (PWA)"
+            >
+              <span className="material-symbols-outlined text-[17px]">
+                install_mobile
+              </span>
+              <span className="hidden lg:inline">App PWA</span>
+            </button>
 
-            {/* Botão Instalar App PWA (quando no navegador comum) */}
-            {!isPwaMode && (
-              <button
-                onClick={handleInstallPwa}
-                className="px-2.5 py-1.5 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-600 border border-sage-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
-                title="Instalar aplicativo no celular ou computador (PWA)"
-              >
-                <span className="material-symbols-outlined text-[17px]">
-                  install_mobile
-                </span>
-                <span className="hidden lg:inline">App PWA</span>
-              </button>
-            )}
-
-            {/* Status do Cofre Automático na Nuvem */}
-            {vault && (
-              <button
-                onClick={handleManualCloudSync}
-                disabled={isSyncingCloud}
-                className="px-3 py-1.5 rounded-xl text-xs font-bold border bg-maldives-50 border-maldives-300 text-maldives-800 hover:border-maldives-500 transition flex items-center gap-1.5 cursor-pointer"
-                title="Cofre sincronizado automaticamente na nuvem (clique para sincronizar agora)"
-              >
-                <span className="material-symbols-outlined text-[17px] text-maldives-600">
-                  {isSyncingCloud ? 'sync' : 'cloud_done'}
-                </span>
-                <span className="hidden sm:inline font-mono">
-                  {vault.vaultId}
-                </span>
-              </button>
-            )}
+            {/* Botão Cofre & Biometria */}
+            <button
+              onClick={() => setIsVaultModalOpen(true)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 cursor-pointer ${
+                vault
+                  ? 'bg-maldives-50 border-maldives-300 text-maldives-800'
+                  : 'bg-oat-50 border-oat-300 text-espresso-800 hover:border-maldives-400'
+              }`}
+              title="Sincronização na Nuvem e Login Biométrico"
+            >
+              <span className="material-symbols-outlined text-[17px] text-maldives-600">
+                {vault ? 'cloud_done' : 'fingerprint'}
+              </span>
+              <span className="hidden sm:inline">
+                {vault ? `Cofre: ${vault.vaultId}` : 'Cofre & Biometria'}
+              </span>
+            </button>
 
             {/* Menu de Exportação e Backup */}
             <div className="relative">
@@ -702,17 +717,6 @@ export const App: React.FC = () => {
                 )}
               </AnimatePresence>
             </div>
-
-            {/* Botão Sair / Bloquear Sessão */}
-            <button
-              onClick={handleLogout}
-              className="p-1.5 rounded-xl bg-oat-50 hover:bg-terracotta-50 text-espresso-600 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
-              title="Sair / Bloquear acesso"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                logout
-              </span>
-            </button>
           </div>
         </div>
       </header>
@@ -956,6 +960,16 @@ export const App: React.FC = () => {
           })}
         </div>
       </nav>
+
+      {/* Modal de Cofre na Nuvem & Biometria */}
+      <VaultAuthModal
+        isOpen={isVaultModalOpen}
+        onClose={() => setIsVaultModalOpen(false)}
+        vault={vault}
+        onUpdateVault={handleUpdateVault}
+        currentBackupPayload={currentBackupPayload}
+        onRestorePayload={handleRestorePayload}
+      />
     </div>
   );
 };
