@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:17:44.648Z",
+  "updatedAt": "2026-11-06T23:18:55.163Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:17:42.827Z",
+    "exportedAt": "2026-11-06T23:18:53.239Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -219,7 +219,7 @@
         "title": "Moto Eletrica",
         "icon": "directions_car",
         "targetAmount": 5000,
-        "currentAmount": 5000,
+        "currentAmount": 0,
         "monthlyContribution": 0,
         "annualInterestRate": 0,
         "syncWithBudget": true,
