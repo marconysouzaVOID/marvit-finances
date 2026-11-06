@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:52:00.529Z",
+  "updatedAt": "2026-11-06T23:52:05.627Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:51:58.564Z",
-    "selectedMonthKey": "2026-11",
+    "exportedAt": "2026-11-06T23:52:03.656Z",
+    "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-06T23:51:58.564Z",
+        "updatedAt": "2026-11-06T23:52:02.398Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -24,7 +24,7 @@
         "expenses": [
           {
             "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-            "amount": 9392.3,
+            "amount": 8791.22,
             "category": "investimento",
             "isCustom": true,
             "id": "exp-1794007990084"
@@ -69,11 +69,12 @@
             "amount": 117.8,
             "category": "essencial"
           }
-        ]
+        ],
+        "notes": "Compra do primeiro AP"
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-06T23:51:57.806Z",
+        "updatedAt": "2026-11-06T23:52:03.656Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -151,7 +152,7 @@
     "expenses": [
       {
         "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-        "amount": 9392.3,
+        "amount": 8791.22,
         "category": "investimento",
         "isCustom": true,
         "id": "exp-1794007990084"
