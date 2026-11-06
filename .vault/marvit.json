@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-06T23:46:46.648Z",
+  "updatedAt": "2026-11-06T23:46:48.212Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-06T23:46:44.877Z",
+    "exportedAt": "2026-11-06T23:46:46.404Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -73,7 +73,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-06T23:46:44.877Z",
+        "updatedAt": "2026-11-06T23:46:46.404Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -195,18 +195,6 @@
       }
     ],
     "customLongTermGoals": [
-      {
-        "title": "Carro Tiggo",
-        "icon": "directions_car",
-        "targetAmount": 48032.08,
-        "currentAmount": 18143.08,
-        "monthlyContribution": 601.08,
-        "annualInterestRate": 0,
-        "syncWithBudget": true,
-        "budgetCategory": "estilo",
-        "notes": "Amortização",
-        "id": "goal-1794008619952"
-      },
       {
         "id": "goal-2",
         "title": "Moto Eletrica",
