@@ -80,7 +80,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200">
           <div className="flex items-center gap-4">
             <InteractiveAsset
-              src="/assets/badge-goals.png"
+              src="/assets/marvit-metas.png"
               alt="Potes dos Sonhos & Metas"
               size="lg"
               tone="maldives"

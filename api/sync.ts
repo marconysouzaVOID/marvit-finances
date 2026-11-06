@@ -1,8 +1,12 @@
 // Vercel Serverless Function (/api/sync)
-// Suporta persistência gratuita via:
-// 1. Vercel KV / Upstash Redis (KV_REST_API_URL + KV_REST_API_TOKEN / UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN)
-// 2. GitHub Cloud Storage (GITHUB_VAULT_TOKEN + GITHUB_VAULT_REPO, ex: "marconysouzaVOID/marvit-finances")
-// 3. Memória de sessão + espelhamento local seguro no navegador/PWA
+// Autenticação básica + Cofre Automático na Nuvem
+// Variáveis de ambiente suportadas na Vercel:
+// - MARVIT_AUTH_USER (padrão: "marvit")
+// - MARVIT_AUTH_PASS (padrão: "Marvit@2026")
+// - GITHUB_VAULT_TOKEN + GITHUB_VAULT_REPO ("marconysouzaVOID/marvit-finances")
+// - KV_REST_API_URL + KV_REST_API_TOKEN (opcional)
+
+import crypto from 'crypto';
 
 interface StoredVaultRecord {
   pinHash: string;
@@ -17,6 +21,15 @@ function getEnv(): Record<string, string | undefined> {
     (globalThis as unknown as { process?: { env?: Record<string, string | undefined> } })
       .process?.env || {}
   );
+}
+
+function getExpectedAuth(): { user: string; pinHash: string } {
+  const env = getEnv();
+  const user = (env.MARVIT_AUTH_USER || 'marvit').trim().toLowerCase();
+  const pass = (env.MARVIT_AUTH_PASS || 'Marvit@2026').trim();
+  const normalized = `${user}::${pass}::marvit_salt_v2`;
+  const pinHash = crypto.createHash('sha256').update(normalized, 'utf8').digest('hex');
+  return { user, pinHash };
 }
 
 function getRedisCredentials(): { url: string; token: string } | null {
@@ -165,6 +178,7 @@ export default async function handler(req: any, res: any) {
   }
 
   const hasCloudDriver = Boolean(getRedisCredentials() || getGitHubVaultCredentials());
+  const expected = getExpectedAuth();
 
   try {
     if (req.method === 'GET') {
@@ -174,7 +188,13 @@ export default async function handler(req: any, res: any) {
       const pinHash = String(req.query?.pinHash || '').trim();
 
       if (!vaultId || !pinHash) {
-        return res.status(400).json({ error: 'Informe vaultId e pinHash.' });
+        return res.status(400).json({ error: 'Informe Login e Senha.' });
+      }
+
+      if (vaultId !== expected.user || pinHash !== expected.pinHash) {
+        return res.status(401).json({
+          error: 'Login ou Senha inválidos. Verifique suas credenciais de acesso.',
+        });
       }
 
       const existing = await storageGet(vaultId);
@@ -184,12 +204,6 @@ export default async function handler(req: any, res: any) {
           ok: true,
           data: null,
           mode: hasCloudDriver ? 'cloud' : 'local-fallback',
-        });
-      }
-
-      if (existing.pinHash !== pinHash) {
-        return res.status(401).json({
-          error: 'PIN incorreto para este Cofre Marvit.',
         });
       }
 
@@ -213,11 +227,9 @@ export default async function handler(req: any, res: any) {
         return res.status(400).json({ error: 'Dados incompletos para sincronização.' });
       }
 
-      const existing = await storageGet(vaultId);
-
-      if (existing && existing.pinHash !== pinHash) {
+      if (vaultId !== expected.user || pinHash !== expected.pinHash) {
         return res.status(401).json({
-          error: 'Este nome de Cofre já pertence a outro PIN/Senha.',
+          error: 'Sessão não autorizada. Login ou Senha inválidos.',
         });
       }
 
@@ -235,14 +247,14 @@ export default async function handler(req: any, res: any) {
         message:
           mode === 'cloud'
             ? 'Sincronizado permanentemente na nuvem!'
-            : 'Sincronizado na sessão (conecte Vercel KV ou GITHUB_VAULT_TOKEN para persistência remota).',
+            : 'Sincronizado na sessão.',
       });
     }
 
     return res.status(405).json({ error: 'Método não permitido.' });
   } catch (err: any) {
     return res.status(500).json({
-      error: err?.message || 'Erro interno no servidor de sincronização.',
+      error: err?.message || 'Erro interno no servidor de autenticação e sincronização.',
     });
   }
 }

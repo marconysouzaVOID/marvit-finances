@@ -25,6 +25,17 @@ function base64ToBuffer(base64: string): ArrayBuffer {
   return bytes.buffer;
 }
 
+/** Verifica se a aplicação está rodando instalada como PWA (standalone / fullscreen / iOS WebApp) */
+export function isRunningAsPwa(): boolean {
+  if (typeof window === 'undefined') return false;
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches ||
+    (window.navigator as any).standalone === true ||
+    document.referrer.includes('android-app://')
+  );
+}
+
 /** Verifica se o dispositivo atual suporta Biometria nativa (FaceID, TouchID, Impressão Digital Android ou Windows Hello) */
 export async function isBiometricsSupported(): Promise<boolean> {
   if (

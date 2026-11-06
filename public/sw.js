@@ -1,15 +1,15 @@
-const CACHE_NAME = 'marvit-finances-cozy-v2';
+const CACHE_NAME = 'marvit-finances-cozy-v3';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/assets/logo-mascot.png',
-  '/assets/pillar-essencial.png',
-  '/assets/pillar-estilo.png',
-  '/assets/pillar-investimento.png',
-  '/assets/badge-goals.png',
-  '/assets/badge-emergency.png',
-  '/assets/badge-freedom.png',
+  '/assets/marvit-logo.png',
+  '/assets/marvit-essencial.png',
+  '/assets/marvit-estilo.png',
+  '/assets/marvit-investimento.png',
+  '/assets/marvit-metas.png',
+  '/assets/marvit-reserva.png',
+  '/assets/marvit-liberdade.png',
 ];
 
 self.addEventListener('install', (event) => {

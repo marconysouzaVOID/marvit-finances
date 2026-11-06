@@ -91,13 +91,15 @@ export async function pullVaultFromCloud(
 
     if (res.ok) {
       const result = await res.json();
-      if (result && result.data) {
+      if (result && 'ok' in result) {
         return {
           ok: true,
           mode: result.mode || 'cloud',
-          data: result.data,
+          data: result.data ?? null,
           updatedAt: result.updatedAt,
-          message: 'Dados carregados da nuvem com sucesso!',
+          message: result.data
+            ? 'Dados carregados da nuvem com sucesso!'
+            : 'Conectado à nuvem com sucesso!',
         };
       }
     }
@@ -105,11 +107,13 @@ export async function pullVaultFromCloud(
     // Fallback para espelho local caso offline ou sem backend ativo
   }
 
+  // Validação offline de segurança para credenciais básicas
+  const defaultExpectedHash = await hashPin('marvit', 'Marvit@2026');
   const localResult = loadLocalMirrorVault(cleanId, pinHash);
   if (localResult.status === 'unauthorized') {
     return {
       ok: false,
-      message: 'PIN incorreto para o cofre salvo neste dispositivo.',
+      message: 'Login ou Senha incorretos.',
     };
   }
   if (localResult.status === 'found' && localResult.data) {
@@ -122,11 +126,18 @@ export async function pullVaultFromCloud(
     };
   }
 
+  if (cleanId !== 'marvit' || pinHash !== defaultExpectedHash) {
+    return {
+      ok: false,
+      message: 'Login ou Senha inválidos.',
+    };
+  }
+
   return {
     ok: true,
     mode: 'local-fallback',
     data: null,
-    message: 'Novo cofre criado! Seus dados atuais serão vinculados a ele.',
+    message: 'Autenticado! Seus dados atuais serão sincronizados.',
   };
 }
 

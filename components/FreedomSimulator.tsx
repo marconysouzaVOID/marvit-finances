@@ -86,7 +86,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
                 </div>
               </div>
               <InteractiveAsset
-                src="/assets/badge-emergency.png"
+                src="/assets/marvit-reserva.png"
                 alt="Reserva de Segurança"
                 size="md"
                 tone="sage"
@@ -130,7 +130,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
                 </div>
               </div>
               <InteractiveAsset
-                src="/assets/pillar-essencial.png"
+                src="/assets/marvit-essencial.png"
                 alt="Liberdade Essencial"
                 size="md"
                 tone="terracotta"
@@ -171,7 +171,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
                 </div>
               </div>
               <InteractiveAsset
-                src="/assets/badge-freedom.png"
+                src="/assets/marvit-liberdade.png"
                 alt="Liberdade Plena Maldivas"
                 size="md"
                 tone="maldives"
