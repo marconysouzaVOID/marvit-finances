@@ -970,7 +970,7 @@ export const App: React.FC = () => {
             />
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-xl font-display font-extrabold text-espresso-900 tracking-tight truncate">
+                <h1 className="text-[15px] sm:text-xl font-display font-extrabold text-espresso-900 tracking-tight whitespace-nowrap">
                   Marvit<span className="text-maldives-600">&</span>Finances
                 </h1>
               </div>
@@ -980,14 +980,14 @@ export const App: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Alternador de Tema Claro / Escuro */}
             <button
               onClick={toggleTheme}
-              className="w-9 h-9 sm:w-auto sm:h-auto sm:px-2.5 sm:py-1.5 rounded-xl bg-oat-50 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+              className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2.5 sm:py-1.5 rounded-xl bg-oat-50 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               title={isDark ? 'Mudar para Modo Claro' : 'Mudar para Modo Escuro'}
             >
-              <span className="material-symbols-outlined text-[18px] text-maldives-600">
+              <span className="material-symbols-outlined text-[17px] sm:text-[18px] text-maldives-600">
                 {isDark ? 'light_mode' : 'dark_mode'}
               </span>
               <span className="hidden lg:inline">
@@ -1010,14 +1010,14 @@ export const App: React.FC = () => {
             {/* Botão Cofre & PIN (Acesso Geral Unificado) */}
             <button
               onClick={() => setIsVaultModalOpen(true)}
-              className={`w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 vault
                   ? 'bg-maldives-50 border-maldives-300 text-maldives-800'
                   : 'bg-oat-50 border-oat-300 text-espresso-800 hover:border-maldives-400'
               }`}
               title="Acesso Geral Unificado (PC + Celular), Troca de PIN e Biometria"
             >
-              <span className="material-symbols-outlined text-[18px] text-maldives-600">
+              <span className="material-symbols-outlined text-[17px] sm:text-[18px] text-maldives-600">
                 {vault ? 'cloud_done' : 'passkey'}
               </span>
               <span className="hidden sm:inline">Cofre & PIN</span>
@@ -1027,10 +1027,10 @@ export const App: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-                className="w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                 title="Exportar relatórios, backup e instalar PWA"
               >
-                <span className="material-symbols-outlined text-[18px]">
+                <span className="material-symbols-outlined text-[17px] sm:text-[18px]">
                   ios_share
                 </span>
                 <span className="hidden sm:inline">Exportar</span>
@@ -1129,10 +1129,10 @@ export const App: React.FC = () => {
                 sessionStorage.removeItem(SESSION_UNLOCKED_KEY);
                 setIsAppLocked(true);
               }}
-              className="w-9 h-9 sm:w-auto sm:h-auto sm:p-1.5 rounded-xl bg-oat-50 hover:bg-terracotta-50 text-espresso-600 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
+              className="w-8 h-8 sm:w-auto sm:h-auto sm:p-1.5 rounded-xl bg-oat-50 hover:bg-terracotta-50 text-espresso-600 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
               title="Bloquear aplicação com PIN"
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-symbols-outlined text-[17px] sm:text-[18px]">
                 lock
               </span>
             </button>
@@ -1153,13 +1153,15 @@ export const App: React.FC = () => {
           linkedGoalsMonthlyTotal={linkedGoalsMonthlyTotal}
         />
 
-        {/* Card de Renda Líquida sempre acessível no topo */}
-        <IncomeCard
-          profile={profile}
-          onChangeProfile={setProfile}
-          balance={balance}
-          totalExpenses={totalExpenses}
-        />
+        {/* Card de Renda Líquida (No mobile aparece na aba Orçamento para não empurrar as outras abas para baixo; no desktop fica sempre visível) */}
+        <div className={activeTab === 'budget' || isBentoMode ? 'block' : 'hidden md:block'}>
+          <IncomeCard
+            profile={profile}
+            onChangeProfile={setProfile}
+            balance={balance}
+            totalExpenses={totalExpenses}
+          />
+        </div>
 
         {/* Barra de Navegação Desktop (Sliding Pill + Toggle Modo Bento) */}
         <div className="hidden md:flex items-center justify-between gap-4 bg-oat-50/90 border border-oat-300 p-1.5 rounded-2xl shadow-sm">
