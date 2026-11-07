@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T00:00:16.850Z",
+  "updatedAt": "2026-11-07T00:00:20.848Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T00:00:14.948Z",
+    "exportedAt": "2026-11-07T00:00:19.044Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -74,7 +74,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-07T00:00:14.948Z",
+        "updatedAt": "2026-11-07T00:00:19.044Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -125,12 +125,6 @@
             "id": "3",
             "name": "Contas (Internet)",
             "amount": 117.8,
-            "category": "essencial"
-          },
-          {
-            "id": "5",
-            "name": "Transporte / Combustível",
-            "amount": 460,
             "category": "essencial"
           }
         ]
@@ -186,12 +180,6 @@
         "id": "3",
         "name": "Contas (Internet)",
         "amount": 117.8,
-        "category": "essencial"
-      },
-      {
-        "id": "5",
-        "name": "Transporte / Combustível",
-        "amount": 460,
         "category": "essencial"
       }
     ],
