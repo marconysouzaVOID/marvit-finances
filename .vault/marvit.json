@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:13:22.910Z",
+  "updatedAt": "2026-11-07T04:13:32.020Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:13:13.924Z",
+    "exportedAt": "2026-11-07T04:13:31.130Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:13:13.924Z",
+        "updatedAt": "2026-11-07T04:13:31.130Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -26,12 +26,6 @@
             "id": "1",
             "name": "Aluguel / Parcela Imóvel",
             "amount": 1800,
-            "category": "essencial"
-          },
-          {
-            "id": "2",
-            "name": "Supermercado, Feira & Despensa",
-            "amount": 950,
             "category": "essencial"
           },
           {
@@ -198,12 +192,6 @@
         "id": "1",
         "name": "Aluguel / Parcela Imóvel",
         "amount": 1800,
-        "category": "essencial"
-      },
-      {
-        "id": "2",
-        "name": "Supermercado, Feira & Despensa",
-        "amount": 950,
         "category": "essencial"
       },
       {
