@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:15:33.360Z",
+  "updatedAt": "2026-11-07T04:15:39.327Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:15:32.421Z",
+    "exportedAt": "2026-11-07T04:15:38.419Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:15:32.421Z",
+        "updatedAt": "2026-11-07T04:15:38.419Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -47,12 +47,6 @@
             "amount": 5500,
             "category": "estilo",
             "subcategory": "direto"
-          },
-          {
-            "id": "10",
-            "name": "Aportes em Renda Variável (Ações/FIIs)",
-            "amount": 1000,
-            "category": "investimento"
           },
           {
             "id": "11",
@@ -187,12 +181,6 @@
         "amount": 5500,
         "category": "estilo",
         "subcategory": "direto"
-      },
-      {
-        "id": "10",
-        "name": "Aportes em Renda Variável (Ações/FIIs)",
-        "amount": 1000,
-        "category": "investimento"
       },
       {
         "id": "11",
