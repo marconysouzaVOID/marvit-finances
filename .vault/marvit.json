@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:14:29.481Z",
+  "updatedAt": "2026-11-07T04:14:30.769Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:14:28.558Z",
+    "exportedAt": "2026-11-07T04:14:29.808Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:14:28.558Z",
+        "updatedAt": "2026-11-07T04:14:29.808Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -17,7 +17,7 @@
           "expectedAnnualReturnRate": 10.5
         },
         "customGoals": {
-          "essencial": 48,
+          "essencial": 44,
           "estilo": 30,
           "investimento": 20
         },
@@ -150,7 +150,7 @@
       "expectedAnnualReturnRate": 10.5
     },
     "customGoals": {
-      "essencial": 48,
+      "essencial": 44,
       "estilo": 30,
       "investimento": 20
     },
