@@ -1,8 +1,8 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:13:15.733Z",
+  "updatedAt": "2026-11-07T04:13:22.910Z",
   "data": {
-    "version": "2.2.0",
+    "version": "2.3.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-07T04:13:13.924Z",
     "selectedMonthKey": "2026-11",
@@ -56,25 +56,29 @@
             "id": "6",
             "name": "Cafeterias, Restaurantes & Delivery",
             "amount": 650,
-            "category": "estilo"
+            "category": "estilo",
+            "subcategory": "direto"
           },
           {
             "id": "7",
             "name": "Assinaturas (Streaming, Música)",
             "amount": 110,
-            "category": "estilo"
+            "category": "estilo",
+            "subcategory": "direto"
           },
           {
             "id": "8",
             "name": "Academia & Autocuidado",
             "amount": 160,
-            "category": "estilo"
+            "category": "estilo",
+            "subcategory": "direto"
           },
           {
             "id": "9",
             "name": "Passeios, Lazer & Compras",
             "amount": 480,
-            "category": "estilo"
+            "category": "estilo",
+            "subcategory": "direto"
           },
           {
             "id": "10",
@@ -139,25 +143,29 @@
             "id": "6",
             "name": "Cafeterias, Restaurantes & Delivery",
             "amount": 650,
-            "category": "estilo"
+            "category": "estilo",
+            "subcategory": "direto"
           },
           {
             "id": "7",
             "name": "Assinaturas (Streaming, Música)",
             "amount": 110,
-            "category": "estilo"
+            "category": "estilo",
+            "subcategory": "direto"
           },
           {
             "id": "8",
             "name": "Academia & Autocuidado",
             "amount": 160,
-            "category": "estilo"
+            "category": "estilo",
+            "subcategory": "direto"
           },
           {
             "id": "9",
             "name": "Passeios, Lazer & Compras",
             "amount": 480,
-            "category": "estilo"
+            "category": "estilo",
+            "subcategory": "direto"
           },
           {
             "id": "10",
@@ -220,25 +228,29 @@
         "id": "6",
         "name": "Cafeterias, Restaurantes & Delivery",
         "amount": 650,
-        "category": "estilo"
+        "category": "estilo",
+        "subcategory": "direto"
       },
       {
         "id": "7",
         "name": "Assinaturas (Streaming, Música)",
         "amount": 110,
-        "category": "estilo"
+        "category": "estilo",
+        "subcategory": "direto"
       },
       {
         "id": "8",
         "name": "Academia & Autocuidado",
         "amount": 160,
-        "category": "estilo"
+        "category": "estilo",
+        "subcategory": "direto"
       },
       {
         "id": "9",
         "name": "Passeios, Lazer & Compras",
         "amount": 480,
-        "category": "estilo"
+        "category": "estilo",
+        "subcategory": "direto"
       },
       {
         "id": "10",
