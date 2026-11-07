@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:15:39.327Z",
+  "updatedAt": "2026-11-07T04:15:40.463Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:15:38.419Z",
+    "exportedAt": "2026-11-07T04:15:39.570Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:15:38.419Z",
+        "updatedAt": "2026-11-07T04:15:39.570Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -47,12 +47,6 @@
             "amount": 5500,
             "category": "estilo",
             "subcategory": "direto"
-          },
-          {
-            "id": "11",
-            "name": "Reserva de Emergência / Tesouro Selic",
-            "amount": 500,
-            "category": "investimento"
           }
         ]
       },
@@ -181,12 +175,6 @@
         "amount": 5500,
         "category": "estilo",
         "subcategory": "direto"
-      },
-      {
-        "id": "11",
-        "name": "Reserva de Emergência / Tesouro Selic",
-        "amount": 500,
-        "category": "investimento"
       }
     ],
     "customLongTermGoals": [],
