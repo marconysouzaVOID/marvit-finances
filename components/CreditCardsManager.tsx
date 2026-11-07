@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CARD_PURCHASE_TAGS } from '../constants';
+import { CARD_PURCHASE_TAGS, SAMPLE_NUBANK_CSV_RAW } from '../constants';
 import {
   CardPurchaseTag,
   CreditCardTransaction,
@@ -20,7 +20,15 @@ interface CreditCardsManagerProps {
   onDeleteExpense: (id: string) => void;
 }
 
-/** Detecta automaticamente a tag da compra pelo nome do estabelecimento */
+export interface CsvParseSummary {
+  fileName: string;
+  transactions: CreditCardTransaction[];
+  totalAmount: number;
+  ignoredPaymentsCount: number;
+  ignoredPaymentsTotal: number;
+}
+
+/** Detecta automaticamente a tag da compra pelo nome do estabelecimento (otimizado p/ faturas Nubank e bancos BR) */
 export function inferCardPurchaseTag(title: string): CardPurchaseTag {
   const lower = title.toLowerCase();
   if (
@@ -64,20 +72,40 @@ export function inferCardPurchaseTag(title: string): CardPurchaseTag {
   return 'outros';
 }
 
-/** Faz o parse de arquivos CSV de fatura de cartão (ex: Nubank date,title,amount) */
-export function parseCreditCardCsvText(csvText: string): CreditCardTransaction[] {
+/**
+ * Faz o parse completo de um arquivo CSV de fatura de cartão (ex: Nubank_2026-11-01.csv `date,title,amount` ou `;`)
+ * separando compras da fatura e pagamentos recebidos / créditos.
+ */
+export function parseCreditCardCsvDetailed(
+  csvText: string,
+  fileName = 'fatura.csv'
+): CsvParseSummary {
   const lines = csvText
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
 
-  if (lines.length <= 1) return [];
+  if (lines.length <= 1) {
+    return {
+      fileName,
+      transactions: [],
+      totalAmount: 0,
+      ignoredPaymentsCount: 0,
+      ignoredPaymentsTotal: 0,
+    };
+  }
 
-  const result: CreditCardTransaction[] = [];
+  // Detectar delimitador (vírgula padrão Nubank ou ponto-e-vírgula)
+  const headerLine = lines[0];
+  const delimiter =
+    headerLine.includes(';') && !headerLine.includes(',') ? ';' : ',';
+
+  const transactions: CreditCardTransaction[] = [];
+  let ignoredPaymentsCount = 0;
+  let ignoredPaymentsTotal = 0;
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
-    // Parse CSV respeitando aspas (ex: 2026-10-24,Hna*Oboticario - Parcela 1/5,"87,86")
     const cols: string[] = [];
     let current = '';
     let inQuotes = false;
@@ -91,7 +119,7 @@ export function parseCreditCardCsvText(csvText: string): CreditCardTransaction[]
         } else {
           inQuotes = !inQuotes;
         }
-      } else if (ch === ',' && !inQuotes) {
+      } else if (ch === delimiter && !inQuotes) {
         cols.push(current.trim());
         current = '';
       } else {
@@ -103,21 +131,27 @@ export function parseCreditCardCsvText(csvText: string): CreditCardTransaction[]
     if (cols.length < 3) continue;
 
     const rawDate = cols[0];
-    let rawTitle = cols[1];
+    let rawTitle = cols.slice(1, cols.length - 1).join(', ').trim();
     const rawAmountStr = cols[cols.length - 1];
 
-    // Ignorar pagamentos recebidos ou estornos negativos
-    if (/pagamento recebido/i.test(rawTitle)) continue;
-
-    const normalizedNum = rawAmountStr
-      .replace(/\s+/g, '')
-      .replace(/\.(?=\d{3}(?:,|$))/g, '')
-      .replace(',', '.');
+    // Normalizar número no formato brasileiro ("- 3.120,62", "87,86") ou internacional ("87.86")
+    const cleanedStr = rawAmountStr.replace(/[R$\s]/g, '');
+    let normalizedNum = cleanedStr;
+    if (cleanedStr.includes(',')) {
+      normalizedNum = cleanedStr.replace(/\./g, '').replace(',', '.');
+    }
     const numericAmount = Number(normalizedNum);
 
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0) continue;
+    if (!Number.isFinite(numericAmount) || numericAmount === 0) continue;
 
-    // Extrair "Parcela X/Y" se presente no título
+    // Ignorar linhas de "Pagamento recebido" ou valores negativos (crédito de pagamento da fatura anterior)
+    if (numericAmount < 0 || /pagamento recebido/i.test(rawTitle)) {
+      ignoredPaymentsCount += 1;
+      ignoredPaymentsTotal += Math.abs(numericAmount);
+      continue;
+    }
+
+    // Extrair "Parcela X/Y" se presente no título (ex: "Hna*Oboticario - Parcela 1/5")
     let installment = 'À vista';
     const parcelaMatch = rawTitle.match(/(?:-\s*)?Parcela\s+(\d+\/\d+)/i);
     if (parcelaMatch) {
@@ -132,7 +166,7 @@ export function parseCreditCardCsvText(csvText: string): CreditCardTransaction[]
       formattedDate = `${dateParts[2]}/${dateParts[1]}`;
     }
 
-    result.push({
+    transactions.push({
       id: `csv-tx-${Date.now()}-${i}`,
       description: rawTitle,
       amount: Math.round(numericAmount * 100) / 100,
@@ -142,7 +176,16 @@ export function parseCreditCardCsvText(csvText: string): CreditCardTransaction[]
     });
   }
 
-  return result;
+  const totalAmount =
+    Math.round(transactions.reduce((acc, t) => acc + t.amount, 0) * 100) / 100;
+
+  return {
+    fileName,
+    transactions,
+    totalAmount,
+    ignoredPaymentsCount,
+    ignoredPaymentsTotal: Math.round(ignoredPaymentsTotal * 100) / 100,
+  };
 }
 
 export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
@@ -215,6 +258,12 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   const [editCardLimit, setEditCardLimit] = useState<number | ''>('');
   const [editCardDueDay, setEditCardDueDay] = useState<number | ''>('');
 
+  // Estado do Importador de Fatura CSV (Pré-visualização e modo Substituir vs Somar)
+  const [csvPreview, setCsvPreview] = useState<CsvParseSummary | null>(null);
+  const [csvImportMode, setCsvImportMode] = useState<'replace' | 'append'>(
+    'replace'
+  );
+
   // Estado para adicionar gasto individualizado na fatura do cartão selecionado
   const [txDesc, setTxDesc] = useState('');
   const [txAmount, setTxAmount] = useState<number | ''>('');
@@ -248,6 +297,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   const handleSelectCard = (id: string) => {
     setActiveCardId(id);
     setIsEditingCardMeta(false);
+    setCsvPreview(null);
     if (onSelectCardId) onSelectCardId(id);
   };
 
@@ -362,6 +412,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     });
   };
 
+  // Ler arquivo CSV selecionado pelo usuário e abrir o painel de confirmação da fatura
   const handleImportCsvFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !activeCard) return;
@@ -369,20 +420,49 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     const reader = new FileReader();
     reader.onload = (ev) => {
       const content = String(ev.target?.result || '');
-      const parsed = parseCreditCardCsvText(content);
-      if (parsed.length > 0) {
-        const currentList = activeCard.cardTransactions || [];
-        const merged = [...parsed, ...currentList];
-        const nextTotal =
-          Math.round(merged.reduce((acc, t) => acc + t.amount, 0) * 100) / 100;
-        onUpdateExpense(activeCard.id, {
-          cardTransactions: merged,
-          amount: nextTotal,
-        });
+      const summary = parseCreditCardCsvDetailed(content, file.name);
+      if (summary.transactions.length > 0) {
+        setCsvImportMode('replace');
+        setCsvPreview(summary);
       }
     };
     reader.readAsText(file);
     e.target.value = '';
+  };
+
+  // Carregar a fatura exemplo Nubank_2026-11-01.csv diretamente no preview do cartão selecionado
+  const handleLoadSampleNubankCsv = () => {
+    if (!activeCard) return;
+    const summary = parseCreditCardCsvDetailed(
+      SAMPLE_NUBANK_CSV_RAW,
+      'Nubank_2026-11-01.csv'
+    );
+    setCsvImportMode('replace');
+    setCsvPreview(summary);
+  };
+
+  // Confirmar a aplicação do CSV como fatura do cartão selecionado
+  const handleConfirmCsvImport = () => {
+    if (!activeCard || !csvPreview) return;
+
+    const currentList = activeCard.cardTransactions || [];
+    const finalTransactions =
+      csvImportMode === 'replace'
+        ? csvPreview.transactions
+        : [...csvPreview.transactions, ...currentList];
+
+    const finalTotal =
+      Math.round(
+        finalTransactions.reduce((acc, t) => acc + t.amount, 0) * 100
+      ) / 100;
+
+    onUpdateExpense(activeCard.id, {
+      cardTransactions: finalTransactions,
+      amount: finalTotal,
+    });
+
+    setCsvPreview(null);
+    setSelectedTagFilter('all');
   };
 
   const handleConvertDirectToCard = (item: ExpenseItem) => {
@@ -437,7 +517,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
   return (
     <div className="space-y-5">
-      {/* Input oculto para importar CSV de fatura (ex: Nubank) */}
+      {/* Input oculto para importar CSV de fatura (ex: Nubank_2026-11-01.csv) */}
       <input
         ref={csvFileInputRef}
         type="file"
@@ -463,12 +543,11 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   Cartões de Crédito • Estilo de Vida
                 </h2>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-terracotta-100 text-terracotta-700 border border-terracotta-200">
-                  Subcategoria Sincronizada
+                  Subcategoria & Fatura CSV
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-espresso-600 mt-1">
-                Gerencie os gastos individualizados de cada cartão adicionado ao pilar{' '}
-                <strong>Estilo de Vida</strong>. A soma das compras atualiza automaticamente a fatura na planilha!
+                Gerencie os gastos individualizados ou importe o arquivo <strong>.CSV</strong> da fatura do cartão selecionado. O total atualiza automaticamente o pilar <strong>Estilo de Vida</strong>!
               </p>
             </div>
           </div>
@@ -841,13 +920,25 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <button
                     type="button"
                     onClick={() => csvFileInputRef.current?.click()}
-                    className="px-3 py-1.5 rounded-xl bg-maldives-50 hover:bg-maldives-100 text-maldives-800 border border-maldives-300 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
-                    title="Importar compras individualizadas de um arquivo .CSV (ex: Nubank)"
+                    className="px-3 py-1.5 rounded-xl bg-maldives-500 hover:bg-maldives-600 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-xs cursor-pointer"
+                    title="Selecionar arquivo .CSV da fatura deste cartão (ex: Nubank)"
                   >
-                    <span className="material-symbols-outlined text-[16px] text-maldives-600">
+                    <span className="material-symbols-outlined text-[16px]">
                       upload_file
                     </span>
                     <span>Importar Fatura (.CSV)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleLoadSampleNubankCsv}
+                    className="px-2.5 py-1.5 rounded-xl bg-maldives-50 hover:bg-maldives-100 text-maldives-800 border border-maldives-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    title="Carregar fatura de exemplo Nubank_2026-11-01.csv neste cartão"
+                  >
+                    <span className="material-symbols-outlined text-[16px] text-maldives-600">
+                      description
+                    </span>
+                    <span>Exemplo Nubank.csv</span>
                   </button>
 
                   <button
@@ -857,12 +948,12 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         ? () => setIsEditingCardMeta(false)
                         : startEditingActiveCard
                     }
-                    className="px-3 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[16px]">
                       {isEditingCardMeta ? 'close' : 'settings'}
                     </span>
-                    <span>{isEditingCardMeta ? 'Fechar' : 'Ajustar Cartão'}</span>
+                    <span>{isEditingCardMeta ? 'Fechar' : 'Ajustar'}</span>
                   </button>
 
                   <button
@@ -889,7 +980,151 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 </div>
               </div>
 
-              {/* Aviso caso o valor manual do cartão esteja diferente da soma dos itens (ex: cartão recém-convertido) */}
+              {/* Painel de Pré-visualização e Confirmação da Importação de Fatura CSV */}
+              <AnimatePresence>
+                {csvPreview && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 rounded-2xl bg-maldives-50/90 border-2 border-maldives-400 space-y-3.5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="material-symbols-outlined text-maldives-700 text-xl shrink-0">
+                            task_alt
+                          </span>
+                          <div className="min-w-0">
+                            <h4 className="text-xs sm:text-sm font-display font-bold text-espresso-900 truncate">
+                              Fatura CSV Lida: {csvPreview.fileName}
+                            </h4>
+                            <p className="text-[11px] text-espresso-600">
+                              Pronta para aplicar como fatura do cartão{' '}
+                              <strong>{activeCard.name}</strong>
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="text-left sm:text-right shrink-0">
+                          <span className="text-[10px] font-bold uppercase text-maldives-800 block">
+                            Valor Total da Fatura CSV
+                          </span>
+                          <span className="text-base sm:text-lg font-mono font-extrabold text-maldives-700">
+                            {formatCurrency(csvPreview.totalAmount)} (
+                            {csvPreview.transactions.length} compras)
+                          </span>
+                        </div>
+                      </div>
+
+                      {csvPreview.ignoredPaymentsCount > 0 && (
+                        <div className="px-3 py-1.5 rounded-xl bg-oat-50/90 border border-maldives-200 text-[11px] text-espresso-700 flex items-center gap-1.5">
+                          <span className="material-symbols-outlined text-sage-600 text-[16px] shrink-0">
+                            info
+                          </span>
+                          <span>
+                            Ignoramos automaticamente{' '}
+                            <strong>
+                              {csvPreview.ignoredPaymentsCount} pagamento(s) recebido(s)
+                            </strong>{' '}
+                            ({formatCurrency(csvPreview.ignoredPaymentsTotal)}) para contabilizar apenas os gastos reais da fatura.
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Escolha do Modo de Importação (Substituir Fatura vs Somar) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setCsvImportMode('replace')}
+                          className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer flex items-start gap-2 ${
+                            csvImportMode === 'replace'
+                              ? 'bg-maldives-500 text-white border-maldives-600 shadow-xs font-bold'
+                              : 'bg-oat-50 text-espresso-700 border-oat-300'
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">
+                            {csvImportMode === 'replace'
+                              ? 'radio_button_checked'
+                              : 'radio_button_unchecked'}
+                          </span>
+                          <div>
+                            <span className="block font-bold">
+                              Substituir Fatura Atual (Recomendado)
+                            </span>
+                            <span
+                              className={`text-[10px] block ${
+                                csvImportMode === 'replace'
+                                  ? 'text-white/90'
+                                  : 'text-espresso-500'
+                              }`}
+                            >
+                              O arquivo CSV será o equivalente exato à fatura de{' '}
+                              {activeCard.name} ({formatCurrency(csvPreview.totalAmount)})
+                            </span>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setCsvImportMode('append')}
+                          className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer flex items-start gap-2 ${
+                            csvImportMode === 'append'
+                              ? 'bg-maldives-500 text-white border-maldives-600 shadow-xs font-bold'
+                              : 'bg-oat-50 text-espresso-700 border-oat-300'
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">
+                            {csvImportMode === 'append'
+                              ? 'radio_button_checked'
+                              : 'radio_button_unchecked'}
+                          </span>
+                          <div>
+                            <span className="block font-bold">
+                              Somar aos Itens Existentes
+                            </span>
+                            <span
+                              className={`text-[10px] block ${
+                                csvImportMode === 'append'
+                                  ? 'text-white/90'
+                                  : 'text-espresso-500'
+                              }`}
+                            >
+                              Adiciona os {csvPreview.transactions.length} itens do CSV aos{' '}
+                              {activeCardTransactions.length} itens já lançados
+                            </span>
+                          </div>
+                        </button>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => setCsvPreview(null)}
+                          className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 transition cursor-pointer"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleConfirmCsvImport}
+                          className="px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">
+                            check_circle
+                          </span>
+                          <span>
+                            Aplicar Fatura em {activeCard.name} (
+                            {formatCurrency(csvPreview.totalAmount)})
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Aviso caso o valor manual do cartão esteja diferente da soma dos itens */}
               {activeCardTransactions.length > 0 &&
                 Math.abs(activeCard.amount - sumOfActiveCardItems) > 0.05 && (
                   <div className="p-3 rounded-2xl bg-maldives-50 border border-maldives-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
@@ -1198,7 +1433,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       </p>
                       <p>
                         Adicione manualmente acima ou clique em{' '}
-                        <strong>“Importar Fatura (.CSV)”</strong> para carregar todos os lançamentos do seu cartão.
+                        <strong>“Importar Fatura (.CSV)”</strong> para carregar o arquivo equivalente à fatura deste cartão.
                       </p>
                     </div>
                   ) : (
