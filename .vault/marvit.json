@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:17:09.345Z",
+  "updatedAt": "2026-11-07T04:17:39.437Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:17:08.292Z",
+    "exportedAt": "2026-11-07T04:17:38.391Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:17:08.292Z",
+        "updatedAt": "2026-11-07T04:17:38.391Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -22,6 +22,13 @@
           "investimento": 20
         },
         "expenses": [
+          {
+            "name": "Pagar rafael",
+            "amount": 4000,
+            "category": "investimento",
+            "isCustom": true,
+            "id": "exp-1794025058391"
+          },
           {
             "name": "Aluguel casa",
             "amount": 2986,
@@ -157,6 +164,13 @@
       "investimento": 20
     },
     "expenses": [
+      {
+        "name": "Pagar rafael",
+        "amount": 4000,
+        "category": "investimento",
+        "isCustom": true,
+        "id": "exp-1794025058391"
+      },
       {
         "name": "Aluguel casa",
         "amount": 2986,
