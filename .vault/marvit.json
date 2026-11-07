@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:13:37.856Z",
+  "updatedAt": "2026-11-07T04:13:40.226Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:13:36.999Z",
+    "exportedAt": "2026-11-07T04:13:39.211Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:13:36.999Z",
+        "updatedAt": "2026-11-07T04:13:39.211Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -33,13 +33,6 @@
             "name": "Contas (Água, Luz, Internet)",
             "amount": 420,
             "category": "essencial"
-          },
-          {
-            "id": "6",
-            "name": "Cafeterias, Restaurantes & Delivery",
-            "amount": 650,
-            "category": "estilo",
-            "subcategory": "direto"
           },
           {
             "id": "7",
@@ -187,13 +180,6 @@
         "name": "Contas (Água, Luz, Internet)",
         "amount": 420,
         "category": "essencial"
-      },
-      {
-        "id": "6",
-        "name": "Cafeterias, Restaurantes & Delivery",
-        "amount": 650,
-        "category": "estilo",
-        "subcategory": "direto"
       },
       {
         "id": "7",
