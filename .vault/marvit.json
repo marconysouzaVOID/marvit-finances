@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:18:26.964Z",
+  "updatedAt": "2026-11-07T04:18:59.518Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:17:38.391Z",
+    "exportedAt": "2026-11-07T04:18:58.598Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:17:38.391Z",
+        "updatedAt": "2026-11-07T04:18:58.598Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -28,13 +28,6 @@
             "category": "investimento",
             "isCustom": true,
             "id": "exp-1794025058391"
-          },
-          {
-            "name": "Aluguel casa",
-            "amount": 2986,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794025028292"
           },
           {
             "name": "Financiamento",
@@ -170,13 +163,6 @@
         "category": "investimento",
         "isCustom": true,
         "id": "exp-1794025058391"
-      },
-      {
-        "name": "Aluguel casa",
-        "amount": 2986,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794025028292"
       },
       {
         "name": "Financiamento",
