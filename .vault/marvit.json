@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:12:07.691Z",
+  "updatedAt": "2026-11-07T04:12:15.366Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:12:05.870Z",
+    "exportedAt": "2026-11-07T04:12:13.454Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
@@ -157,18 +157,6 @@
         "syncWithBudget": true,
         "budgetCategory": "investimento",
         "notes": "Marcenaria verde sálvia, bancada de quartzo creme e ilha gourmet."
-      },
-      {
-        "id": "goal-3",
-        "title": "Entrada do Imóvel Próprio",
-        "icon": "cottage",
-        "targetAmount": 120000,
-        "currentAmount": 38000,
-        "monthlyContribution": 1500,
-        "annualInterestRate": 11.5,
-        "syncWithBudget": false,
-        "budgetCategory": "investimento",
-        "notes": "Fundo dedicado em Tesouro IPCA+ e CDBs de liquidez."
       }
     ],
     "history": []
