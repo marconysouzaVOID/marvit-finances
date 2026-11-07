@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:13:40.226Z",
+  "updatedAt": "2026-11-07T04:13:41.066Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:13:39.211Z",
+    "exportedAt": "2026-11-07T04:13:40.194Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:13:39.211Z",
+        "updatedAt": "2026-11-07T04:13:40.194Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -33,13 +33,6 @@
             "name": "Contas (Água, Luz, Internet)",
             "amount": 420,
             "category": "essencial"
-          },
-          {
-            "id": "7",
-            "name": "Assinaturas (Streaming, Música)",
-            "amount": 110,
-            "category": "estilo",
-            "subcategory": "direto"
           },
           {
             "id": "8",
@@ -180,13 +173,6 @@
         "name": "Contas (Água, Luz, Internet)",
         "amount": 420,
         "category": "essencial"
-      },
-      {
-        "id": "7",
-        "name": "Assinaturas (Streaming, Música)",
-        "amount": 110,
-        "category": "estilo",
-        "subcategory": "direto"
       },
       {
         "id": "8",
