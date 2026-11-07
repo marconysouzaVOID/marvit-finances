@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:14:51.827Z",
+  "updatedAt": "2026-11-07T04:15:33.360Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:14:50.926Z",
+    "exportedAt": "2026-11-07T04:15:32.421Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:14:50.926Z",
+        "updatedAt": "2026-11-07T04:15:32.421Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -22,6 +22,13 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Financiamento",
+            "amount": 1253,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794024932421"
+          },
           {
             "id": "1",
             "name": "Aluguel / Parcela Imóvel",
@@ -155,6 +162,13 @@
       "investimento": 25
     },
     "expenses": [
+      {
+        "name": "Financiamento",
+        "amount": 1253,
+        "category": "essencial",
+        "isCustom": true,
+        "id": "exp-1794024932421"
+      },
       {
         "id": "1",
         "name": "Aluguel / Parcela Imóvel",
