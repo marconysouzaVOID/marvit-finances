@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:12:15.366Z",
+  "updatedAt": "2026-11-07T04:12:18.959Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:12:13.454Z",
+    "exportedAt": "2026-11-07T04:12:17.204Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
@@ -133,32 +133,7 @@
         "category": "essencial"
       }
     ],
-    "customLongTermGoals": [
-      {
-        "id": "goal-1",
-        "title": "Férias nas Maldivas",
-        "icon": "beach_access",
-        "targetAmount": 24000,
-        "currentAmount": 6500,
-        "monthlyContribution": 600,
-        "annualInterestRate": 10.5,
-        "syncWithBudget": false,
-        "budgetCategory": "estilo",
-        "notes": "Viagem dos sonhos com bangalô sobre as águas cristalinas."
-      },
-      {
-        "id": "goal-2",
-        "title": "Reforma da Cozinha Comfy",
-        "icon": "countertops",
-        "targetAmount": 35000,
-        "currentAmount": 12000,
-        "monthlyContribution": 850,
-        "annualInterestRate": 11,
-        "syncWithBudget": true,
-        "budgetCategory": "investimento",
-        "notes": "Marcenaria verde sálvia, bancada de quartzo creme e ilha gourmet."
-      }
-    ],
+    "customLongTermGoals": [],
     "history": []
   }
 }
