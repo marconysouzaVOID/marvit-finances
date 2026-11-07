@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-07T04:13:41.066Z",
+  "updatedAt": "2026-11-07T04:13:42.145Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-07T04:13:40.194Z",
+    "exportedAt": "2026-11-07T04:13:41.277Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-07T04:13:40.194Z",
+        "updatedAt": "2026-11-07T04:13:41.277Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -38,13 +38,6 @@
             "id": "8",
             "name": "Academia & Autocuidado",
             "amount": 160,
-            "category": "estilo",
-            "subcategory": "direto"
-          },
-          {
-            "id": "9",
-            "name": "Passeios, Lazer & Compras",
-            "amount": 480,
             "category": "estilo",
             "subcategory": "direto"
           },
@@ -178,13 +171,6 @@
         "id": "8",
         "name": "Academia & Autocuidado",
         "amount": 160,
-        "category": "estilo",
-        "subcategory": "direto"
-      },
-      {
-        "id": "9",
-        "name": "Passeios, Lazer & Compras",
-        "amount": 480,
         "category": "estilo",
         "subcategory": "direto"
       },
