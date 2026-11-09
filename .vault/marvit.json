@@ -1,6 +1,6 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-09T22:23:07.332Z",
+  "updatedAt": "2026-11-09T22:24:35.090Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
@@ -199,6 +199,76 @@
     "customLongTermGoals": [],
     "history": [
       {
+        "id": "snap-1794009106533",
+        "monthLabel": "Novembro / 2026",
+        "dateCreated": "2026-11-09T22:23:06.247Z",
+        "profile": {
+          "monthlyIncome": 22000,
+          "additionalIncome": 0,
+          "desiredEmergencyMonths": 6,
+          "expectedAnnualReturnRate": 10.5
+        },
+        "customGoals": {
+          "essencial": 40,
+          "estilo": 35,
+          "investimento": 25
+        },
+        "expenses": [
+          {
+            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
+            "amount": 8791.22,
+            "category": "investimento",
+            "isCustom": true,
+            "id": "exp-1794007990084"
+          },
+          {
+            "name": "Cartões (Inter, Nubank, Itau)",
+            "amount": 8000,
+            "category": "estilo",
+            "isCustom": true,
+            "id": "exp-1794006938471",
+            "subcategory": "cartao",
+            "cardTransactions": []
+          },
+          {
+            "name": "Financiamento Veículo",
+            "amount": 1253,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794006429901"
+          },
+          {
+            "name": "Contas (Luz)",
+            "amount": 144.12,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794006373678"
+          },
+          {
+            "name": "Contas (Água)",
+            "amount": 106.35,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794006363575"
+          },
+          {
+            "id": "1",
+            "name": "Aluguel / Parcela Imóvel",
+            "amount": 2986.43,
+            "category": "essencial"
+          },
+          {
+            "id": "3",
+            "name": "Contas (Internet)",
+            "amount": 117.8,
+            "category": "essencial"
+          }
+        ],
+        "customLongTermGoals": [],
+        "notes": "Compra do primeiro AP",
+        "monthKey": "2026-11"
+      },
+      {
         "id": "snap-1794262415137",
         "monthKey": "2026-10",
         "monthLabel": "Outubro / 2026",
@@ -272,76 +342,6 @@
             "notes": "Moto Comprada"
           }
         ]
-      },
-      {
-        "id": "snap-1794009106533",
-        "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-09T22:23:06.247Z",
-        "profile": {
-          "monthlyIncome": 22000,
-          "additionalIncome": 0,
-          "desiredEmergencyMonths": 6,
-          "expectedAnnualReturnRate": 10.5
-        },
-        "customGoals": {
-          "essencial": 40,
-          "estilo": 35,
-          "investimento": 25
-        },
-        "expenses": [
-          {
-            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-            "amount": 8791.22,
-            "category": "investimento",
-            "isCustom": true,
-            "id": "exp-1794007990084"
-          },
-          {
-            "name": "Cartões (Inter, Nubank, Itau)",
-            "amount": 8000,
-            "category": "estilo",
-            "isCustom": true,
-            "id": "exp-1794006938471",
-            "subcategory": "cartao",
-            "cardTransactions": []
-          },
-          {
-            "name": "Financiamento Veículo",
-            "amount": 1253,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006429901"
-          },
-          {
-            "name": "Contas (Luz)",
-            "amount": 144.12,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006373678"
-          },
-          {
-            "name": "Contas (Água)",
-            "amount": 106.35,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006363575"
-          },
-          {
-            "id": "1",
-            "name": "Aluguel / Parcela Imóvel",
-            "amount": 2986.43,
-            "category": "essencial"
-          },
-          {
-            "id": "3",
-            "name": "Contas (Internet)",
-            "amount": 117.8,
-            "category": "essencial"
-          }
-        ],
-        "customLongTermGoals": [],
-        "notes": "Compra do primeiro AP",
-        "monthKey": "2026-11"
       }
     ],
     "restoredAt": "2026-11-09T22:13:29.900Z"
