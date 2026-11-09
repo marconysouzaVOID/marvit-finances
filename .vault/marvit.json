@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-09T22:12:45.936Z",
+  "updatedAt": "2026-11-09T22:12:50.482Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-09T22:12:17.151Z",
+    "exportedAt": "2026-11-09T22:12:49.392Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -76,7 +76,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-09T22:12:17.151Z",
+        "updatedAt": "2026-11-09T22:12:49.392Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -207,7 +207,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-09T22:12:17.151Z",
+        "dateCreated": "2026-11-09T22:12:49.392Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
