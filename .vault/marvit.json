@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-09T06:13:09.052Z",
+  "updatedAt": "2026-11-09T06:13:11.951Z",
   "data": {
     "version": "2.2.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-09T06:13:07.221Z",
-    "selectedMonthKey": "2026-11",
+    "exportedAt": "2026-11-09T06:13:10.085Z",
+    "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -52,7 +52,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-07T04:13:13.107Z",
+        "updatedAt": "2026-11-09T06:13:10.085Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 100,
@@ -145,29 +145,21 @@
       "expectedAnnualReturnRate": 10.5
     },
     "customGoals": {
-      "essencial": 45,
-      "estilo": 36,
+      "essencial": 50,
+      "estilo": 30,
       "investimento": 20
     },
     "expenses": [
       {
-        "name": "Pagar rafael",
-        "amount": 4000,
-        "category": "investimento",
-        "isCustom": true,
-        "id": "exp-1794025058391"
-      },
-      {
-        "name": "Financiamento",
-        "amount": 1253,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794024932421"
-      },
-      {
         "id": "1",
         "name": "Aluguel / Parcela Imóvel",
-        "amount": 2300,
+        "amount": 1800,
+        "category": "essencial"
+      },
+      {
+        "id": "2",
+        "name": "Supermercado, Feira & Despensa",
+        "amount": 950,
         "category": "essencial"
       },
       {
@@ -175,6 +167,58 @@
         "name": "Contas (Água, Luz, Internet)",
         "amount": 420,
         "category": "essencial"
+      },
+      {
+        "id": "4",
+        "name": "Plano de Saúde & Farmácia",
+        "amount": 380,
+        "category": "essencial"
+      },
+      {
+        "id": "5",
+        "name": "Transporte / Combustível",
+        "amount": 450,
+        "category": "essencial"
+      },
+      {
+        "id": "6",
+        "name": "Cafeterias, Restaurantes & Delivery",
+        "amount": 650,
+        "category": "estilo",
+        "subcategory": "direto"
+      },
+      {
+        "id": "7",
+        "name": "Assinaturas (Streaming, Música)",
+        "amount": 110,
+        "category": "estilo",
+        "subcategory": "direto"
+      },
+      {
+        "id": "8",
+        "name": "Academia & Autocuidado",
+        "amount": 160,
+        "category": "estilo",
+        "subcategory": "direto"
+      },
+      {
+        "id": "9",
+        "name": "Passeios, Lazer & Compras",
+        "amount": 480,
+        "category": "estilo",
+        "subcategory": "direto"
+      },
+      {
+        "id": "10",
+        "name": "Aportes em Renda Variável (Ações/FIIs)",
+        "amount": 1000,
+        "category": "investimento"
+      },
+      {
+        "id": "11",
+        "name": "Reserva de Emergência / Tesouro Selic",
+        "amount": 500,
+        "category": "investimento"
       }
     ],
     "customLongTermGoals": [],
