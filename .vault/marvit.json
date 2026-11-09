@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-09T22:12:56.922Z",
+  "updatedAt": "2026-11-09T22:13:04.282Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-09T22:12:55.990Z",
+    "exportedAt": "2026-11-09T22:13:03.966Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-09T22:12:55.990Z",
+        "updatedAt": "2026-11-09T22:13:03.966Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -76,7 +76,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-09T22:12:49.392Z",
+        "updatedAt": "2026-11-09T22:13:03.966Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -198,23 +198,23 @@
     ],
     "customLongTermGoals": [
       {
-        "id": "goal-2",
-        "title": "Moto Eletrica",
+        "title": "Carro Tiggo",
         "icon": "directions_car",
-        "targetAmount": 5000,
-        "currentAmount": 0,
-        "monthlyContribution": 5000,
+        "targetAmount": 48032.08,
+        "currentAmount": 18744.160000000003,
+        "monthlyContribution": 601.08,
         "annualInterestRate": 0,
         "syncWithBudget": true,
         "budgetCategory": "estilo",
-        "notes": "Moto Comprada"
+        "notes": "Amortização",
+        "id": "goal-1794008860404"
       }
     ],
     "history": [
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-09T22:12:49.392Z",
+        "dateCreated": "2026-11-07T00:00:37.290Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -289,7 +289,7 @@
       {
         "id": "snap-1794009106533",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-09T22:12:55.990Z",
+        "dateCreated": "2026-11-06T23:51:46.533Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -354,22 +354,22 @@
         ],
         "customLongTermGoals": [
           {
-            "id": "goal-2",
-            "title": "Moto Eletrica",
+            "title": "Carro Tiggo",
             "icon": "directions_car",
-            "targetAmount": 5000,
-            "currentAmount": 0,
-            "monthlyContribution": 5000,
+            "targetAmount": 48032.08,
+            "currentAmount": 18744.160000000003,
+            "monthlyContribution": 601.08,
             "annualInterestRate": 0,
             "syncWithBudget": true,
             "budgetCategory": "estilo",
-            "notes": "Moto Comprada"
+            "notes": "Amortização",
+            "id": "goal-1794008860404"
           }
         ],
         "notes": "Compra do primeiro AP",
         "monthKey": "2026-11"
       }
     ],
-    "restoredAt": "2026-11-09T22:12:17.151Z"
+    "restoredAt": "2026-11-09T22:13:03.966Z"
   }
 }
