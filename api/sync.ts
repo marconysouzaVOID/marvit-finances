@@ -52,13 +52,13 @@ async function githubGet(vaultId: string): Promise<StoredVaultRecord | null> {
   if (!gh) return null;
 
   const filePath = `.vault/${encodeURIComponent(vaultId)}.json`;
-  const url = `https://api.github.com/repos/${gh.repo}/contents/${filePath}`;
+  const url = `https://api.github.com/repos/${gh.repo}/contents/${filePath}?t=${Date.now()}`;
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${gh.token}`,
       Accept: 'application/vnd.github+json',
       'User-Agent': 'Marvit-Finances-CloudSync',
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
     },
   });
   if (!res.ok) return null;
@@ -77,40 +77,53 @@ async function githubSet(vaultId: string, value: StoredVaultRecord): Promise<boo
   if (!gh) return false;
 
   const filePath = `.vault/${encodeURIComponent(vaultId)}.json`;
-  const url = `https://api.github.com/repos/${gh.repo}/contents/${filePath}`;
+  const baseUrl = `https://api.github.com/repos/${gh.repo}/contents/${filePath}`;
   const headers = {
     Authorization: `Bearer ${gh.token}`,
     Accept: 'application/vnd.github+json',
     'Content-Type': 'application/json',
     'User-Agent': 'Marvit-Finances-CloudSync',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
   };
-
-  let sha: string | undefined;
-  const checkRes = await fetch(url, { headers });
-  if (checkRes.ok) {
-    const existingFile = (await checkRes.json()) as { sha?: string };
-    sha = existingFile.sha;
-  }
 
   const contentBase64 = Buffer.from(JSON.stringify(value, null, 2), 'utf-8').toString(
     'base64'
   );
 
-  const putRes = await fetch(url, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify({
-      message: `chore(vault): sync global marvit finance state`,
-      content: contentBase64,
-      ...(sha ? { sha } : {}),
-    }),
-  });
+  // Tenta até 3 vezes caso haja conflito de SHA (409/422) em edições rápidas seguidas
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let sha: string | undefined;
+    const checkRes = await fetch(`${baseUrl}?t=${Date.now()}`, { headers });
+    if (checkRes.ok) {
+      const existingFile = (await checkRes.json()) as { sha?: string };
+      sha = existingFile.sha;
+    }
 
-  return putRes.ok;
+    const putRes = await fetch(baseUrl, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        message: `chore(vault): sync global marvit finance state`,
+        content: contentBase64,
+        ...(sha ? { sha } : {}),
+      }),
+    });
+
+    if (putRes.ok) {
+      return true;
+    }
+
+    if (putRes.status !== 409 && putRes.status !== 422) {
+      break;
+    }
+  }
+
+  return false;
 }
 
 async function storageGet(): Promise<StoredVaultRecord | null> {
   const key = `marvit:vault:${GLOBAL_VAULT_ID}`;
+  const memRecord = memoryStore.get(key) || null;
   const creds = getRedisCredentials();
   if (creds) {
     const response = await fetch(`${creds.url}/get/${encodeURIComponent(key)}`, {
@@ -129,15 +142,21 @@ async function storageGet(): Promise<StoredVaultRecord | null> {
   }
 
   const ghRecord = await githubGet(GLOBAL_VAULT_ID);
-  if (ghRecord) return ghRecord;
+  if (ghRecord && memRecord) {
+    const ghTime = new Date(ghRecord.updatedAt || 0).getTime() || 0;
+    const memTime = new Date(memRecord.updatedAt || 0).getTime() || 0;
+    return memTime > ghTime ? memRecord : ghRecord;
+  }
 
-  return memoryStore.get(key) || null;
+  return ghRecord || memRecord;
 }
 
 async function storageSet(
   value: StoredVaultRecord
 ): Promise<'cloud' | 'local-fallback'> {
   const key = `marvit:vault:${GLOBAL_VAULT_ID}`;
+  memoryStore.set(key, value);
+
   const creds = getRedisCredentials();
   if (creds) {
     const response = await fetch(`${creds.url}/set/${encodeURIComponent(key)}`, {
@@ -159,7 +178,6 @@ async function storageSet(
     return 'cloud';
   }
 
-  memoryStore.set(key, value);
   return 'local-fallback';
 }
 

@@ -86,6 +86,7 @@ export interface MonthDataRecord {
 
 export interface MonthSnapshot {
   id: string;
+  monthKey?: string; // Formato "YYYY-MM", ex: "2026-11"
   monthLabel: string; // Ex: "Novembro / 2026"
   dateCreated: string;
   profile: FinancialProfile;
@@ -107,6 +108,12 @@ export interface MarvitBackupData {
   expenses: ExpenseItem[];
   customLongTermGoals: CustomGoalItem[];
   history: MonthSnapshot[];
+  /**
+   * Marca de quando um backup .JSON foi restaurado (importado) explicitamente pelo usuário.
+   * Uma restauração é autoritativa: os outros aparelhos (PC/Celular) adotam o conteúdo restaurado
+   * por completo em vez de mesclar mês a mês com os dados antigos que tinham.
+   */
+  restoredAt?: string;
 }
 
 export interface VaultCredentials {

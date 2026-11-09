@@ -26,16 +26,21 @@ import { IncomeCard } from './components/IncomeCard';
 import { InteractiveAsset } from './components/InteractiveAsset';
 import {
   formatMonthKeyLabel,
+  formatMonthKeySlashLabel,
   getCurrentMonthKey,
+  inferMonthKeyFromLabel,
   MonthCalendarBar,
   shiftMonthKey,
 } from './components/MonthCalendarBar';
 import { VaultAuthModal } from './components/VaultAuthModal';
-import { generateReportImageBase64 } from './utils/exportCanvas';
+import { generateReportImageSync } from './utils/exportCanvas';
 import {
-  downloadBase64Png,
-  exportBackupJson,
-  exportMarkdownReport,
+  canUseNativeMobileShare,
+  isMobileOrTouchDevice,
+  prepareBackupJsonFile,
+  PreparedExportFile,
+  prepareMarkdownReportFile,
+  saveExportedFileWithPrompt,
 } from './utils/sourceExporter';
 import {
   DEFAULT_INITIAL_PIN,
@@ -43,6 +48,7 @@ import {
   hashPin,
   pullVaultFromCloud,
   pushVaultToCloud,
+  saveLocalMirrorVault,
 } from './utils/cloudSync';
 import {
   hasRegisteredBiometrics,
@@ -68,6 +74,19 @@ const THEME_STORAGE_KEY = 'marvit_theme_mode';
 const CARD_NAME_REGEX =
   /(cart[aã]o|nubank|nu\b|inter\b|ita[uú]|bradesco|santander|c6\b|xp\b|btg|picpay|neon|next|will|digio|fatura|cr[eé]dito|ultravioleta|black|platinum|infinite|mastercard|visa|elo|amex|sicredi|sicoob|caixa)/i;
 
+const DEFAULT_PROFILE: FinancialProfile = {
+  monthlyIncome: 7500,
+  additionalIncome: 500,
+  desiredEmergencyMonths: 6,
+  expectedAnnualReturnRate: 10.5,
+};
+
+const DEFAULT_CUSTOM_GOALS: Record<ExpenseCategory, number> = {
+  essencial: 50,
+  estilo: 30,
+  investimento: 20,
+};
+
 function normalizeLifestyleExpenses(items: ExpenseItem[]): ExpenseItem[] {
   return items.map((item) => {
     if (item.category !== 'estilo' || item.linkedGoalId) return item;
@@ -81,6 +100,315 @@ function normalizeLifestyleExpenses(items: ExpenseItem[]): ExpenseItem[] {
   });
 }
 
+/**
+ * Verifica se o registro de um mês ainda está exatamente igual ao template padrão inicial
+ * (sem edições do usuário), para permitir que cálculos reais ou fechamentos do Histórico tenham prioridade.
+ */
+function isUntouchedDefaultMonth(rec?: {
+  profile?: FinancialProfile;
+  expenses?: ExpenseItem[];
+  notes?: string;
+}): boolean {
+  if (!rec || !rec.profile || !rec.expenses) return true;
+  if (rec.notes && rec.notes.trim().length > 0) return false;
+  if (
+    rec.profile.monthlyIncome !== DEFAULT_PROFILE.monthlyIncome ||
+    rec.profile.additionalIncome !== DEFAULT_PROFILE.additionalIncome ||
+    rec.profile.desiredEmergencyMonths !==
+      DEFAULT_PROFILE.desiredEmergencyMonths ||
+    rec.profile.expectedAnnualReturnRate !==
+      DEFAULT_PROFILE.expectedAnnualReturnRate
+  ) {
+    return false;
+  }
+
+  const manual = rec.expenses.filter((e) => !e.linkedGoalId);
+  if (manual.length !== INITIAL_EXPENSES.length) return false;
+
+  for (let i = 0; i < INITIAL_EXPENSES.length; i++) {
+    const initExp = INITIAL_EXPENSES[i];
+    const curExp = manual[i];
+    if (
+      !curExp ||
+      curExp.id !== initExp.id ||
+      curExp.name !== initExp.name ||
+      curExp.amount !== initExp.amount ||
+      curExp.category !== initExp.category ||
+      (curExp.cardTransactions && curExp.cardTransactions.length > 0)
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+interface HydratedAppState {
+  selectedMonthKey: string;
+  monthsData: Record<string, MonthDataRecord>;
+  profile: FinancialProfile;
+  customGoals: Record<ExpenseCategory, number>;
+  expenses: ExpenseItem[];
+  currentMonthNotes: string;
+  longTermGoals: CustomGoalItem[];
+  history: MonthSnapshot[];
+  exportedAt: string;
+  restoredAt?: string;
+}
+
+function hydratePayloadState(
+  raw?: Partial<MarvitBackupData> | null,
+  preferredMonthKey?: string
+): HydratedAppState {
+  const sysMonthKey = getCurrentMonthKey();
+  const normalizedHistory: MonthSnapshot[] = (raw?.history || []).map((snap) => {
+    const resolvedKey =
+      snap.monthKey ||
+      inferMonthKeyFromLabel(snap.monthLabel, snap.dateCreated) ||
+      sysMonthKey;
+    return {
+      ...snap,
+      monthKey: resolvedKey,
+      expenses: normalizeLifestyleExpenses(
+        (snap.expenses || []).filter((e) => !e.linkedGoalId)
+      ),
+    };
+  });
+
+  const monthsMap: Record<string, MonthDataRecord> = {};
+
+  if (raw?.monthsData) {
+    for (const [mKey, rec] of Object.entries(raw.monthsData)) {
+      if (!rec || !rec.profile || !rec.expenses) continue;
+      monthsMap[mKey] = {
+        ...rec,
+        monthKey: mKey,
+        updatedAt: rec.updatedAt || raw.exportedAt || new Date().toISOString(),
+        profile: { ...rec.profile },
+        customGoals: { ...(rec.customGoals || DEFAULT_CUSTOM_GOALS) },
+        expenses: normalizeLifestyleExpenses(
+          rec.expenses.filter((e) => !e.linkedGoalId)
+        ),
+      };
+    }
+  }
+
+  const candidateSelectedKey =
+    preferredMonthKey || raw?.selectedMonthKey || sysMonthKey;
+
+  if (raw?.profile && raw?.expenses) {
+    const topKey = raw.selectedMonthKey || sysMonthKey;
+    const topRec: MonthDataRecord = {
+      monthKey: topKey,
+      updatedAt: raw.exportedAt || new Date().toISOString(),
+      profile: { ...raw.profile },
+      customGoals: { ...(raw.customGoals || DEFAULT_CUSTOM_GOALS) },
+      expenses: normalizeLifestyleExpenses(
+        raw.expenses.filter((e) => !e.linkedGoalId)
+      ),
+    };
+
+    const existingTop = monthsMap[topKey];
+    if (
+      !existingTop ||
+      (isUntouchedDefaultMonth(existingTop) && !isUntouchedDefaultMonth(topRec))
+    ) {
+      monthsMap[topKey] = topRec;
+    }
+  }
+
+  // Hidrata automaticamente monthsData a partir do Histórico (do mais antigo para o mais recente)
+  const chronologicalHistory = [...normalizedHistory].reverse();
+  for (const snap of chronologicalHistory) {
+    const mKey =
+      snap.monthKey ||
+      inferMonthKeyFromLabel(snap.monthLabel, snap.dateCreated) ||
+      sysMonthKey;
+    const snapRec: MonthDataRecord = {
+      monthKey: mKey,
+      updatedAt: snap.dateCreated || raw?.exportedAt || new Date().toISOString(),
+      profile: { ...snap.profile },
+      customGoals: { ...(snap.customGoals || DEFAULT_CUSTOM_GOALS) },
+      expenses: normalizeLifestyleExpenses(
+        snap.expenses.filter((e) => !e.linkedGoalId)
+      ),
+      notes: snap.notes,
+    };
+
+    const existing = monthsMap[mKey];
+    const snapTime = new Date(snapRec.updatedAt || 0).getTime() || 0;
+    const existingTime = new Date(existing?.updatedAt || 0).getTime() || 0;
+    if (
+      !existing ||
+      (isUntouchedDefaultMonth(existing) && !isUntouchedDefaultMonth(snapRec)) ||
+      (!isUntouchedDefaultMonth(snapRec) && snapTime > existingTime)
+    ) {
+      monthsMap[mKey] = snapRec;
+    }
+  }
+
+  // Se o mês inicial selecionado ainda estiver com o template padrão intocado, mas o usuário já tiver
+  // fechamentos reais no Histórico, usa o fechamento mais recente para não perder o cálculo na tela!
+  let finalSelectedKey = candidateSelectedKey;
+  if (
+    (!monthsMap[finalSelectedKey] ||
+      isUntouchedDefaultMonth(monthsMap[finalSelectedKey])) &&
+    normalizedHistory.length > 0
+  ) {
+    const latestSnap = normalizedHistory[0];
+    const latestSnapKey =
+      latestSnap.monthKey ||
+      inferMonthKeyFromLabel(latestSnap.monthLabel, latestSnap.dateCreated) ||
+      finalSelectedKey;
+
+    if (!preferredMonthKey && !raw?.selectedMonthKey && monthsMap[latestSnapKey]) {
+      finalSelectedKey = latestSnapKey;
+    } else if (
+      !monthsMap[finalSelectedKey] ||
+      isUntouchedDefaultMonth(monthsMap[finalSelectedKey])
+    ) {
+      monthsMap[finalSelectedKey] = {
+        monthKey: finalSelectedKey,
+        updatedAt:
+          latestSnap.dateCreated || raw?.exportedAt || new Date().toISOString(),
+        profile: { ...latestSnap.profile },
+        customGoals: { ...(latestSnap.customGoals || DEFAULT_CUSTOM_GOALS) },
+        expenses: normalizeLifestyleExpenses(
+          latestSnap.expenses.filter((e) => !e.linkedGoalId)
+        ),
+        notes: latestSnap.notes,
+      };
+    }
+  }
+
+  const activeRecord = monthsMap[finalSelectedKey] || {
+    monthKey: finalSelectedKey,
+    updatedAt: raw?.exportedAt || new Date().toISOString(),
+    profile: { ...(raw?.profile || DEFAULT_PROFILE) },
+    customGoals: { ...(raw?.customGoals || DEFAULT_CUSTOM_GOALS) },
+    expenses: normalizeLifestyleExpenses(
+      (raw?.expenses || INITIAL_EXPENSES).filter((e) => !e.linkedGoalId)
+    ),
+    notes: undefined,
+  };
+
+  monthsMap[finalSelectedKey] = activeRecord;
+
+  return {
+    selectedMonthKey: finalSelectedKey,
+    monthsData: monthsMap,
+    profile: activeRecord.profile,
+    customGoals: activeRecord.customGoals,
+    expenses: activeRecord.expenses,
+    currentMonthNotes: activeRecord.notes || '',
+    longTermGoals: raw?.customLongTermGoals || INITIAL_LONG_TERM_GOALS,
+    history: normalizedHistory,
+    exportedAt: raw?.exportedAt || new Date().toISOString(),
+    restoredAt: raw?.restoredAt,
+  };
+}
+
+function getTimeMs(iso?: string): number {
+  return new Date(iso || 0).getTime() || 0;
+}
+
+function mergeHydratedStates(
+  localState: HydratedAppState,
+  cloudRaw: MarvitBackupData,
+  preserveSelectedMonth: boolean
+): HydratedAppState {
+  const cloudState = hydratePayloadState(cloudRaw);
+  const mergedMonths: Record<string, MonthDataRecord> = {
+    ...cloudState.monthsData,
+  };
+
+  for (const [mKey, localRec] of Object.entries(localState.monthsData)) {
+    const cloudRec = mergedMonths[mKey];
+    if (!cloudRec) {
+      mergedMonths[mKey] = localRec;
+      continue;
+    }
+
+    const localIsDefault = isUntouchedDefaultMonth(localRec);
+    const cloudIsDefault = isUntouchedDefaultMonth(cloudRec);
+
+    if (localIsDefault && !cloudIsDefault) {
+      mergedMonths[mKey] = cloudRec;
+    } else if (!localIsDefault && cloudIsDefault) {
+      mergedMonths[mKey] = localRec;
+    } else {
+      const localTime = new Date(localRec.updatedAt || 0).getTime() || 0;
+      const cloudTime = new Date(cloudRec.updatedAt || 0).getTime() || 0;
+      mergedMonths[mKey] = localTime >= cloudTime ? localRec : cloudRec;
+    }
+  }
+
+  // Mesclar histórico sem perder fechamentos de nenhum dos lados
+  const historyMap = new Map<string, MonthSnapshot>();
+  for (const item of [...localState.history, ...cloudState.history]) {
+    const existing = historyMap.get(item.id);
+    if (!existing) {
+      historyMap.set(item.id, item);
+    } else {
+      const tA = new Date(existing.dateCreated || 0).getTime() || 0;
+      const tB = new Date(item.dateCreated || 0).getTime() || 0;
+      if (tB > tA) historyMap.set(item.id, item);
+    }
+  }
+  const mergedHistory = Array.from(historyMap.values()).sort(
+    (a, b) =>
+      (new Date(b.dateCreated || 0).getTime() || 0) -
+      (new Date(a.dateCreated || 0).getTime() || 0)
+  );
+
+  const localExportTime = new Date(localState.exportedAt || 0).getTime() || 0;
+  const cloudExportTime = new Date(cloudState.exportedAt || 0).getTime() || 0;
+  const targetMonthKey = preserveSelectedMonth
+    ? localState.selectedMonthKey
+    : cloudExportTime > localExportTime
+    ? cloudState.selectedMonthKey
+    : localState.selectedMonthKey;
+
+  const activeRec =
+    mergedMonths[targetMonthKey] ||
+    localState.monthsData[targetMonthKey] ||
+    cloudState.monthsData[targetMonthKey];
+
+  return {
+    selectedMonthKey: targetMonthKey,
+    monthsData: mergedMonths,
+    profile: activeRec.profile,
+    customGoals: activeRec.customGoals,
+    expenses: normalizeLifestyleExpenses(activeRec.expenses),
+    currentMonthNotes: activeRec.notes || '',
+    longTermGoals:
+      cloudExportTime > localExportTime
+        ? cloudState.longTermGoals
+        : localState.longTermGoals,
+    history: mergedHistory,
+    exportedAt:
+      localExportTime >= cloudExportTime
+        ? localState.exportedAt
+        : cloudState.exportedAt,
+    restoredAt:
+      getTimeMs(localState.restoredAt) >= getTimeMs(cloudState.restoredAt)
+        ? localState.restoredAt
+        : cloudState.restoredAt,
+  };
+}
+
+function loadInitialHydratedState(): HydratedAppState {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved) as Partial<MarvitBackupData>;
+      return hydratePayloadState(parsed);
+    }
+  } catch {
+    // ignore
+  }
+  return hydratePayloadState(null);
+}
+
 export const App: React.FC = () => {
   const [isDark, setIsDark] = useState<boolean>(() => {
     try {
@@ -90,39 +418,65 @@ export const App: React.FC = () => {
     }
   });
 
-  const [selectedMonthKey, setSelectedMonthKey] = useState<string>(() =>
-    getCurrentMonthKey()
+  const initialHydrated = useMemo(() => loadInitialHydratedState(), []);
+
+  const [selectedMonthKey, setSelectedMonthKey] = useState<string>(
+    () => initialHydrated.selectedMonthKey
   );
   const [monthsData, setMonthsData] = useState<Record<string, MonthDataRecord>>(
-    {}
+    () => initialHydrated.monthsData
   );
-  const [currentMonthNotes, setCurrentMonthNotes] = useState<string>('');
+  const [currentMonthNotes, setCurrentMonthNotes] = useState<string>(
+    () => initialHydrated.currentMonthNotes
+  );
 
-  const [profile, setProfile] = useState<FinancialProfile>({
-    monthlyIncome: 7500,
-    additionalIncome: 500,
-    desiredEmergencyMonths: 6,
-    expectedAnnualReturnRate: 10.5,
-  });
+  const [profile, setProfile] = useState<FinancialProfile>(
+    () => initialHydrated.profile
+  );
 
-  const [customGoals, setCustomGoals] = useState<Record<ExpenseCategory, number>>({
-    essencial: 50,
-    estilo: 30,
-    investimento: 20,
-  });
+  const [customGoals, setCustomGoals] = useState<Record<ExpenseCategory, number>>(
+    () => initialHydrated.customGoals
+  );
 
-  const [expenses, setExpenses] = useState<ExpenseItem[]>(INITIAL_EXPENSES);
+  const [expenses, setExpenses] = useState<ExpenseItem[]>(
+    () => initialHydrated.expenses
+  );
   const [longTermGoals, setLongTermGoals] = useState<CustomGoalItem[]>(
-    INITIAL_LONG_TERM_GOALS
+    () => initialHydrated.longTermGoals
   );
-  const [history, setHistory] = useState<MonthSnapshot[]>([]);
+  const [history, setHistory] = useState<MonthSnapshot[]>(
+    () => initialHydrated.history
+  );
+  const [lastModifiedAt, setLastModifiedAt] = useState<string>(
+    () => initialHydrated.exportedAt
+  );
+  const [restoredAt, setRestoredAt] = useState<string | undefined>(
+    () => initialHydrated.restoredAt
+  );
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('budget');
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isBentoMode, setIsBentoMode] = useState(false);
   const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
-  const [vault, setVault] = useState<VaultCredentials | null>(null);
+  const [pendingExportFile, setPendingExportFile] =
+    useState<PreparedExportFile | null>(null);
+  const [vault, setVault] = useState<VaultCredentials | null>(() => {
+    try {
+      const savedVault = localStorage.getItem(VAULT_SESSION_KEY);
+      if (savedVault) {
+        const parsedVault = JSON.parse(savedVault) as VaultCredentials;
+        return {
+          ...parsedVault,
+          vaultId: DEFAULT_VAULT_ID,
+          autoSync: true,
+        };
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
 
   // PIN obrigatório desde o primeiro acesso!
   const [isAppLocked, setIsAppLocked] = useState<boolean>(() => {
@@ -146,7 +500,19 @@ export const App: React.FC = () => {
   const [deferredPwaPrompt, setDeferredPwaPrompt] = useState<any>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const isInitialLoad = useRef(true);
+  const lastLocalEditTimestampRef = useRef<number>(0);
+  const isPushingCloudRef = useRef<boolean>(false);
+  // Enquanto um backup recém-importado estiver sendo gravado na nuvem, nenhum pull pode sobrescrevê-lo
+  const importGuardUntilRef = useRef<number>(0);
+  // Só envia dados para a nuvem depois de ter lido a nuvem ao menos 1x nesta sessão
+  // (evita que um aparelho com dados antigos sobrescreva um backup restaurado em outro aparelho ao abrir o app)
+  const hasPulledCloudRef = useRef<boolean>(false);
+
+  const markUserEdit = () => {
+    const nowIso = new Date().toISOString();
+    lastLocalEditTimestampRef.current = Date.now();
+    setLastModifiedAt(nowIso);
+  };
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -176,49 +542,8 @@ export const App: React.FC = () => {
 
   const toggleTheme = () => setIsDark((prev) => !prev);
 
-  // Carregar estado salvo no LocalStorage e checar parâmetros de atalho PWA
+  // Checar parâmetros de atalho PWA na URL
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved) as Partial<MarvitBackupData>;
-        const initialKey = parsed.selectedMonthKey || getCurrentMonthKey();
-        setSelectedMonthKey(initialKey);
-
-        if (parsed.monthsData && parsed.monthsData[initialKey]) {
-          const monthRec = parsed.monthsData[initialKey];
-          setMonthsData(parsed.monthsData);
-          setProfile(monthRec.profile);
-          setCustomGoals(monthRec.customGoals);
-          setExpenses(normalizeLifestyleExpenses(monthRec.expenses));
-          setCurrentMonthNotes(monthRec.notes || '');
-        } else {
-          if (parsed.monthsData) setMonthsData(parsed.monthsData);
-          if (parsed.profile) setProfile(parsed.profile);
-          if (parsed.customGoals) setCustomGoals(parsed.customGoals);
-          if (parsed.expenses)
-            setExpenses(normalizeLifestyleExpenses(parsed.expenses));
-        }
-
-        if (parsed.customLongTermGoals) {
-          setLongTermGoals(parsed.customLongTermGoals);
-        }
-        if (parsed.history) setHistory(parsed.history);
-      }
-
-      const savedVault = localStorage.getItem(VAULT_SESSION_KEY);
-      if (savedVault) {
-        const parsedVault = JSON.parse(savedVault) as VaultCredentials;
-        setVault({
-          ...parsedVault,
-          vaultId: DEFAULT_VAULT_ID,
-          autoSync: true,
-        });
-      }
-    } catch {
-      // Ignora erro de parse
-    }
-
     const params = new URLSearchParams(window.location.search);
     const tabParam = params.get('tab') as ActiveTab | null;
     if (
@@ -246,39 +571,79 @@ export const App: React.FC = () => {
     }
   }, [isAppLocked]);
 
-  // Sincronização automática da Conta Geral Unificada (PC + Celular) ao focar a janela/aba
+  // Sempre que os dados do mês atual mudarem (profile, customGoals, expenses, currentMonthNotes),
+  // persiste automaticamente no estado monthsData[selectedMonthKey] e sincroniza eventual fechamento desse mês no Histórico!
   useEffect(() => {
-    if (isAppLocked || !vault?.pinHash) return;
+    const manualOnly = normalizeLifestyleExpenses(
+      expenses.filter((e) => !e.linkedGoalId)
+    );
+    const effectiveUpdatedAt =
+      lastModifiedAt ||
+      monthsData[selectedMonthKey]?.updatedAt ||
+      new Date().toISOString();
 
-    const syncFromCloud = async () => {
-      const res = await pullVaultFromCloud(DEFAULT_VAULT_ID, vault.pinHash);
-      if (res.ok && res.data) {
-        handleRestorePayload(res.data, true);
-      }
-    };
+    setMonthsData((prev) => {
+      const nextRecord: MonthDataRecord = {
+        monthKey: selectedMonthKey,
+        updatedAt: effectiveUpdatedAt,
+        profile,
+        customGoals,
+        expenses: manualOnly,
+        notes: currentMonthNotes.trim() || undefined,
+      };
+      return {
+        ...prev,
+        [selectedMonthKey]: nextRecord,
+      };
+    });
 
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        syncFromCloud();
-      }
-    };
+    if (lastLocalEditTimestampRef.current > 0) {
+      setHistory((prevHistory) => {
+        const idx = prevHistory.findIndex(
+          (h) =>
+            (h.monthKey ||
+              inferMonthKeyFromLabel(h.monthLabel, h.dateCreated)) ===
+            selectedMonthKey
+        );
+        if (idx === -1) return prevHistory;
+        const targetSnap = prevHistory[idx];
+        const updatedSnap: MonthSnapshot = {
+          ...targetSnap,
+          monthKey: selectedMonthKey,
+          dateCreated: effectiveUpdatedAt,
+          profile: { ...profile },
+          customGoals: { ...customGoals },
+          expenses: manualOnly.map((e) => ({ ...e })),
+          customLongTermGoals: longTermGoals.map((g) => ({ ...g })),
+          notes: currentMonthNotes.trim() || targetSnap.notes,
+        };
+        const nextHistory = [...prevHistory];
+        nextHistory[idx] = updatedSnap;
+        return nextHistory;
+      });
+    }
+  }, [
+    selectedMonthKey,
+    profile,
+    customGoals,
+    expenses,
+    currentMonthNotes,
+    lastModifiedAt,
+    longTermGoals,
+  ]);
 
-    window.addEventListener('focus', syncFromCloud);
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => {
-      window.removeEventListener('focus', syncFromCloud);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, [isAppLocked, vault?.pinHash]);
-
-  // Sempre que os dados do mês atual mudarem (profile, customGoals, expenses, currentMonthNotes), sincroniza em monthsData[selectedMonthKey]
   const syncedMonthsData = useMemo<Record<string, MonthDataRecord>>(() => {
-    const manualOnly = expenses.filter((e) => !e.linkedGoalId);
+    const manualOnly = normalizeLifestyleExpenses(
+      expenses.filter((e) => !e.linkedGoalId)
+    );
     return {
       ...monthsData,
       [selectedMonthKey]: {
         monthKey: selectedMonthKey,
-        updatedAt: new Date().toISOString(),
+        updatedAt:
+          lastModifiedAt ||
+          monthsData[selectedMonthKey]?.updatedAt ||
+          new Date().toISOString(),
         profile,
         customGoals,
         expenses: manualOnly,
@@ -292,31 +657,78 @@ export const App: React.FC = () => {
     customGoals,
     expenses,
     currentMonthNotes,
+    lastModifiedAt,
   ]);
 
-  // Transitar entre os meses do calendário
+  // Transitar entre os meses do calendário persistindo automaticamente o mês anterior e carregando o destino
   const handleSelectMonth = (nextMonthKey: string) => {
     if (nextMonthKey === selectedMonthKey) return;
 
-    // Salva o estado do mês atual no dicionário antes de trocar
-    const updatedMap = { ...syncedMonthsData };
-    setMonthsData(updatedMap);
-    setSelectedMonthKey(nextMonthKey);
+    const nowIso = new Date().toISOString();
+    const currentManualOnly = normalizeLifestyleExpenses(
+      expenses.filter((e) => !e.linkedGoalId)
+    );
+    const updatedMap: Record<string, MonthDataRecord> = {
+      ...syncedMonthsData,
+      [selectedMonthKey]: {
+        monthKey: selectedMonthKey,
+        updatedAt: lastModifiedAt || nowIso,
+        profile,
+        customGoals,
+        expenses: currentManualOnly,
+        notes: currentMonthNotes.trim() || undefined,
+      },
+    };
 
-    const existingTarget = updatedMap[nextMonthKey];
+    // Verifica se o mês de destino já existe em monthsData ou se possui fechamento salvo no Histórico
+    let existingTarget = updatedMap[nextMonthKey];
+    if (!existingTarget || isUntouchedDefaultMonth(existingTarget)) {
+      const matchingSnapshot = history.find(
+        (h) =>
+          (h.monthKey ||
+            inferMonthKeyFromLabel(h.monthLabel, h.dateCreated)) ===
+          nextMonthKey
+      );
+      if (matchingSnapshot) {
+        existingTarget = {
+          monthKey: nextMonthKey,
+          updatedAt: matchingSnapshot.dateCreated || nowIso,
+          profile: { ...matchingSnapshot.profile },
+          customGoals: { ...matchingSnapshot.customGoals },
+          expenses: normalizeLifestyleExpenses(
+            matchingSnapshot.expenses.filter((e) => !e.linkedGoalId)
+          ),
+          notes: matchingSnapshot.notes,
+        };
+        updatedMap[nextMonthKey] = existingTarget;
+      }
+    }
+
     if (existingTarget) {
+      setMonthsData(updatedMap);
+      setSelectedMonthKey(nextMonthKey);
       setProfile(existingTarget.profile);
       setCustomGoals(existingTarget.customGoals);
       setExpenses(normalizeLifestyleExpenses(existingTarget.expenses));
       setCurrentMonthNotes(existingTarget.notes || '');
       showToast(`Editando ${formatMonthKeyLabel(nextMonthKey)}`);
     } else {
-      // Novo mês ainda não preenchido: mantém a renda/metas base e despesas recorrentes para edição
-      const cleanManual = expenses
-        .filter((e) => !e.linkedGoalId)
-        .map((e) => ({ ...e }));
+      // Novo mês ainda não preenchido: cria e persiste imediatamente o registro do novo mês
+      const cleanManual = currentManualOnly.map((e) => ({ ...e }));
+      const newMonthRecord: MonthDataRecord = {
+        monthKey: nextMonthKey,
+        updatedAt: nowIso,
+        profile: { ...profile },
+        customGoals: { ...customGoals },
+        expenses: cleanManual,
+        notes: undefined,
+      };
+      updatedMap[nextMonthKey] = newMonthRecord;
+      setMonthsData(updatedMap);
+      setSelectedMonthKey(nextMonthKey);
       setExpenses(cleanManual);
       setCurrentMonthNotes('');
+      markUserEdit();
       showToast(
         `${formatMonthKeyLabel(nextMonthKey)} aberto para preenchimento!`
       );
@@ -334,9 +746,12 @@ export const App: React.FC = () => {
       return;
     }
 
+    markUserEdit();
     setProfile({ ...prevRecord.profile });
     setCustomGoals({ ...prevRecord.customGoals });
-    setExpenses(prevRecord.expenses.map((e) => ({ ...e })));
+    setExpenses(
+      normalizeLifestyleExpenses(prevRecord.expenses.map((e) => ({ ...e })))
+    );
     setCurrentMonthNotes(prevRecord.notes || '');
     showToast(
       `Dados copiados de ${formatMonthKeyLabel(prevKey)} para ${formatMonthKeyLabel(selectedMonthKey)}!`
@@ -368,18 +783,22 @@ export const App: React.FC = () => {
 
   const currentBackupPayload = useMemo<MarvitBackupData>(
     () => ({
-      version: '2.2.0',
+      version: '2.3.0',
       appName: 'Marvit&Finances',
-      exportedAt: new Date().toISOString(),
+      exportedAt: lastModifiedAt,
       selectedMonthKey,
       monthsData: syncedMonthsData,
       profile,
       customGoals,
-      expenses: expenses.filter((e) => !e.linkedGoalId),
+      expenses: normalizeLifestyleExpenses(
+        expenses.filter((e) => !e.linkedGoalId)
+      ),
       customLongTermGoals: longTermGoals,
       history,
+      ...(restoredAt ? { restoredAt } : {}),
     }),
     [
+      lastModifiedAt,
       selectedMonthKey,
       syncedMonthsData,
       profile,
@@ -387,30 +806,129 @@ export const App: React.FC = () => {
       expenses,
       longTermGoals,
       history,
+      restoredAt,
     ]
   );
 
-  // Salvar automaticamente no LocalStorage e sincronizar na nuvem com debounce se ativo
+  const latestPayloadRef = useRef<MarvitBackupData>(currentBackupPayload);
+  latestPayloadRef.current = currentBackupPayload;
+
+  // Salvar imediatamente no LocalStorage em toda alteração e sincronizar na nuvem com debounce curto (600ms)
   useEffect(() => {
-    if (isInitialLoad.current) {
-      isInitialLoad.current = false;
-      return;
-    }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(currentBackupPayload));
+      if (vault?.pinHash) {
+        saveLocalMirrorVault(vault.pinHash, currentBackupPayload);
+      }
     } catch {
       // Ignora quota error
     }
 
-    if (!isAppLocked && vault && vault.autoSync) {
+    if (!isAppLocked && vault && vault.autoSync && hasPulledCloudRef.current) {
       const timer = setTimeout(() => {
-        pushVaultToCloud(vault.vaultId, vault.pinHash, currentBackupPayload).catch(
-          () => {}
-        );
-      }, 1500);
+        isPushingCloudRef.current = true;
+        pushVaultToCloud(vault.vaultId, vault.pinHash, currentBackupPayload)
+          .catch(() => {})
+          .finally(() => {
+            isPushingCloudRef.current = false;
+          });
+      }, 600);
       return () => clearTimeout(timer);
     }
   }, [currentBackupPayload, vault, isAppLocked]);
+
+  // Garante envio imediato (keepalive) ao fechar/recarregar a página se houve edição recente
+  useEffect(() => {
+    const handleFlushOnUnload = () => {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(latestPayloadRef.current)
+        );
+        if (vault?.pinHash) {
+          saveLocalMirrorVault(vault.pinHash, latestPayloadRef.current);
+          if (!isAppLocked && vault.autoSync && hasPulledCloudRef.current) {
+            pushVaultToCloud(
+              vault.vaultId,
+              vault.pinHash,
+              latestPayloadRef.current,
+              undefined,
+              true
+            ).catch(() => {});
+          }
+        }
+      } catch {
+        // ignore
+      }
+    };
+
+    window.addEventListener('beforeunload', handleFlushOnUnload);
+    window.addEventListener('pagehide', handleFlushOnUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleFlushOnUnload);
+      window.removeEventListener('pagehide', handleFlushOnUnload);
+    };
+  }, [vault, isAppLocked]);
+
+  // Sincronização inteligente da Conta Geral Unificada (PC + Celular) ao abrir e ao focar a janela/aba
+  // Nunca sobrescreve edições locais mais recentes nem um backup recém-importado!
+  const syncFromCloudRef = useRef<() => Promise<void>>(async () => {});
+  syncFromCloudRef.current = async () => {
+    if (isAppLocked || !vault?.pinHash) return;
+    const isBlocked = () =>
+      isPushingCloudRef.current ||
+      Date.now() < importGuardUntilRef.current ||
+      Date.now() - lastLocalEditTimestampRef.current < 4000;
+    if (isBlocked()) {
+      if (!hasPulledCloudRef.current) {
+        setTimeout(() => {
+          syncFromCloudRef.current();
+        }, 4500);
+      }
+      return;
+    }
+
+    const res = await pullVaultFromCloud(DEFAULT_VAULT_ID, vault.pinHash);
+    if (!res.ok) return;
+    if (isBlocked()) {
+      // Houve edição/importação local durante a leitura: tenta novamente em instantes
+      if (!hasPulledCloudRef.current) {
+        setTimeout(() => {
+          syncFromCloudRef.current();
+        }, 4500);
+      }
+      return;
+    }
+    if (res.data) {
+      handleSmartMergeCloudPayload(res.data, hasPulledCloudRef.current);
+    }
+    hasPulledCloudRef.current = true;
+  };
+
+  useEffect(() => {
+    if (isAppLocked || !vault?.pinHash) return;
+
+    // Leitura inicial da nuvem ao abrir o app já desbloqueado (sessão ativa)
+    if (!hasPulledCloudRef.current) {
+      syncFromCloudRef.current();
+    }
+
+    const syncFromCloud = () => {
+      syncFromCloudRef.current();
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        syncFromCloud();
+      }
+    };
+
+    window.addEventListener('focus', syncFromCloud);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      window.removeEventListener('focus', syncFromCloud);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [isAppLocked, vault?.pinHash]);
 
   const handleUpdateVault = (nextVault: VaultCredentials | null) => {
     setVault(nextVault);
@@ -419,6 +937,16 @@ export const App: React.FC = () => {
     } else {
       localStorage.removeItem(VAULT_SESSION_KEY);
     }
+  };
+
+  const handleChangeProfile = (nextProfile: FinancialProfile) => {
+    markUserEdit();
+    setProfile(nextProfile);
+  };
+
+  const handleChangeMonthNotes = (notes: string) => {
+    markUserEdit();
+    setCurrentMonthNotes(notes);
   };
 
   const totalIncome = profile.monthlyIncome + profile.additionalIncome;
@@ -443,11 +971,9 @@ export const App: React.FC = () => {
 
   // Handlers de Despesas
   const handleAddExpense = (newItem: Omit<ExpenseItem, 'id'>) => {
+    markUserEdit();
     const newId = `exp-${Date.now()}`;
-    setExpenses((prev) => [
-      { ...newItem, id: newId },
-      ...prev,
-    ]);
+    setExpenses((prev) => [{ ...newItem, id: newId }, ...prev]);
     if (newItem.category === 'estilo' && newItem.subcategory === 'cartao') {
       setSelectedCardId(newId);
       showToast('Cartão de Crédito adicionado ao Estilo de Vida!');
@@ -464,10 +990,12 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteExpense = (id: string) => {
+    markUserEdit();
     setExpenses((prev) => prev.filter((e) => e.id !== id));
   };
 
   const handleUpdateExpense = (id: string, updated: Partial<ExpenseItem>) => {
+    markUserEdit();
     setExpenses((prev) =>
       prev.map((e) => (e.id === id ? { ...e, ...updated } : e))
     );
@@ -475,6 +1003,7 @@ export const App: React.FC = () => {
 
   // Handlers de Metas de Longo Prazo
   const handleAddLongTermGoal = (goal: Omit<CustomGoalItem, 'id'>) => {
+    markUserEdit();
     setLongTermGoals((prev) => [
       { ...goal, id: `goal-${Date.now()}` },
       ...prev,
@@ -486,54 +1015,178 @@ export const App: React.FC = () => {
     id: string,
     updated: Partial<CustomGoalItem>
   ) => {
+    markUserEdit();
     setLongTermGoals((prev) =>
       prev.map((g) => (g.id === id ? { ...g, ...updated } : g))
     );
   };
 
   const handleDeleteLongTermGoal = (id: string) => {
+    markUserEdit();
     setLongTermGoals((prev) => prev.filter((g) => g.id !== id));
   };
 
-  // Handlers de Histórico
-  const handleSaveCurrentMonth = (monthLabel: string, notes?: string) => {
+  // Handlers de Histórico (vinculados diretamente à competência do Calendário)
+  const handleSaveCurrentMonth = (
+    monthLabel: string,
+    notes?: string,
+    targetMonthKey?: string
+  ) => {
+    const nowIso = new Date().toISOString();
+    const resolvedMonthKey =
+      targetMonthKey ||
+      inferMonthKeyFromLabel(monthLabel, nowIso) ||
+      selectedMonthKey;
+
+    const cleanManualExpenses = normalizeLifestyleExpenses(
+      expenses.filter((e) => !e.linkedGoalId).map((e) => ({ ...e }))
+    );
+    const resolvedNotes = (notes ?? currentMonthNotes).trim() || undefined;
+
     const snapshot: MonthSnapshot = {
       id: `snap-${Date.now()}`,
-      monthLabel,
-      dateCreated: new Date().toISOString(),
+      monthKey: resolvedMonthKey,
+      monthLabel:
+        monthLabel.trim() || formatMonthKeySlashLabel(resolvedMonthKey),
+      dateCreated: nowIso,
       profile: { ...profile },
       customGoals: { ...customGoals },
       expenses: combinedExpenses.map((e) => ({ ...e })),
       customLongTermGoals: longTermGoals.map((g) => ({ ...g })),
-      notes: notes || currentMonthNotes || undefined,
+      notes: resolvedNotes,
     };
-    setHistory((prev) => [snapshot, ...prev]);
-    showToast(`Mês "${monthLabel}" salvo no histórico!`);
+
+    markUserEdit();
+    setMonthsData((prev) => ({
+      ...prev,
+      [resolvedMonthKey]: {
+        monthKey: resolvedMonthKey,
+        updatedAt: nowIso,
+        profile: { ...profile },
+        customGoals: { ...customGoals },
+        expenses: cleanManualExpenses,
+        notes: resolvedNotes,
+      },
+    }));
+    if (resolvedMonthKey !== selectedMonthKey) {
+      setSelectedMonthKey(resolvedMonthKey);
+    }
+    if (resolvedNotes) {
+      setCurrentMonthNotes(resolvedNotes);
+    }
+    setHistory((prev) => {
+      const filtered = prev.filter(
+        (h) =>
+          !(
+            (h.monthKey ||
+              inferMonthKeyFromLabel(h.monthLabel, h.dateCreated)) ===
+              resolvedMonthKey &&
+            h.monthLabel.trim().toLowerCase() ===
+              snapshot.monthLabel.trim().toLowerCase()
+          )
+      );
+      return [snapshot, ...filtered];
+    });
+    showToast(
+      `Fechamento "${snapshot.monthLabel}" salvo e vinculado a ${formatMonthKeyLabel(resolvedMonthKey)}!`
+    );
   };
 
   const handleLoadSnapshot = (snapshot: MonthSnapshot) => {
-    setProfile(snapshot.profile);
-    setCustomGoals(snapshot.customGoals);
-    setExpenses(snapshot.expenses.filter((e) => !e.linkedGoalId));
+    const nowIso = new Date().toISOString();
+    const targetMonthKey =
+      snapshot.monthKey ||
+      inferMonthKeyFromLabel(snapshot.monthLabel, snapshot.dateCreated) ||
+      selectedMonthKey;
+
+    const restoredExpenses = normalizeLifestyleExpenses(
+      snapshot.expenses.filter((e) => !e.linkedGoalId).map((e) => ({ ...e }))
+    );
+    const restoredProfile = { ...snapshot.profile };
+    const restoredGoals = { ...snapshot.customGoals };
+    const restoredNotes = snapshot.notes || '';
+
+    markUserEdit();
+    setMonthsData((prev) => ({
+      ...prev,
+      [selectedMonthKey]: {
+        monthKey: selectedMonthKey,
+        updatedAt: lastModifiedAt || nowIso,
+        profile,
+        customGoals,
+        expenses: normalizeLifestyleExpenses(
+          expenses.filter((e) => !e.linkedGoalId)
+        ),
+        notes: currentMonthNotes.trim() || undefined,
+      },
+      [targetMonthKey]: {
+        monthKey: targetMonthKey,
+        updatedAt: nowIso,
+        profile: restoredProfile,
+        customGoals: restoredGoals,
+        expenses: restoredExpenses,
+        notes: restoredNotes.trim() || undefined,
+      },
+    }));
+
+    setSelectedMonthKey(targetMonthKey);
+    setProfile(restoredProfile);
+    setCustomGoals(restoredGoals);
+    setExpenses(restoredExpenses);
+    setCurrentMonthNotes(restoredNotes);
+
     if (snapshot.customLongTermGoals) {
-      setLongTermGoals(snapshot.customLongTermGoals);
+      setLongTermGoals(snapshot.customLongTermGoals.map((g) => ({ ...g })));
     }
-    if (snapshot.notes) {
-      setCurrentMonthNotes(snapshot.notes);
-    }
-    showToast(`Mês "${snapshot.monthLabel}" restaurado para a tela!`);
+
+    setActiveTab('budget');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast(
+      `Mês "${snapshot.monthLabel}" restaurado para ${formatMonthKeyLabel(targetMonthKey)}!`
+    );
   };
 
   const handleDeleteSnapshot = (id: string) => {
+    markUserEdit();
     setHistory((prev) => prev.filter((h) => h.id !== id));
   };
 
-  // Exportações
-  const handleExportPng = async () => {
+  // Exportações (100% síncronas na criação do arquivo para preservar o gesto de toque no Mobile & PWA)
+  const handleTriggerExportFile = (prepared: PreparedExportFile) => {
+    setIsExportMenuOpen(false);
+    const isMobile = isMobileOrTouchDevice();
+
+    if (isMobile) {
+      // No mobile, abre imediatamente o Pop-up de Salvamento e aciona em paralelo a folha nativa do sistema
+      setPendingExportFile(prepared);
+      saveExportedFileWithPrompt(prepared, 'auto')
+        .then((res) => {
+          if (res === 'shared' || res === 'picked') {
+            setPendingExportFile(null);
+            showToast(`Arquivo "${prepared.filename}" salvo com sucesso!`);
+          }
+        })
+        .catch(() => {});
+      return;
+    }
+
+    // No desktop, abre o seletor nativo "Salvar como..." (showSaveFilePicker) ou faz o download direto
+    saveExportedFileWithPrompt(prepared, 'auto')
+      .then((res) => {
+        if (res !== 'cancelled') {
+          showToast(`Arquivo "${prepared.filename}" salvo com sucesso!`);
+        }
+      })
+      .catch(() => {
+        setPendingExportFile(prepared);
+      });
+  };
+
+  const handleExportPng = () => {
     try {
-      setIsExportMenuOpen(false);
-      showToast('Gerando relatório gráfico em alta resolução...');
-      const base64 = await generateReportImageBase64({
+      const dateTag = new Date().toISOString().slice(0, 10);
+      const filename = `marvit-finances-relatorio-${dateTag}.png`;
+      const rendered = generateReportImageSync({
         profile,
         customGoals,
         categoryTotals,
@@ -543,59 +1196,188 @@ export const App: React.FC = () => {
         totalExpenses,
         balance,
       });
-      const dateTag = new Date().toISOString().slice(0, 10);
-      downloadBase64Png(base64, `marvit-finances-relatorio-${dateTag}.png`);
-      showToast('Relatório PNG baixado com sucesso!');
+      const prepared: PreparedExportFile = {
+        filename,
+        mimeType: 'image/png',
+        blob: rendered.blob,
+        kind: 'png',
+        title: 'Relatório Gráfico (.PNG)',
+        subtitle:
+          'Imagem em alta resolução (1200x1680) com seus pilares, gastos e metas.',
+        previewDataUrl: rendered.dataUrl,
+      };
+      handleTriggerExportFile(prepared);
     } catch {
       showToast('Não foi possível gerar a imagem PNG.');
     }
   };
 
+  const handleExportMarkdown = () => {
+    const prepared = prepareMarkdownReportFile({
+      profile,
+      customGoals,
+      categoryTotals,
+      expenses: combinedExpenses,
+      customLongTermGoals: longTermGoals,
+      totalIncome,
+      totalExpenses,
+      balance,
+    });
+    handleTriggerExportFile(prepared);
+  };
+
+  const handleExportBackupJson = () => {
+    const prepared = prepareBackupJsonFile(currentBackupPayload);
+    handleTriggerExportFile(prepared);
+  };
+
+  const applyHydratedState = (state: HydratedAppState) => {
+    setSelectedMonthKey(state.selectedMonthKey);
+    setMonthsData(state.monthsData);
+    setProfile(state.profile);
+    setCustomGoals(state.customGoals);
+    setExpenses(state.expenses);
+    setCurrentMonthNotes(state.currentMonthNotes);
+    setLongTermGoals(state.longTermGoals);
+    setHistory(state.history);
+    setLastModifiedAt(state.exportedAt);
+    setRestoredAt(state.restoredAt);
+  };
+
+  const pushPayloadNow = (payload: MarvitBackupData) => {
+    if (!vault?.pinHash || !vault.autoSync) return Promise.resolve();
+    isPushingCloudRef.current = true;
+    return pushVaultToCloud(vault.vaultId, vault.pinHash, payload)
+      .catch(() => undefined)
+      .then(() => undefined)
+      .finally(() => {
+        isPushingCloudRef.current = false;
+      });
+  };
+
+  const handleSmartMergeCloudPayload = (
+    cloudPayload: MarvitBackupData,
+    preserveCurrentMonthOnScreen = false
+  ) => {
+    const localPayload = latestPayloadRef.current;
+    const localRestoreTime = getTimeMs(localPayload.restoredAt);
+    const cloudRestoreTime = getTimeMs(cloudPayload.restoredAt);
+
+    // 1) Um backup foi restaurado em outro aparelho depois da última restauração conhecida aqui:
+    //    a restauração é autoritativa -> adota o conteúdo da nuvem por completo (sem mesclar dados antigos).
+    if (cloudRestoreTime > localRestoreTime) {
+      applyHydratedState(hydratePayloadState(cloudPayload));
+      showToast('Backup restaurado em outro aparelho aplicado aqui!');
+      return;
+    }
+
+    // 2) A nuvem ainda não contém o backup restaurado neste aparelho (leitura atrasada ou outro aparelho
+    //    gravou dados antigos): ignora a nuvem e regrava o backup restaurado.
+    if (localRestoreTime > cloudRestoreTime) {
+      pushPayloadNow(localPayload);
+      return;
+    }
+
+    const localHydrated = hydratePayloadState(
+      localPayload,
+      localPayload.selectedMonthKey || selectedMonthKey
+    );
+    const merged = mergeHydratedStates(
+      localHydrated,
+      cloudPayload,
+      preserveCurrentMonthOnScreen
+    );
+    applyHydratedState(merged);
+  };
+
   const handleRestorePayload = (payload: MarvitBackupData, silent = false) => {
-    const targetMonth = payload.selectedMonthKey || selectedMonthKey;
-    setSelectedMonthKey(targetMonth);
+    if (silent) {
+      handleSmartMergeCloudPayload(payload, false);
+      return;
+    }
+    const hydrated = hydratePayloadState(payload);
+    markUserEdit();
+    applyHydratedState({
+      ...hydrated,
+      exportedAt: new Date().toISOString(),
+    });
+    showToast('Backup restaurado com sucesso!');
+  };
 
-    if (payload.monthsData) {
-      setMonthsData(payload.monthsData);
-      const activeRec = payload.monthsData[targetMonth];
-      if (activeRec) {
-        setProfile(activeRec.profile);
-        setCustomGoals(activeRec.customGoals);
-        setExpenses(normalizeLifestyleExpenses(activeRec.expenses));
-        setCurrentMonthNotes(activeRec.notes || '');
-      } else {
-        if (payload.profile) setProfile(payload.profile);
-        if (payload.customGoals) setCustomGoals(payload.customGoals);
-        if (payload.expenses)
-          setExpenses(normalizeLifestyleExpenses(payload.expenses));
-      }
-    } else {
-      if (payload.profile) setProfile(payload.profile);
-      if (payload.customGoals) setCustomGoals(payload.customGoals);
-      if (payload.expenses)
-        setExpenses(normalizeLifestyleExpenses(payload.expenses));
+  // Importação de um arquivo de backup .JSON: substitui todos os dados e passa a valer em todos os aparelhos
+  const handleImportBackupPayload = (payload: MarvitBackupData) => {
+    const nowIso = new Date().toISOString();
+    const hydrated = hydratePayloadState({ ...payload, restoredAt: undefined });
+
+    // Todos os meses importados passam a ser a versão mais recente (vencem qualquer mesclagem futura)
+    const stampedMonths: Record<string, MonthDataRecord> = {};
+    for (const [mKey, rec] of Object.entries(hydrated.monthsData)) {
+      stampedMonths[mKey] = { ...rec, updatedAt: nowIso };
     }
 
-    if (payload.customLongTermGoals) {
-      setLongTermGoals(payload.customLongTermGoals);
+    const nextState: HydratedAppState = {
+      ...hydrated,
+      monthsData: stampedMonths,
+      exportedAt: nowIso,
+      restoredAt: nowIso,
+    };
+
+    // Bloqueia qualquer pull da nuvem até o backup ser gravado (e alguns segundos extras p/ leituras atrasadas)
+    importGuardUntilRef.current = Date.now() + 20000;
+    hasPulledCloudRef.current = true;
+    markUserEdit();
+    applyHydratedState(nextState);
+
+    const payloadToPush: MarvitBackupData = {
+      version: '2.3.0',
+      appName: 'Marvit&Finances',
+      exportedAt: nowIso,
+      selectedMonthKey: nextState.selectedMonthKey,
+      monthsData: stampedMonths,
+      profile: nextState.profile,
+      customGoals: nextState.customGoals,
+      expenses: nextState.expenses,
+      customLongTermGoals: nextState.longTermGoals,
+      history: nextState.history,
+      restoredAt: nowIso,
+    };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payloadToPush));
+      if (vault?.pinHash) saveLocalMirrorVault(vault.pinHash, payloadToPush);
+    } catch {
+      // ignore
     }
-    if (payload.history) setHistory(payload.history);
-    if (!silent) {
-      showToast('Backup restaurado com sucesso!');
-    }
+    pushPayloadNow(payloadToPush).finally(() => {
+      importGuardUntilRef.current = Date.now() + 6000;
+    });
+
+    const monthsCount = Object.keys(stampedMonths).length;
+    showToast(
+      `Backup restaurado: ${monthsCount} ${monthsCount === 1 ? 'mês' : 'meses'} aplicados e sincronizados!`
+    );
   };
 
   const handleImportJsonFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Bloqueia o pull disparado pelo foco ao voltar do seletor de arquivos enquanto o arquivo é lido
+    importGuardUntilRef.current = Date.now() + 20000;
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
         const parsed = JSON.parse(String(ev.target?.result)) as MarvitBackupData;
-        handleRestorePayload(parsed);
+        if (!parsed || typeof parsed !== 'object' || (!parsed.monthsData && !parsed.profile)) {
+          throw new Error('invalid');
+        }
+        handleImportBackupPayload(parsed);
       } catch {
+        importGuardUntilRef.current = 0;
         showToast('Arquivo JSON inválido.');
       }
+    };
+    reader.onerror = () => {
+      importGuardUntilRef.current = 0;
+      showToast('Não foi possível ler o arquivo.');
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -623,6 +1405,7 @@ export const App: React.FC = () => {
       if (cloudRes.ok && cloudRes.data) {
         handleRestorePayload(cloudRes.data, true);
       }
+      if (cloudRes.ok) hasPulledCloudRef.current = true;
       const nextVault: VaultCredentials = {
         vaultId: creds.vaultId,
         pinHash: creds.pinHash,
@@ -670,6 +1453,7 @@ export const App: React.FC = () => {
       if (res.data) {
         handleRestorePayload(res.data, true);
       }
+      hasPulledCloudRef.current = true;
 
       // Se estiver em modo PWA, registra automaticamente a biometria no primeiro login!
       let bioRegistered = Boolean(hasRegisteredBiometrics());
@@ -994,13 +1778,14 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden flex flex-col pb-28 md:pb-12 pt-safe">
-      {/* Input oculto para importar JSON */}
+      {/* Input acessível para importar JSON (compatível com iOS/Android/PWA) */}
       <input
+        id="marvit-restore-json-input"
         ref={fileInputRef}
         type="file"
         accept=".json,application/json"
         onChange={handleImportJsonFile}
-        className="hidden"
+        className="sr-only"
       />
 
       {/* Toast Flutuante */}
@@ -1101,87 +1886,78 @@ export const App: React.FC = () => {
 
               <AnimatePresence>
                 {isExportMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    className="absolute right-0 mt-2 w-60 bg-oat-50 border-2 border-oat-300 rounded-2xl shadow-cozy-lg p-2 z-50 space-y-1"
-                  >
-                    <button
-                      onClick={() => {
-                        setIsExportMenuOpen(false);
-                        handleInstallPwa();
-                      }}
-                      className="sm:hidden w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-sage-600 hover:bg-sage-50 flex items-center gap-2.5 transition cursor-pointer"
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsExportMenuOpen(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      className="absolute right-0 mt-2 w-64 bg-oat-50 border-2 border-oat-300 rounded-2xl shadow-cozy-lg p-2 z-50 space-y-1"
                     >
-                      <span className="material-symbols-outlined text-sage-600 text-lg">
-                        install_mobile
-                      </span>
-                      <span>Instalar Aplicativo (PWA)</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsExportMenuOpen(false);
+                          handleInstallPwa();
+                        }}
+                        className="sm:hidden w-full px-3 py-2.5 rounded-xl text-left text-xs font-bold text-sage-600 hover:bg-sage-50 flex items-center gap-2.5 transition cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-sage-600 text-lg">
+                          install_mobile
+                        </span>
+                        <span>Instalar Aplicativo (PWA)</span>
+                      </button>
 
-                    <button
-                      onClick={handleExportPng}
-                      className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-maldives-600 text-lg">
-                        image
-                      </span>
-                      <span>Relatório Gráfico (.PNG)</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={handleExportPng}
+                        className="w-full px-3 py-2.5 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-maldives-600 text-lg">
+                          image
+                        </span>
+                        <span>Relatório Gráfico (.PNG)</span>
+                      </button>
 
-                    <button
-                      onClick={() => {
-                        setIsExportMenuOpen(false);
-                        exportMarkdownReport({
-                          profile,
-                          customGoals,
-                          categoryTotals,
-                          expenses: combinedExpenses,
-                          customLongTermGoals: longTermGoals,
-                          totalIncome,
-                          totalExpenses,
-                          balance,
-                        });
-                        showToast('Relatório Markdown exportado!');
-                      }}
-                      className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-sage-600 text-lg">
-                        description
-                      </span>
-                      <span>Resumo Executivo (.MD)</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={handleExportMarkdown}
+                        className="w-full px-3 py-2.5 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-sage-600 text-lg">
+                          description
+                        </span>
+                        <span>Resumo Executivo (.MD)</span>
+                      </button>
 
-                    <div className="border-t border-oat-200 my-1" />
+                      <div className="border-t border-oat-200 my-1" />
 
-                    <button
-                      onClick={() => {
-                        setIsExportMenuOpen(false);
-                        exportBackupJson(currentBackupPayload);
-                        showToast('Arquivo de Backup JSON salvo!');
-                      }}
-                      className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-terracotta-600 text-lg">
-                        download
-                      </span>
-                      <span>Baixar Backup Completo (.JSON)</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={handleExportBackupJson}
+                        className="w-full px-3 py-2.5 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-terracotta-600 text-lg">
+                          download
+                        </span>
+                        <span>Baixar Backup Completo (.JSON)</span>
+                      </button>
 
-                    <button
-                      onClick={() => {
-                        setIsExportMenuOpen(false);
-                        fileInputRef.current?.click();
-                      }}
-                      className="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-espresso-600 text-lg">
-                        upload_file
-                      </span>
-                      <span>Restaurar Backup (.JSON)</span>
-                    </button>
-                  </motion.div>
+                      <label
+                        htmlFor="marvit-restore-json-input"
+                        onClick={() => setIsExportMenuOpen(false)}
+                        className="w-full px-3 py-2.5 rounded-xl text-left text-xs font-bold text-espresso-800 hover:bg-maldives-50 hover:text-maldives-800 flex items-center gap-2.5 transition cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-espresso-600 text-lg">
+                          upload_file
+                        </span>
+                        <span>Restaurar Backup (.JSON)</span>
+                      </label>
+                    </motion.div>
+                  </>
                 )}
               </AnimatePresence>
             </div>
@@ -1211,7 +1987,7 @@ export const App: React.FC = () => {
           onSelectMonth={handleSelectMonth}
           monthsData={syncedMonthsData}
           currentMonthNotes={currentMonthNotes}
-          onChangeMonthNotes={setCurrentMonthNotes}
+          onChangeMonthNotes={handleChangeMonthNotes}
           onCopyFromPreviousMonth={handleCopyFromPreviousMonth}
           linkedGoalsMonthlyTotal={linkedGoalsMonthlyTotal}
         />
@@ -1220,7 +1996,7 @@ export const App: React.FC = () => {
         <div className={activeTab === 'budget' || isBentoMode ? 'block' : 'hidden md:block'}>
           <IncomeCard
             profile={profile}
-            onChangeProfile={setProfile}
+            onChangeProfile={handleChangeProfile}
             balance={balance}
             totalExpenses={totalExpenses}
           />
@@ -1298,16 +2074,18 @@ export const App: React.FC = () => {
               totalIncome={totalIncome}
               categoryTotals={categoryTotals}
               customGoals={customGoals}
-              onUpdateGoalPercent={(cat, percent) =>
-                setCustomGoals((prev) => ({ ...prev, [cat]: percent }))
-              }
-              onResetGoals={() =>
+              onUpdateGoalPercent={(cat, percent) => {
+                markUserEdit();
+                setCustomGoals((prev) => ({ ...prev, [cat]: percent }));
+              }}
+              onResetGoals={() => {
+                markUserEdit();
                 setCustomGoals({
                   essencial: AUVP_GOALS.essencial.idealPercent,
                   estilo: AUVP_GOALS.estilo.idealPercent,
                   investimento: AUVP_GOALS.investimento.idealPercent,
-                })
-              }
+                });
+              }}
             />
             <ExpenseManager
               expenses={combinedExpenses}
@@ -1349,6 +2127,8 @@ export const App: React.FC = () => {
             </div>
             <HistoryManager
               history={history}
+              selectedMonthKey={selectedMonthKey}
+              currentMonthNotes={currentMonthNotes}
               onSaveCurrentMonth={handleSaveCurrentMonth}
               onLoadSnapshot={handleLoadSnapshot}
               onDeleteSnapshot={handleDeleteSnapshot}
@@ -1370,16 +2150,18 @@ export const App: React.FC = () => {
                     totalIncome={totalIncome}
                     categoryTotals={categoryTotals}
                     customGoals={customGoals}
-                    onUpdateGoalPercent={(cat, percent) =>
-                      setCustomGoals((prev) => ({ ...prev, [cat]: percent }))
-                    }
-                    onResetGoals={() =>
+                    onUpdateGoalPercent={(cat, percent) => {
+                      markUserEdit();
+                      setCustomGoals((prev) => ({ ...prev, [cat]: percent }));
+                    }}
+                    onResetGoals={() => {
+                      markUserEdit();
                       setCustomGoals({
                         essencial: AUVP_GOALS.essencial.idealPercent,
                         estilo: AUVP_GOALS.estilo.idealPercent,
                         investimento: AUVP_GOALS.investimento.idealPercent,
-                      })
-                    }
+                      });
+                    }}
                   />
                   <ExpenseManager
                     expenses={combinedExpenses}
@@ -1435,6 +2217,8 @@ export const App: React.FC = () => {
               {activeTab === 'history' && (
                 <HistoryManager
                   history={history}
+                  selectedMonthKey={selectedMonthKey}
+                  currentMonthNotes={currentMonthNotes}
                   onSaveCurrentMonth={handleSaveCurrentMonth}
                   onLoadSnapshot={handleLoadSnapshot}
                   onDeleteSnapshot={handleDeleteSnapshot}
@@ -1481,6 +2265,133 @@ export const App: React.FC = () => {
           })}
         </div>
       </nav>
+
+      {/* Pop-up de Exportação & Seleção de Onde Salvar (Especialmente otimizado para Mobile & PWA) */}
+      <AnimatePresence>
+        {pendingExportFile && (
+          <div
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-espresso-900/50 backdrop-blur-sm"
+            onClick={() => setPendingExportFile(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.96 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-oat-50 border-2 border-oat-300 rounded-3xl max-w-md w-full p-5 shadow-cozy-lg space-y-4 max-h-[88vh] overflow-y-auto"
+            >
+              <div className="flex items-start justify-between gap-3 pb-3 border-b border-oat-200">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-maldives-600 text-2xl">
+                      {pendingExportFile.kind === 'png'
+                        ? 'image'
+                        : pendingExportFile.kind === 'md'
+                        ? 'description'
+                        : 'folder_zip'}
+                    </span>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-maldives-700 block">
+                      Arquivo Pronto para Salvar
+                    </span>
+                    <h3 className="text-base font-display font-bold text-espresso-900 truncate">
+                      {pendingExportFile.title}
+                    </h3>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPendingExportFile(null)}
+                  className="p-1.5 rounded-xl text-espresso-500 hover:text-espresso-900 hover:bg-oat-200 transition cursor-pointer shrink-0"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-oat-100 border border-oat-300 space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-mono font-bold text-espresso-900 truncate">
+                    {pendingExportFile.filename}
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 shrink-0">
+                    {Math.max(
+                      1,
+                      Math.round(pendingExportFile.blob.size / 1024)
+                    )}{' '}
+                    KB
+                  </span>
+                </div>
+                <p className="text-[11px] text-espresso-600">
+                  {pendingExportFile.subtitle}
+                </p>
+              </div>
+
+              {pendingExportFile.previewDataUrl && (
+                <div className="rounded-2xl overflow-hidden border border-oat-300 bg-oat-100 max-h-52 flex items-center justify-center p-2">
+                  <img
+                    src={pendingExportFile.previewDataUrl}
+                    alt={pendingExportFile.filename}
+                    className="max-h-48 w-auto object-contain rounded-xl shadow-xs"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2.5 pt-1">
+                {canUseNativeMobileShare(pendingExportFile) && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const res = await saveExportedFileWithPrompt(
+                        pendingExportFile,
+                        'share'
+                      );
+                      if (res === 'shared' || res === 'picked') {
+                        setPendingExportFile(null);
+                        showToast(
+                          `Arquivo "${pendingExportFile.filename}" salvo com sucesso!`
+                        );
+                      }
+                    }}
+                    className="w-full py-3 px-4 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">
+                      folder_open
+                    </span>
+                    <span>
+                      Escolher Onde Salvar (Arquivos / Drive / App)
+                    </span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await saveExportedFileWithPrompt(
+                      pendingExportFile,
+                      'download'
+                    );
+                    setPendingExportFile(null);
+                    showToast(
+                      `Download de "${pendingExportFile.filename}" iniciado!`
+                    );
+                  }}
+                  className={`w-full py-3 px-4 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer border ${
+                    canUseNativeMobileShare(pendingExportFile)
+                      ? 'bg-oat-100 hover:bg-oat-200 text-espresso-900 border-oat-300'
+                      : 'bg-maldives-500 hover:bg-maldives-600 text-white border-maldives-600 shadow-md'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    download
+                  </span>
+                  <span>Salvar na Pasta Downloads do Aparelho</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Modal de Cofre na Nuvem, Troca de PIN & Biometria */}
       <VaultAuthModal

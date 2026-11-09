@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MonthDataRecord } from '../types';
 import { formatCurrency } from '../utils/formatters';
@@ -38,6 +38,79 @@ export function formatMonthKeyLabel(monthKey: string): string {
   const year = Number(yStr) || new Date().getFullYear();
   const monthIdx = Math.max(0, Math.min(11, (Number(mStr) || 1) - 1));
   return `${MONTH_NAMES_FULL[monthIdx]} de ${year}`;
+}
+
+export function formatMonthKeySlashLabel(monthKey: string): string {
+  const [yStr, mStr] = monthKey.split('-');
+  const year = Number(yStr) || new Date().getFullYear();
+  const monthIdx = Math.max(0, Math.min(11, (Number(mStr) || 1) - 1));
+  return `${MONTH_NAMES_FULL[monthIdx]} / ${year}`;
+}
+
+/**
+ * Infere a chave de competência "YYYY-MM" a partir de um rótulo de histórico
+ * (ex: "Novembro / 2026", "Outubro de 2026", "Set/2026", "11/2026", "2026-11").
+ */
+export function inferMonthKeyFromLabel(
+  label?: string,
+  fallbackIsoDate?: string
+): string | null {
+  const raw = (label || '').trim();
+  const fallbackYear = fallbackIsoDate
+    ? new Date(fallbackIsoDate).getFullYear() || new Date().getFullYear()
+    : new Date().getFullYear();
+
+  if (raw) {
+    // 1. Formato direto YYYY-MM
+    const isoMatch = raw.match(/\b(20\d{2})-(0[1-9]|1[0-2])\b/);
+    if (isoMatch) {
+      return `${isoMatch[1]}-${isoMatch[2]}`;
+    }
+
+    // 2. Formato numérico MM/YYYY
+    const slashNumMatch = raw.match(/\b(0?[1-9]|1[0-2])\s*[/.-]\s*(20\d{2})\b/);
+    if (slashNumMatch) {
+      return `${slashNumMatch[2]}-${String(Number(slashNumMatch[1])).padStart(2, '0')}`;
+    }
+
+    // 3. Nome do mês em português (completo ou abreviado) + ano opcional
+    const normalized = raw
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    const monthPatterns: [RegExp, number][] = [
+      [/\b(janeiro|jan)\b/, 1],
+      [/\b(fevereiro|fev)\b/, 2],
+      [/\b(marco|mar)\b/, 3],
+      [/\b(abril|abr)\b/, 4],
+      [/\b(maio|mai)\b/, 5],
+      [/\b(junho|jun)\b/, 6],
+      [/\b(julho|jul)\b/, 7],
+      [/\b(agosto|ago)\b/, 8],
+      [/\b(setembro|set)\b/, 9],
+      [/\b(outubro|out)\b/, 10],
+      [/\b(novembro|nov)\b/, 11],
+      [/\b(dezembro|dez)\b/, 12],
+    ];
+
+    for (const [regex, monthNum] of monthPatterns) {
+      if (regex.test(normalized)) {
+        const yearMatch = normalized.match(/\b(20\d{2})\b/);
+        const year = yearMatch ? Number(yearMatch[1]) : fallbackYear;
+        return `${year}-${String(monthNum).padStart(2, '0')}`;
+      }
+    }
+  }
+
+  if (fallbackIsoDate) {
+    const d = new Date(fallbackIsoDate);
+    if (!Number.isNaN(d.getTime())) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+  }
+
+  return null;
 }
 
 export function getCurrentMonthKey(): string {
@@ -82,6 +155,11 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
   const selectedMonthIdx = Math.max(0, Math.min(11, (Number(selectedMonthStr) || 1) - 1));
 
   const [viewYear, setViewYear] = useState<number>(selectedYear);
+
+  // Sincroniza o ano visível do calendário sempre que o mês selecionado mudar (ex: ao restaurar do Histórico)
+  useEffect(() => {
+    setViewYear(selectedYear);
+  }, [selectedYear]);
 
   const handleSelectYearAndMonth = (year: number, monthIndex0: number) => {
     const key = `${year}-${String(monthIndex0 + 1).padStart(2, '0')}`;

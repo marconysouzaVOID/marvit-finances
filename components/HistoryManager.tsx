@@ -1,50 +1,66 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { ExpenseCategory, MonthSnapshot } from '../types';
 import { formatCurrency, formatPercent } from '../utils/formatters';
+import {
+  formatMonthKeyLabel,
+  formatMonthKeySlashLabel,
+  inferMonthKeyFromLabel,
+  MONTH_NAMES_FULL,
+} from './MonthCalendarBar';
 
 interface HistoryManagerProps {
   history: MonthSnapshot[];
-  onSaveCurrentMonth: (label: string, notes?: string) => void;
+  selectedMonthKey: string;
+  currentMonthNotes?: string;
+  onSaveCurrentMonth: (
+    label: string,
+    notes?: string,
+    targetMonthKey?: string
+  ) => void;
   onLoadSnapshot: (snapshot: MonthSnapshot) => void;
   onDeleteSnapshot: (id: string) => void;
 }
 
 export const HistoryManager: React.FC<HistoryManagerProps> = ({
   history,
+  selectedMonthKey,
+  currentMonthNotes,
   onSaveCurrentMonth,
   onLoadSnapshot,
   onDeleteSnapshot,
 }) => {
-  const [newLabel, setNewLabel] = useState('');
-  const [newNotes, setNewNotes] = useState('');
+  const [targetMonthKey, setTargetMonthKey] = useState<string>(selectedMonthKey);
+  const [newLabel, setNewLabel] = useState<string>(() =>
+    formatMonthKeySlashLabel(selectedMonthKey)
+  );
+  const [newNotes, setNewNotes] = useState<string>(currentMonthNotes || '');
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const defaultMonthName = () => {
-    const months = [
-      'Janeiro',
-      'Fevereiro',
-      'Março',
-      'Abril',
-      'Maio',
-      'Junho',
-      'Julho',
-      'Agosto',
-      'Setembro',
-      'Outubro',
-      'Novembro',
-      'Dezembro',
-    ];
-    const now = new Date();
-    return `${months[now.getMonth()]} / ${now.getFullYear()}`;
+  // Sincroniza o mês sugerido no formulário sempre que o usuário alternar o mês no Calendário
+  useEffect(() => {
+    setTargetMonthKey(selectedMonthKey);
+    setNewLabel(formatMonthKeySlashLabel(selectedMonthKey));
+    setNewNotes(currentMonthNotes || '');
+  }, [selectedMonthKey, currentMonthNotes]);
+
+  const [selYearStr, selMonthStr] = targetMonthKey.split('-');
+  const selYear = Number(selYearStr) || new Date().getFullYear();
+  const selMonthNum = Math.max(1, Math.min(12, Number(selMonthStr) || 1));
+
+  const handleChangeMonthSelect = (year: number, monthNum: number) => {
+    const nextKey = `${year}-${String(monthNum).padStart(2, '0')}`;
+    setTargetMonthKey(nextKey);
+    setNewLabel(formatMonthKeySlashLabel(nextKey));
   };
 
   const handleSave = () => {
-    const label = newLabel.trim() || defaultMonthName();
-    onSaveCurrentMonth(label, newNotes.trim());
-    setNewLabel('');
-    setNewNotes('');
+    const inferredFromLabel = inferMonthKeyFromLabel(newLabel);
+    const finalMonthKey = inferredFromLabel || targetMonthKey || selectedMonthKey;
+    const label = newLabel.trim() || formatMonthKeySlashLabel(finalMonthKey);
+
+    onSaveCurrentMonth(label, newNotes.trim(), finalMonthKey);
     setIsFormOpen(false);
     confetti({
       particleCount: 50,
@@ -55,10 +71,10 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
   };
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-5 sm:p-6 shadow-cozy">
+    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-maldives-600 text-xl">
               calendar_month
             </span>
@@ -68,7 +84,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
               Histórico & Fechamentos Mensais
             </h2>
             <p className="text-xs text-espresso-600">
-              Guarde uma fotografia de cada mês para comparar sua evolução patrimonial.
+              Os cálculos de cada mês já são salvos automaticamente no Calendário. Aqui você também pode guardar fechamentos oficiais ou restaurá-los diretamente para a competência correspondente.
             </p>
           </div>
         </div>
@@ -76,14 +92,18 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
         <button
           onClick={() => {
             setIsFormOpen(!isFormOpen);
-            if (!newLabel) setNewLabel(defaultMonthName());
+            setTargetMonthKey(selectedMonthKey);
+            setNewLabel(formatMonthKeySlashLabel(selectedMonthKey));
+            setNewNotes(currentMonthNotes || '');
           }}
-          className="px-4 py-2 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer self-start sm:self-auto"
+          className="px-4 py-2 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer self-start sm:self-auto shrink-0"
         >
           <span className="material-symbols-outlined text-[18px]">
             bookmark_add
           </span>
-          <span>Salvar Mês Atual no Histórico</span>
+          <span>
+            Salvar {formatMonthKeySlashLabel(selectedMonthKey)} no Histórico
+          </span>
         </button>
       </div>
 
@@ -91,7 +111,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
         <div className="mt-4 p-4 rounded-2xl bg-oat-100 border-2 border-maldives-300 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-maldives-800 uppercase tracking-wider">
-              Registrar Fechamento do Mês
+              Registrar Fechamento de {formatMonthKeyLabel(targetMonthKey)}
             </span>
             <button
               onClick={() => setIsFormOpen(false)}
@@ -101,10 +121,44 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="text-xs font-semibold text-espresso-700 block mb-1">
-                Mês de Referência
+                Competência do Calendário
+              </label>
+              <div className="grid grid-cols-2 gap-1.5">
+                <select
+                  value={selMonthNum}
+                  onChange={(e) =>
+                    handleChangeMonthSelect(selYear, Number(e.target.value))
+                  }
+                  className="bg-oat-50 border border-oat-300 rounded-xl px-2.5 py-2 text-xs font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                >
+                  {MONTH_NAMES_FULL.map((mName, idx) => (
+                    <option key={mName} value={idx + 1}>
+                      {mName}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  min={2020}
+                  max={2100}
+                  value={selYear}
+                  onChange={(e) =>
+                    handleChangeMonthSelect(
+                      Number(e.target.value) || new Date().getFullYear(),
+                      selMonthNum
+                    )
+                  }
+                  className="bg-oat-50 border border-oat-300 rounded-xl px-2.5 py-2 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-espresso-700 block mb-1">
+                Título / Rótulo do Fechamento
               </label>
               <input
                 type="text"
@@ -114,6 +168,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                 className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm text-espresso-900 focus:outline-none focus:border-maldives-500"
               />
             </div>
+
             <div>
               <label className="text-xs font-semibold text-espresso-700 block mb-1">
                 Notas do Mês (Opcional)
@@ -122,7 +177,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                 type="text"
                 value={newNotes}
                 onChange={(e) => setNewNotes(e.target.value)}
-                placeholder="Ex: 13º salário investido, meta da cozinha batida..."
+                placeholder="Ex: 13º salário investido, meta batida..."
                 className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm text-espresso-900 focus:outline-none focus:border-maldives-500"
               />
             </div>
@@ -155,12 +210,19 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
               Nenhum fechamento mensal salvo ainda.
             </p>
             <p className="text-espresso-500 text-xs mt-1">
-              Clique em “Salvar Mês Atual no Histórico” para registrar sua linha do tempo financeira.
+              Seus cálculos mensais já ficam salvos automaticamente no Calendário de Meses no topo da tela. Use o botão acima se quiser criar um marco de fechamento adicional.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {history.map((item) => {
+              const resolvedMonthKey =
+                item.monthKey ||
+                inferMonthKeyFromLabel(item.monthLabel, item.dateCreated) ||
+                selectedMonthKey;
+              const isCurrentCalendarMonth =
+                resolvedMonthKey === selectedMonthKey;
+
               const income =
                 item.profile.monthlyIncome + item.profile.additionalIncome;
               const catTotals: Record<ExpenseCategory, number> = {
@@ -181,20 +243,29 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                 <motion.div
                   key={item.id}
                   whileHover={{ y: -3 }}
-                  className="bg-oat-100/80 border-2 border-oat-300 hover:border-maldives-400 rounded-2xl p-4 flex flex-col justify-between transition shadow-sm"
+                  className={`bg-oat-100/80 border-2 rounded-2xl p-4 flex flex-col justify-between transition shadow-sm ${
+                    isCurrentCalendarMonth
+                      ? 'border-maldives-500 bg-maldives-50/40'
+                      : 'border-oat-300 hover:border-maldives-400'
+                  }`}
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h3 className="text-base font-display font-bold text-espresso-900">
-                          {item.monthLabel}
-                        </h3>
-                        <span className="text-[10px] text-espresso-500 font-mono">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h3 className="text-base font-display font-bold text-espresso-900">
+                            {item.monthLabel}
+                          </h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300">
+                            {formatMonthKeyLabel(resolvedMonthKey)}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-espresso-500 font-mono block mt-0.5">
                           Salvo em{' '}
                           {new Date(item.dateCreated).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
-                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300">
+                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 shrink-0">
                         {formatPercent(aportePercent)} aportes
                       </span>
                     </div>
@@ -239,11 +310,14 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                     <button
                       onClick={() => onLoadSnapshot(item)}
                       className="px-3 py-1.5 rounded-xl bg-oat-50 hover:bg-maldives-50 text-xs font-bold text-maldives-700 border border-oat-300 hover:border-maldives-300 transition flex items-center gap-1 cursor-pointer"
+                      title={`Abrir e restaurar na competência ${formatMonthKeyLabel(resolvedMonthKey)}`}
                     >
                       <span className="material-symbols-outlined text-[16px]">
                         file_open
                       </span>
-                      <span>Restaurar p/ Tela</span>
+                      <span>
+                        Restaurar em {formatMonthKeySlashLabel(resolvedMonthKey)}
+                      </span>
                     </button>
 
                     <button
@@ -265,4 +339,3 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
     </div>
   );
 };
-

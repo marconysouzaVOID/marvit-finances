@@ -12,8 +12,24 @@ export interface ExportReportData {
   balance: number;
 }
 
-/** Renderiza um relatório gráfico estilizado em alta resolução (1200x1680) na estética Cozy Kitchen & Verde Maldivas */
-export async function generateReportImageBase64(data: ExportReportData): Promise<string> {
+export interface GeneratedReportImage {
+  base64: string;
+  dataUrl: string;
+  blob: Blob;
+}
+
+function base64ToPngBlob(base64: string): Blob {
+  const binaryStr = window.atob(base64);
+  const len = binaryStr.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryStr.charCodeAt(i);
+  }
+  return new Blob([bytes], { type: 'image/png' });
+}
+
+/** Renderiza de forma 100% síncrona (preservando o gesto de toque no mobile) um relatório gráfico estilizado em alta resolução (1200x1680) */
+export function generateReportImageSync(data: ExportReportData): GeneratedReportImage {
   const canvas = document.createElement('canvas');
   const width = 1200;
   const height = 1680;
@@ -334,6 +350,12 @@ export async function generateReportImageBase64(data: ExportReportData): Promise
   );
 
   const dataUrl = canvas.toDataURL('image/png');
-  return dataUrl.split(',')[1];
+  const base64 = dataUrl.split(',')[1];
+  const blob = base64ToPngBlob(base64);
+  return { base64, dataUrl, blob };
+}
+
+export async function generateReportImageBase64(data: ExportReportData): Promise<string> {
+  return generateReportImageSync(data).base64;
 }
 
