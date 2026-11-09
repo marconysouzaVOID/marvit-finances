@@ -1,6 +1,6 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-09T22:09:17.992Z",
+  "updatedAt": "2026-11-09T22:09:20.257Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
@@ -1119,89 +1119,6 @@
     ],
     "history": [
       {
-        "id": "snap-1794009106533",
-        "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-09T22:02:38.185Z",
-        "profile": {
-          "monthlyIncome": 22000,
-          "additionalIncome": 0,
-          "desiredEmergencyMonths": 6,
-          "expectedAnnualReturnRate": 10.5
-        },
-        "customGoals": {
-          "essencial": 40,
-          "estilo": 35,
-          "investimento": 25
-        },
-        "expenses": [
-          {
-            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-            "amount": 8791.22,
-            "category": "investimento",
-            "isCustom": true,
-            "id": "exp-1794007990084"
-          },
-          {
-            "name": "Cartões (Inter, Nubank, Itau)",
-            "amount": 8000,
-            "category": "estilo",
-            "isCustom": true,
-            "id": "exp-1794006938471",
-            "subcategory": "cartao",
-            "cardTransactions": []
-          },
-          {
-            "name": "Financiamento Veículo",
-            "amount": 1253,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006429901"
-          },
-          {
-            "name": "Contas (Luz)",
-            "amount": 144.12,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006373678"
-          },
-          {
-            "name": "Contas (Água)",
-            "amount": 106.35,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006363575"
-          },
-          {
-            "id": "1",
-            "name": "Aluguel / Parcela Imóvel",
-            "amount": 2986.43,
-            "category": "essencial"
-          },
-          {
-            "id": "3",
-            "name": "Contas (Internet)",
-            "amount": 117.8,
-            "category": "essencial"
-          }
-        ],
-        "customLongTermGoals": [
-          {
-            "title": "Carro Tiggo",
-            "icon": "directions_car",
-            "targetAmount": 48032.08,
-            "currentAmount": 18744.160000000003,
-            "monthlyContribution": 601.08,
-            "annualInterestRate": 0,
-            "syncWithBudget": true,
-            "budgetCategory": "estilo",
-            "notes": "Amortização",
-            "id": "goal-1794008860404"
-          }
-        ],
-        "notes": "Compra do primeiro AP",
-        "monthKey": "2026-11"
-      },
-      {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
         "dateCreated": "2026-11-09T22:08:45.463Z",
@@ -1732,6 +1649,89 @@
           }
         ],
         "monthKey": "2026-10"
+      },
+      {
+        "id": "snap-1794009106533",
+        "monthLabel": "Novembro / 2026",
+        "dateCreated": "2026-11-09T22:02:38.185Z",
+        "profile": {
+          "monthlyIncome": 22000,
+          "additionalIncome": 0,
+          "desiredEmergencyMonths": 6,
+          "expectedAnnualReturnRate": 10.5
+        },
+        "customGoals": {
+          "essencial": 40,
+          "estilo": 35,
+          "investimento": 25
+        },
+        "expenses": [
+          {
+            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
+            "amount": 8791.22,
+            "category": "investimento",
+            "isCustom": true,
+            "id": "exp-1794007990084"
+          },
+          {
+            "name": "Cartões (Inter, Nubank, Itau)",
+            "amount": 8000,
+            "category": "estilo",
+            "isCustom": true,
+            "id": "exp-1794006938471",
+            "subcategory": "cartao",
+            "cardTransactions": []
+          },
+          {
+            "name": "Financiamento Veículo",
+            "amount": 1253,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794006429901"
+          },
+          {
+            "name": "Contas (Luz)",
+            "amount": 144.12,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794006373678"
+          },
+          {
+            "name": "Contas (Água)",
+            "amount": 106.35,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794006363575"
+          },
+          {
+            "id": "1",
+            "name": "Aluguel / Parcela Imóvel",
+            "amount": 2986.43,
+            "category": "essencial"
+          },
+          {
+            "id": "3",
+            "name": "Contas (Internet)",
+            "amount": 117.8,
+            "category": "essencial"
+          }
+        ],
+        "customLongTermGoals": [
+          {
+            "title": "Carro Tiggo",
+            "icon": "directions_car",
+            "targetAmount": 48032.08,
+            "currentAmount": 18744.160000000003,
+            "monthlyContribution": 601.08,
+            "annualInterestRate": 0,
+            "syncWithBudget": true,
+            "budgetCategory": "estilo",
+            "notes": "Amortização",
+            "id": "goal-1794008860404"
+          }
+        ],
+        "notes": "Compra do primeiro AP",
+        "monthKey": "2026-11"
       }
     ],
     "restoredAt": "2026-11-09T22:01:51.505Z"
