@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-09T22:09:52.430Z",
+  "updatedAt": "2026-11-09T22:10:06.480Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-09T22:09:42.683Z",
-    "selectedMonthKey": "2026-10",
+    "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -135,20 +135,27 @@
       }
     },
     "profile": {
-      "monthlyIncome": 23614.09,
+      "monthlyIncome": 22000,
       "additionalIncome": 0,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
     },
     "customGoals": {
-      "essencial": 50,
-      "estilo": 30,
-      "investimento": 20
+      "essencial": 40,
+      "estilo": 35,
+      "investimento": 25
     },
     "expenses": [
       {
+        "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
+        "amount": 8791.22,
+        "category": "investimento",
+        "isCustom": true,
+        "id": "exp-1794007990084"
+      },
+      {
         "name": "Cartões (Inter, Nubank, Itau)",
-        "amount": 15288.95,
+        "amount": 8000,
         "category": "estilo",
         "isCustom": true,
         "id": "exp-1794006938471",
@@ -282,7 +289,7 @@
       {
         "id": "snap-1794009106533",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-06T23:51:46.533Z",
+        "dateCreated": "2026-11-09T22:09:42.683Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -347,16 +354,16 @@
         ],
         "customLongTermGoals": [
           {
-            "title": "Carro Tiggo",
+            "id": "goal-2",
+            "title": "Moto Eletrica",
             "icon": "directions_car",
-            "targetAmount": 48032.08,
-            "currentAmount": 18744.160000000003,
-            "monthlyContribution": 601.08,
+            "targetAmount": 5000,
+            "currentAmount": 0,
+            "monthlyContribution": 5000,
             "annualInterestRate": 0,
             "syncWithBudget": true,
             "budgetCategory": "estilo",
-            "notes": "Amortização",
-            "id": "goal-1794008860404"
+            "notes": "Moto Comprada"
           }
         ],
         "notes": "Compra do primeiro AP",
