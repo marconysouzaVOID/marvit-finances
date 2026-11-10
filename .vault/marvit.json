@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T06:54:42.850Z",
+  "updatedAt": "2026-11-10T06:54:46.590Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T06:54:41.461Z",
-    "selectedMonthKey": "2027-01",
+    "selectedMonthKey": "2026-12",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -1708,7 +1708,7 @@
       },
       "2026-12": {
         "monthKey": "2026-12",
-        "updatedAt": "2026-11-10T05:49:56.154Z",
+        "updatedAt": "2026-11-10T06:54:41.461Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 0,
@@ -3480,15 +3480,6 @@
         "isCustom": true,
         "id": "exp-1794272287172",
         "globalCardId": "exp-1794272287172"
-      },
-      {
-        "name": "Moto Eletrica",
-        "amount": 5000,
-        "category": "estilo",
-        "subcategory": "direto",
-        "isCustom": true,
-        "id": "exp-1794271769420",
-        "expenseDate": "19/10"
       },
       {
         "name": "Financiamento Veículo",
