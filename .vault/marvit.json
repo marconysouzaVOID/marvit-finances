@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:49:46.578Z",
+  "updatedAt": "2026-11-10T05:49:49.927Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T05:49:43.202Z",
-    "selectedMonthKey": "2026-10",
+    "selectedMonthKey": "2026-12",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -6281,7 +6281,7 @@
       }
     },
     "profile": {
-      "monthlyIncome": 23614.09,
+      "monthlyIncome": 16800,
       "additionalIncome": 0,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
@@ -6294,65 +6294,15 @@
     "expenses": [
       {
         "name": "Itau",
-        "amount": 1277.38,
+        "amount": 0,
         "category": "estilo",
         "subcategory": "cartao",
-        "cardTransactions": [
-          {
-            "id": "tx-1794272658218",
-            "description": "Localiza",
-            "amount": 8.17,
-            "tag": "outros",
-            "installment": "À vista",
-            "purchaseDate": "21/10"
-          },
-          {
-            "id": "tx-1794272641744",
-            "description": "Localiza",
-            "amount": 7.94,
-            "tag": "lazer",
-            "installment": "À vista",
-            "purchaseDate": "20/10"
-          },
-          {
-            "id": "tx-1794272625054",
-            "description": "Localiza",
-            "amount": 48.02,
-            "tag": "lazer",
-            "installment": "À vista",
-            "purchaseDate": "20/10"
-          },
-          {
-            "id": "tx-1794272491455",
-            "description": "Moto eletrica",
-            "amount": 647.57,
-            "tag": "outros",
-            "installment": "1/10",
-            "purchaseDate": "16/10"
-          },
-          {
-            "id": "tx-1794272450048",
-            "description": "Localiza",
-            "amount": 565.68,
-            "tag": "lazer",
-            "installment": "1/3",
-            "purchaseDate": "09/10"
-          }
-        ],
+        "cardTransactions": [],
         "cardLimit": 700,
         "cardDueDay": 2,
         "isCustom": true,
         "id": "exp-1794272287172",
         "globalCardId": "exp-1794272287172"
-      },
-      {
-        "name": "Moto Eletrica",
-        "amount": 5000,
-        "category": "estilo",
-        "subcategory": "direto",
-        "isCustom": true,
-        "id": "exp-1794271769420",
-        "expenseDate": "19/10"
       },
       {
         "name": "Financiamento Veículo",
