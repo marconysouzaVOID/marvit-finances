@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:55:02.864Z",
+  "updatedAt": "2026-11-10T00:55:15.927Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T00:54:45.025Z",
+    "exportedAt": "2026-11-10T00:55:14.952Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T00:54:45.025Z",
+        "updatedAt": "2026-11-10T00:55:14.952Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -50,7 +50,7 @@
             "category": "estilo",
             "subcategory": "cartao",
             "cardTransactions": [],
-            "cardLimit": 3500,
+            "cardLimit": 2500,
             "cardDueDay": 2,
             "isCustom": true,
             "id": "exp-1794272057919"
@@ -226,7 +226,7 @@
         "category": "estilo",
         "subcategory": "cartao",
         "cardTransactions": [],
-        "cardLimit": 3500,
+        "cardLimit": 2500,
         "cardDueDay": 2,
         "isCustom": true,
         "id": "exp-1794272057919"
@@ -310,7 +310,7 @@
       {
         "id": "snap-1794009106533",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T00:54:45.025Z",
+        "dateCreated": "2026-11-10T00:55:14.952Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -351,7 +351,7 @@
             "category": "estilo",
             "subcategory": "cartao",
             "cardTransactions": [],
-            "cardLimit": 3500,
+            "cardLimit": 2500,
             "cardDueDay": 2,
             "isCustom": true,
             "id": "exp-1794272057919"
