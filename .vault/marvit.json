@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T07:02:11.870Z",
+  "updatedAt": "2026-11-10T07:02:13.708Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T07:02:10.927Z",
+    "exportedAt": "2026-11-10T07:02:12.594Z",
     "selectedMonthKey": "2026-09",
     "monthsData": {
       "2026-11": {
@@ -1881,7 +1881,7 @@
       },
       "2026-09": {
         "monthKey": "2026-09",
-        "updatedAt": "2026-11-10T07:02:10.927Z",
+        "updatedAt": "2026-11-10T07:02:12.594Z",
         "profile": {
           "monthlyIncome": 0,
           "additionalIncome": 0,
