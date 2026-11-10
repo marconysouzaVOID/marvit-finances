@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T07:04:40.008Z",
+  "updatedAt": "2026-11-10T07:04:46.662Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T07:04:08.977Z",
+    "exportedAt": "2026-11-10T07:04:45.484Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T07:04:08.977Z",
+        "updatedAt": "2026-11-10T07:04:45.484Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -2169,10 +2169,10 @@
     ],
     "history": [
       {
-        "id": "snap-1794273445526",
+        "id": "snap-1794294285484",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T06:54:59.619Z",
+        "dateCreated": "2026-11-10T07:04:45.484Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
