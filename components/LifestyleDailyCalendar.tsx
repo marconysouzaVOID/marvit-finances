@@ -19,6 +19,9 @@ interface DailyCalendarPurchase {
   installment?: string;
   dateStr?: string;
   rawDay?: number;
+  isPreviousMonthCycle?: boolean;
+  isNextMonthCycle?: boolean;
+  cycleBadgeText?: string;
 }
 
 interface LifestyleDailyCalendarProps {
@@ -31,51 +34,147 @@ interface LifestyleDailyCalendarProps {
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+export interface CalendarDayResolution {
+  day: number;
+  isPreviousMonthCycle: boolean;
+  isNextMonthCycle: boolean;
+  badgeLabel: string;
+  originalDateStr: string;
+}
+
 /**
- * Normaliza e extrai o dia do mês (1 a 31) a partir de strings como:
- * - "2026-11-12" (ISO)
- * - "12/11" ou "12/11/2026" (padrão brasileiro)
- * - "12"
+ * Normaliza e resolve o dia do mês (1 a daysInMonth) para visualização no calendário,
+ * suportando com perfeição o Ciclo de Fechamento da Fatura de Cartões de Crédito:
+ * - Compras do próprio mês (ex: 24/10 para fatura de Outubro) -> Dia 24
+ * - Compras do ciclo do mês anterior (ex: 26/09 a 29/09 para fatura que fechou dia 25) -> Dias 26 a 29 com badge "Ciclo da Fatura"
+ * - Suporta ISO (2026-09-26), DD/MM (26/09), DD/MM/YYYY e dias individuais (26).
  */
-function extractDayNumber(
+export function resolveCalendarDay(
   dateStr: string | undefined,
   targetYear: number,
-  targetMonthIndex: number
-): number | null {
+  targetMonthIndex: number, // 0..11
+  daysInMonth: number,
+  _cardClosingDay?: number
+): CalendarDayResolution | null {
   if (!dateStr || !dateStr.trim()) return null;
   const trimmed = dateStr.trim();
 
+  const prevMonthIndex = targetMonthIndex === 0 ? 11 : targetMonthIndex - 1;
+  const prevYear = targetMonthIndex === 0 ? targetYear - 1 : targetYear;
+  const nextMonthIndex = targetMonthIndex === 11 ? 0 : targetMonthIndex + 1;
+  const nextYear = targetMonthIndex === 11 ? targetYear + 1 : targetYear;
+
   // Caso 1: YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
-    const parts = trimmed.split('-');
-    const year = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1;
-    const day = parseInt(parts[2].slice(0, 2), 10);
-    if (year === targetYear && month === targetMonthIndex && day >= 1 && day <= 31) {
-      return day;
+  const isoMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (isoMatch) {
+    const year = parseInt(isoMatch[1], 10);
+    const month = parseInt(isoMatch[2], 10) - 1;
+    const day = parseInt(isoMatch[3], 10);
+
+    if (day >= 1 && day <= 31) {
+      const safeDay = Math.min(day, daysInMonth);
+
+      // Compra do próprio mês visualizado
+      if (year === targetYear && month === targetMonthIndex) {
+        return {
+          day: safeDay,
+          isPreviousMonthCycle: false,
+          isNextMonthCycle: false,
+          badgeLabel: `${String(day).padStart(2, '0')}/${String(targetMonthIndex + 1).padStart(2, '0')}`,
+          originalDateStr: trimmed,
+        };
+      }
+
+      // Compra do mês anterior (ciclo de fechamento da fatura)
+      if (year === prevYear && month === prevMonthIndex) {
+        return {
+          day: safeDay,
+          isPreviousMonthCycle: true,
+          isNextMonthCycle: false,
+          badgeLabel: `${String(day).padStart(2, '0')}/${String(prevMonthIndex + 1).padStart(2, '0')} • Ciclo da Fatura`,
+          originalDateStr: trimmed,
+        };
+      }
+
+      // Compra do mês posterior
+      if (year === nextYear && month === nextMonthIndex) {
+        return {
+          day: safeDay,
+          isPreviousMonthCycle: false,
+          isNextMonthCycle: true,
+          badgeLabel: `${String(day).padStart(2, '0')}/${String(nextMonthIndex + 1).padStart(2, '0')} • Próx. Ciclo`,
+          originalDateStr: trimmed,
+        };
+      }
     }
     return null;
   }
 
   // Caso 2: DD/MM ou DD/MM/YYYY
-  if (/^\d{1,2}\/\d{1,2}/.test(trimmed)) {
-    const parts = trimmed.split('/');
-    const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1;
-    if (parts.length >= 3) {
-      const year = parseInt(parts[2], 10);
-      if (year !== targetYear) return null;
+  const brMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+  if (brMatch) {
+    const day = parseInt(brMatch[1], 10);
+    const month = parseInt(brMatch[2], 10) - 1;
+    let year: number | null = null;
+    if (brMatch[3]) {
+      year = parseInt(brMatch[3], 10);
+      if (year < 100) year += 2000;
     }
-    if (month === targetMonthIndex && day >= 1 && day <= 31) {
-      return day;
+
+    if (day >= 1 && day <= 31) {
+      const safeDay = Math.min(day, daysInMonth);
+
+      const matchesTargetYear = year === null || year === targetYear;
+      const matchesPrevYear = year === null || year === prevYear;
+      const matchesNextYear = year === null || year === nextYear;
+
+      // Compra do próprio mês
+      if (matchesTargetYear && month === targetMonthIndex) {
+        return {
+          day: safeDay,
+          isPreviousMonthCycle: false,
+          isNextMonthCycle: false,
+          badgeLabel: `${String(day).padStart(2, '0')}/${String(targetMonthIndex + 1).padStart(2, '0')}`,
+          originalDateStr: trimmed,
+        };
+      }
+
+      // Compra do mês anterior (ciclo da fatura)
+      if (matchesPrevYear && month === prevMonthIndex) {
+        return {
+          day: safeDay,
+          isPreviousMonthCycle: true,
+          isNextMonthCycle: false,
+          badgeLabel: `${String(day).padStart(2, '0')}/${String(prevMonthIndex + 1).padStart(2, '0')} • Ciclo da Fatura`,
+          originalDateStr: trimmed,
+        };
+      }
+
+      // Compra do mês seguinte
+      if (matchesNextYear && month === nextMonthIndex) {
+        return {
+          day: safeDay,
+          isPreviousMonthCycle: false,
+          isNextMonthCycle: true,
+          badgeLabel: `${String(day).padStart(2, '0')}/${String(nextMonthIndex + 1).padStart(2, '0')} • Próx. Ciclo`,
+          originalDateStr: trimmed,
+        };
+      }
     }
     return null;
   }
 
-  // Caso 3: apenas o número do dia (1..31)
+  // Caso 3: Apenas o número do dia (1..31)
   const num = parseInt(trimmed, 10);
   if (!isNaN(num) && num >= 1 && num <= 31 && String(num) === trimmed) {
-    return num;
+    const safeDay = Math.min(num, daysInMonth);
+    return {
+      day: safeDay,
+      isPreviousMonthCycle: false,
+      isNextMonthCycle: false,
+      badgeLabel: `Dia ${num}`,
+      originalDateStr: trimmed,
+    };
   }
 
   return null;
@@ -143,19 +242,39 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
   }, [lifestyleExpenses]);
 
   // Mapeia todas as transações e compras do pilar Estilo de Vida
-  const { dailyBuckets, undatedPurchases, totalMonthLifestyle } = useMemo(() => {
+  const {
+    dailyBuckets,
+    undatedPurchases,
+    totalMonthLifestyle,
+    cyclePurchasesCount,
+    cyclePurchasesTotal,
+  } = useMemo(() => {
     const buckets: Record<number, DailyCalendarPurchase[]> = {};
     for (let d = 1; d <= daysInMonth; d++) {
       buckets[d] = [];
     }
     const undated: DailyCalendarPurchase[] = [];
     let totalSpent = 0;
+    let cycleCount = 0;
+    let cycleTotal = 0;
 
     lifestyleExpenses.forEach((item) => {
       if (item.subcategory === 'cartao' && item.cardTransactions) {
         item.cardTransactions.forEach((tx) => {
           totalSpent += tx.amount;
-          const day = extractDayNumber(tx.purchaseDate, yearNum, monthNum);
+          const res = resolveCalendarDay(
+            tx.purchaseDate,
+            yearNum,
+            monthNum,
+            daysInMonth,
+            item.cardClosingDay
+          );
+
+          if (res?.isPreviousMonthCycle) {
+            cycleCount += 1;
+            cycleTotal += tx.amount;
+          }
+
           const purchaseObj: DailyCalendarPurchase = {
             id: tx.id,
             sourceType: 'card',
@@ -166,17 +285,32 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
             tag: tx.tag,
             installment: tx.installment,
             dateStr: tx.purchaseDate,
-            rawDay: day || undefined,
+            rawDay: res?.day,
+            isPreviousMonthCycle: res?.isPreviousMonthCycle,
+            isNextMonthCycle: res?.isNextMonthCycle,
+            cycleBadgeText: res?.badgeLabel,
           };
-          if (day && day >= 1 && day <= daysInMonth) {
-            buckets[day].push(purchaseObj);
+
+          if (res && res.day >= 1 && res.day <= daysInMonth) {
+            buckets[res.day].push(purchaseObj);
           } else {
             undated.push(purchaseObj);
           }
         });
       } else if (item.subcategory === 'direto' || !item.subcategory) {
         totalSpent += item.amount;
-        const day = extractDayNumber(item.expenseDate, yearNum, monthNum);
+        const res = resolveCalendarDay(
+          item.expenseDate,
+          yearNum,
+          monthNum,
+          daysInMonth
+        );
+
+        if (res?.isPreviousMonthCycle) {
+          cycleCount += 1;
+          cycleTotal += item.amount;
+        }
+
         const purchaseObj: DailyCalendarPurchase = {
           id: item.id,
           sourceType: 'direct',
@@ -186,10 +320,14 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
           amount: item.amount,
           tag: 'outros',
           dateStr: item.expenseDate,
-          rawDay: day || undefined,
+          rawDay: res?.day,
+          isPreviousMonthCycle: res?.isPreviousMonthCycle,
+          isNextMonthCycle: res?.isNextMonthCycle,
+          cycleBadgeText: res?.badgeLabel,
         };
-        if (day && day >= 1 && day <= daysInMonth) {
-          buckets[day].push(purchaseObj);
+
+        if (res && res.day >= 1 && res.day <= daysInMonth) {
+          buckets[res.day].push(purchaseObj);
         } else {
           undated.push(purchaseObj);
         }
@@ -200,6 +338,8 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
       dailyBuckets: buckets,
       undatedPurchases: undated,
       totalMonthLifestyle: Math.round(totalSpent * 100) / 100,
+      cyclePurchasesCount: cycleCount,
+      cyclePurchasesTotal: Math.round(cycleTotal * 100) / 100,
     };
   }, [lifestyleExpenses, daysInMonth, yearNum, monthNum]);
 
@@ -537,6 +677,26 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
             </select>
           )}
         </div>
+
+        {/* Banner Informativo do Ciclo de Fechamento da Fatura */}
+        {cyclePurchasesCount > 0 && (
+          <div className="mt-4 p-3 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800/70 flex items-center justify-between gap-3 text-xs shadow-2xs">
+            <div className="flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-xl shrink-0">
+                sync_alt
+              </span>
+              <div className="text-amber-950 dark:text-amber-200">
+                <strong>Ciclo da Fatura Reconhecido:</strong> {cyclePurchasesCount}{' '}
+                {cyclePurchasesCount === 1 ? 'compra realizada' : 'compras realizadas'}{' '}
+                no mês anterior (a partir do dia de fechamento) pertencem a esta fatura e foram mapeadas nos respectivos dias (total:{' '}
+                <strong className="font-mono">{formatCurrency(cyclePurchasesTotal)}</strong>).
+              </div>
+            </div>
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-200/70 dark:bg-amber-900/60 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shrink-0 hidden sm:inline">
+              Fechamento Automático
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Grade do Calendário Mensal */}
@@ -576,6 +736,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
             const dayTotal = dailyMetrics.totals[dayNum] || 0;
             const hasPurchases = dayPurchases.length > 0;
             const isPeak = dayNum === dailyMetrics.peakDay && dayTotal > 0;
+            const hasCycleItem = dayPurchases.some((p) => p.isPreviousMonthCycle);
 
             // Extrai ícones únicos de categorias deste dia
             const uniqueTagIcons = Array.from(
@@ -596,7 +757,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                   isSelected
                 )}`}
               >
-                {/* Linha superior: número do dia + badge hoje/pico */}
+                {/* Linha superior: número do dia + badge hoje/pico/ciclo */}
                 <div className="flex items-center justify-between w-full">
                   <span
                     className={`text-xs sm:text-sm font-bold font-mono rounded-lg px-1.5 py-0.2 ${
@@ -610,20 +771,31 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                     {dayNum}
                   </span>
 
-                  {isToday && !isSelected && (
-                    <span className="text-[9px] font-bold uppercase text-maldives-600 dark:text-maldives-400 hidden sm:inline">
-                      Hoje
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1">
+                    {hasCycleItem && (
+                      <span
+                        title="Possui compras do ciclo de fechamento da fatura"
+                        className="text-[8px] sm:text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700"
+                      >
+                        ↺
+                      </span>
+                    )}
 
-                  {isPeak && dayTotal > 0 && (
-                    <span
-                      title="Dia de maior gasto no mês"
-                      className="material-symbols-outlined text-terracotta-600 dark:text-terracotta-400 text-[14px] sm:text-[16px]"
-                    >
-                      local_fire_department
-                    </span>
-                  )}
+                    {isToday && !isSelected && (
+                      <span className="text-[9px] font-bold uppercase text-maldives-600 dark:text-maldives-400 hidden sm:inline">
+                        Hoje
+                      </span>
+                    )}
+
+                    {isPeak && dayTotal > 0 && (
+                      <span
+                        title="Dia de maior gasto no mês"
+                        className="material-symbols-outlined text-terracotta-600 dark:text-terracotta-400 text-[14px] sm:text-[16px]"
+                      >
+                        local_fire_department
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Centro: ícones de tags */}
@@ -858,6 +1030,17 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                             <span>•</span>
                             <span className="font-mono">{purchase.installment}</span>
                           </>
+                        )}
+                        {purchase.isPreviousMonthCycle && (
+                          <span className="font-mono font-bold text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded-md border border-amber-300 dark:border-amber-700 flex items-center gap-1">
+                            <span>📅</span>
+                            <span>{purchase.cycleBadgeText || 'Ciclo da Fatura'}</span>
+                          </span>
+                        )}
+                        {!purchase.isPreviousMonthCycle && purchase.cycleBadgeText && (
+                          <span className="font-mono text-espresso-500 bg-oat-100 dark:bg-espresso-700/50 px-1.5 py-0.5 rounded">
+                            📅 {purchase.cycleBadgeText}
+                          </span>
                         )}
                       </div>
                     </div>

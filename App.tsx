@@ -189,6 +189,7 @@ function extractGlobalCards(
             name: item.name,
             cardLimit: item.cardLimit || 1500,
             cardDueDay: item.cardDueDay || 10,
+            cardClosingDay: item.cardClosingDay || (item.name.toLowerCase().includes('nubank') ? 25 : 5),
           });
         }
       }
@@ -241,6 +242,7 @@ function normalizeExpensesWithGlobalCards(
           name: matchingGlobalCard.name,
           cardLimit: matchingGlobalCard.cardLimit ?? item.cardLimit,
           cardDueDay: matchingGlobalCard.cardDueDay ?? item.cardDueDay,
+          cardClosingDay: matchingGlobalCard.cardClosingDay ?? item.cardClosingDay,
         });
         continue;
       }
@@ -260,6 +262,7 @@ function normalizeExpensesWithGlobalCards(
         subcategory: 'cartao',
         cardLimit: gCard.cardLimit,
         cardDueDay: gCard.cardDueDay,
+        cardClosingDay: gCard.cardClosingDay,
         cardTransactions: [],
         isCustom: true,
       });
@@ -1217,6 +1220,7 @@ export const App: React.FC = () => {
       subcategory: 'cartao',
       cardLimit: newGlobalCard.cardLimit,
       cardDueDay: newGlobalCard.cardDueDay,
+      cardClosingDay: newGlobalCard.cardClosingDay,
       cardTransactions: [],
       isCustom: true,
     };
@@ -1247,6 +1251,9 @@ export const App: React.FC = () => {
               ...(typeof updated.cardDueDay !== 'undefined'
                 ? { cardDueDay: updated.cardDueDay }
                 : {}),
+              ...(typeof updated.cardClosingDay !== 'undefined'
+                ? { cardClosingDay: updated.cardClosingDay }
+                : {}),
             }
           : e
       )
@@ -1268,6 +1275,9 @@ export const App: React.FC = () => {
                     : {}),
                   ...(typeof updated.cardDueDay !== 'undefined'
                     ? { cardDueDay: updated.cardDueDay }
+                    : {}),
+                  ...(typeof updated.cardClosingDay !== 'undefined'
+                    ? { cardClosingDay: updated.cardClosingDay }
                     : {}),
                 }
               : e
@@ -2743,6 +2753,7 @@ export const App: React.FC = () => {
               onAddCardExpense={handleAddExpense}
               onUpdateExpense={handleUpdateExpense}
               onDeleteExpense={handleDeleteExpense}
+              showToast={showToast}
             />
             <GoalsManager
               goals={longTermGoals}
@@ -2905,6 +2916,7 @@ export const App: React.FC = () => {
                   onAddCardExpense={handleAddExpense}
                   onUpdateExpense={handleUpdateExpense}
                   onDeleteExpense={handleDeleteExpense}
+                  showToast={showToast}
                 />
               )}
 

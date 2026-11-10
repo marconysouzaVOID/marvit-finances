@@ -98,6 +98,7 @@ export const INITIAL_GLOBAL_CARDS: GlobalCreditCard[] = [
     name: 'Cartão Nubank / Ultravioleta',
     cardLimit: 1500,
     cardDueDay: 10,
+    cardClosingDay: 25,
     color: '#820ad1',
     brand: 'nubank',
   },
@@ -106,6 +107,7 @@ export const INITIAL_GLOBAL_CARDS: GlobalCreditCard[] = [
     name: 'Cartão Inter / Pontos',
     cardLimit: 1000,
     cardDueDay: 15,
+    cardClosingDay: 5,
     color: '#ff7a00',
     brand: 'inter',
   },
@@ -128,6 +130,7 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
     category: 'estilo',
     subcategory: 'cartao',
     cardDueDay: 10,
+    cardClosingDay: 25,
     cardLimit: 1500,
     cardTransactions: [
       {
@@ -164,6 +167,7 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
     category: 'estilo',
     subcategory: 'cartao',
     cardDueDay: 15,
+    cardClosingDay: 5,
     cardLimit: 1000,
     cardTransactions: [
       {

@@ -27,6 +27,7 @@ interface CreditCardsManagerProps {
   onAddCardExpense: (card: Omit<ExpenseItem, 'id'>) => void;
   onUpdateExpense: (id: string, updated: Partial<ExpenseItem>) => void;
   onDeleteExpense: (id: string) => void;
+  showToast?: (msg: string) => void;
 }
 
 export interface BankPreset {
@@ -34,6 +35,7 @@ export interface BankPreset {
   label: string;
   brand: string;
   dueDay: number;
+  closingDay: number;
   limit: number;
   badgeClass: string;
 }
@@ -44,6 +46,7 @@ export const BANK_PRESETS: BankPreset[] = [
     label: '💜 Nubank',
     brand: 'nubank',
     dueDay: 10,
+    closingDay: 25,
     limit: 2500,
     badgeClass: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100',
   },
@@ -52,6 +55,7 @@ export const BANK_PRESETS: BankPreset[] = [
     label: '🧡 Inter',
     brand: 'inter',
     dueDay: 15,
+    closingDay: 5,
     limit: 2000,
     badgeClass: 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100',
   },
@@ -60,6 +64,7 @@ export const BANK_PRESETS: BankPreset[] = [
     label: '💙 Itaú',
     brand: 'itau',
     dueDay: 20,
+    closingDay: 10,
     limit: 5000,
     badgeClass: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100',
   },
@@ -68,6 +73,7 @@ export const BANK_PRESETS: BankPreset[] = [
     label: '🖤 C6 Bank',
     brand: 'c6',
     dueDay: 25,
+    closingDay: 18,
     limit: 6000,
     badgeClass: 'bg-zinc-100 text-zinc-800 border-zinc-300 hover:bg-zinc-200',
   },
@@ -76,6 +82,7 @@ export const BANK_PRESETS: BankPreset[] = [
     label: '💛 XP',
     brand: 'xp',
     dueDay: 22,
+    closingDay: 15,
     limit: 10000,
     badgeClass: 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100',
   },
@@ -84,6 +91,7 @@ export const BANK_PRESETS: BankPreset[] = [
     label: '🔴 Santander',
     brand: 'santander',
     dueDay: 12,
+    closingDay: 2,
     limit: 4000,
     badgeClass: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
   },
@@ -96,6 +104,11 @@ export interface CsvParseSummary {
   ignoredPaymentsCount: number;
   ignoredPaymentsTotal: number;
   detectedBank?: string;
+  cycleInfo?: {
+    hasPreviousMonthPurchases: boolean;
+    previousMonthCount: number;
+    dateRange?: string;
+  };
 }
 
 export { inferCardPurchaseTag };
@@ -207,12 +220,41 @@ export function parseCreditCardCsvDetailed(
   const totalAmount =
     Math.round(transactions.reduce((acc, t) => acc + t.amount, 0) * 100) / 100;
 
+  // Identificar ciclo de datas (ex: se há compras do mês de fechamento anterior como 26/09 a 29/09)
+  const monthCountMap = new Map<number, number>();
+  transactions.forEach((t) => {
+    if (t.purchaseDate && t.purchaseDate.includes('/')) {
+      const parts = t.purchaseDate.split('/');
+      const m = parseInt(parts[1], 10);
+      if (!isNaN(m)) {
+        monthCountMap.set(m, (monthCountMap.get(m) || 0) + 1);
+      }
+    }
+  });
+
+  let hasPreviousMonthPurchases = false;
+  let previousMonthCount = 0;
+  if (monthCountMap.size > 1) {
+    const sortedMonths = Array.from(monthCountMap.keys()).sort((a, b) => a - b);
+    const earlierMonth = sortedMonths[0];
+    previousMonthCount = monthCountMap.get(earlierMonth) || 0;
+    hasPreviousMonthPurchases = true;
+  }
+
   return {
     fileName,
     transactions,
     totalAmount,
     ignoredPaymentsCount,
     ignoredPaymentsTotal: Math.round(ignoredPaymentsTotal * 100) / 100,
+    cycleInfo: {
+      hasPreviousMonthPurchases,
+      previousMonthCount,
+      dateRange:
+        transactions.length > 0
+          ? `${transactions[transactions.length - 1].purchaseDate} a ${transactions[0].purchaseDate}`
+          : undefined,
+    },
   };
 }
 
@@ -231,6 +273,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   onAddCardExpense,
   onUpdateExpense,
   onDeleteExpense,
+  showToast,
 }) => {
   const [cardsSubView, setCardsSubView] = useState<'invoices' | 'calendar'>(
     initialSubView
@@ -289,12 +332,14 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   const [newCardName, setNewCardName] = useState('');
   const [newCardLimit, setNewCardLimit] = useState<number | ''>(1500);
   const [newCardDueDay, setNewCardDueDay] = useState<number | ''>(10);
+  const [newCardClosingDay, setNewCardClosingDay] = useState<number | ''>(25);
 
   // Estado de edição de configurações do cartão ativo
   const [isEditingCardMeta, setIsEditingCardMeta] = useState(false);
   const [editCardName, setEditCardName] = useState('');
   const [editCardLimit, setEditCardLimit] = useState<number | ''>('');
   const [editCardDueDay, setEditCardDueDay] = useState<number | ''>('');
+  const [editCardClosingDay, setEditCardClosingDay] = useState<number | ''>('');
 
   // Estado do Importador de Fatura CSV / PDF (Pré-visualização e modo Substituir vs Somar)
   const [csvPreview, setCsvPreview] = useState<CsvParseSummary | null>(null);
@@ -366,6 +411,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           Number(newCardDueDay) >= 1 && Number(newCardDueDay) <= 31
             ? Number(newCardDueDay)
             : undefined,
+        cardClosingDay:
+          Number(newCardClosingDay) >= 1 && Number(newCardClosingDay) <= 31
+            ? Number(newCardClosingDay)
+            : undefined,
       });
     } else {
       onAddCardExpense({
@@ -378,6 +427,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
         cardDueDay:
           Number(newCardDueDay) >= 1 && Number(newCardDueDay) <= 31
             ? Number(newCardDueDay)
+            : undefined,
+        cardClosingDay:
+          Number(newCardClosingDay) >= 1 && Number(newCardClosingDay) <= 31
+            ? Number(newCardClosingDay)
             : undefined,
         isCustom: true,
       });
@@ -392,6 +445,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     setEditCardName(activeCard.name);
     setEditCardLimit(activeCard.cardLimit || '');
     setEditCardDueDay(activeCard.cardDueDay || '');
+    setEditCardClosingDay(activeCard.cardClosingDay || 25);
     setIsEditingCardMeta(true);
   };
 
@@ -407,6 +461,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           Number(editCardDueDay) >= 1 && Number(editCardDueDay) <= 31
             ? Number(editCardDueDay)
             : undefined,
+        cardClosingDay:
+          Number(editCardClosingDay) >= 1 && Number(editCardClosingDay) <= 31
+            ? Number(editCardClosingDay)
+            : undefined,
       });
     } else {
       onUpdateExpense(activeCard.id, {
@@ -415,6 +473,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
         cardDueDay:
           Number(editCardDueDay) >= 1 && Number(editCardDueDay) <= 31
             ? Number(editCardDueDay)
+            : undefined,
+        cardClosingDay:
+          Number(editCardClosingDay) >= 1 && Number(editCardClosingDay) <= 31
+            ? Number(editCardClosingDay)
             : undefined,
       });
     }
@@ -696,6 +758,11 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
     setCsvPreview(null);
     setSelectedTagFilter('all');
+    if (showToast) {
+      showToast(
+        `Fatura importada com sucesso! ${finalTransactions.length} compras salvas no ${activeCard.name}.`
+      );
+    }
   };
 
   const handleConvertDirectToCard = (item: ExpenseItem) => {
@@ -964,17 +1031,18 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           setNewCardName(p.name);
                           setNewCardLimit(p.limit);
                           setNewCardDueDay(p.dueDay);
+                          setNewCardClosingDay(p.closingDay);
                         }}
                         className={`text-xs px-2.5 py-1 rounded-xl font-bold border transition cursor-pointer ${p.badgeClass} shadow-2xs`}
                         title={`Preencher dados com ${p.name}`}
                       >
-                        {p.label} (Venc. {p.dueDay})
+                        {p.label} (Venc. {p.dueDay} • Fecha {p.closingDay})
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div>
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
                       Nome do Cartão / Banco
@@ -990,7 +1058,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                   <div>
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Meta / Limite Global deste Cartão (R$)
+                      Meta / Limite Global (R$)
                     </label>
                     <input
                       type="number"
@@ -1009,7 +1077,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                   <div>
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Dia do Vencimento Global (1 a 31)
+                      Dia Vencimento (1 a 31)
                     </label>
                     <input
                       type="number"
@@ -1022,6 +1090,25 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         )
                       }
                       placeholder="Ex: 10"
+                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-espresso-700 mb-1 block" title="Dia que fecha a fatura (ex: dia 25)">
+                      Dia Fechamento (1 a 31)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="31"
+                      value={newCardClosingDay}
+                      onChange={(e) =>
+                        setNewCardClosingDay(
+                          e.target.value === '' ? '' : Number(e.target.value)
+                        )
+                      }
+                      placeholder="Ex: 25"
                       className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
@@ -1264,6 +1351,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       {activeCard.cardDueDay && (
                         <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 shrink-0">
                           Venc. dia {activeCard.cardDueDay}
+                          {activeCard.cardClosingDay ? ` • Fecha dia ${activeCard.cardClosingDay}` : ''}
                         </span>
                       )}
                     </div>
@@ -1426,6 +1514,18 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         </div>
                       )}
 
+                      {csvPreview.cycleInfo?.hasPreviousMonthPurchases && (
+                        <div className="px-3 py-2 rounded-xl bg-amber-50/90 border border-amber-300 text-[11px] text-amber-950 flex items-center gap-2 shadow-2xs">
+                          <span className="material-symbols-outlined text-amber-600 text-[18px] shrink-0">
+                            sync_alt
+                          </span>
+                          <div>
+                            <strong>Ciclo de Fechamento Detectado:</strong> Foram identificadas{' '}
+                            <strong>{csvPreview.cycleInfo.previousMonthCount} compras</strong> realizadas no mês anterior (após o fechamento, ex: a partir do dia 26/09). Elas serão mapeadas automaticamente no calendário diário deste mês!
+                          </div>
+                        </div>
+                      )}
+
                       {/* Escolha do Modo de Importação (Substituir Fatura vs Somar) */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <button
@@ -1572,7 +1672,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       <p className="text-[11px] text-espresso-600">
                         Alterações no nome, teto de gastos ou dia de vencimento serão sincronizadas em <strong>todos os meses</strong> do sistema.
                       </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div>
                           <label className="text-[11px] font-semibold text-espresso-700 block mb-1">
                             Nome do Cartão
@@ -1606,7 +1706,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         </div>
                         <div>
                           <label className="text-[11px] font-semibold text-espresso-700 block mb-1">
-                            Dia de Vencimento Global
+                            Dia de Vencimento
                           </label>
                           <input
                             type="number"
@@ -1621,6 +1721,26 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                               )
                             }
                             placeholder="Ex: 10"
+                            className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-semibold text-espresso-700 block mb-1" title="Dia que fecha a fatura (ex: dia 25)">
+                            Dia de Fechamento
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="31"
+                            value={editCardClosingDay}
+                            onChange={(e) =>
+                              setEditCardClosingDay(
+                                e.target.value === ''
+                                  ? ''
+                                  : Number(e.target.value)
+                              )
+                            }
+                            placeholder="Ex: 25"
                             className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                           />
                         </div>
@@ -1933,6 +2053,32 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                     className="w-14 sm:w-16 bg-transparent text-[10px] font-mono text-espresso-700 dark:text-oat-200 focus:outline-none focus:border-b focus:border-terracotta-500 text-center placeholder:text-espresso-400"
                                   />
                                 </div>
+
+                                {/* Badge de Ciclo de Fechamento da Fatura */}
+                                {tx.purchaseDate &&
+                                  selectedMonthKey &&
+                                  (() => {
+                                    const parts = selectedMonthKey.split('-');
+                                    if (parts.length !== 2) return false;
+                                    const curM = parseInt(parts[1], 10);
+                                    const prevM = curM === 1 ? 12 : curM - 1;
+                                    const prevMStr = String(prevM).padStart(2, '0');
+                                    const isPrev =
+                                      tx.purchaseDate.endsWith(`/${prevMStr}`) ||
+                                      tx.purchaseDate.includes(`/${prevMStr}/`) ||
+                                      tx.purchaseDate.includes(`-${prevMStr}-`);
+                                    return (
+                                      isPrev && (
+                                        <span
+                                          title="Compra realizada após o fechamento da fatura anterior (Ciclo da Fatura)"
+                                          className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shrink-0 flex items-center gap-0.5"
+                                        >
+                                          <span>↺</span>
+                                          <span>Ciclo</span>
+                                        </span>
+                                      )
+                                    );
+                                  })()}
                               </div>
                             </div>
                           </div>

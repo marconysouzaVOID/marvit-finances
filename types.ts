@@ -30,6 +30,7 @@ export interface GlobalCreditCard {
   name: string; // Ex: "Cartão Nubank / Ultravioleta"
   cardLimit?: number; // Limite global do cartão
   cardDueDay?: number; // Dia de vencimento (1 a 31)
+  cardClosingDay?: number; // Dia de fechamento da fatura (1 a 31, ex: 25)
   color?: string; // Cor visual / tema
   brand?: string; // Banco / bandeira (ex: 'nubank', 'inter', 'c6', 'xp', 'itau')
   isArchived?: boolean; // Se arquivado, não aparece nos meses ativos
@@ -51,6 +52,8 @@ export interface ExpenseItem {
   cardTransactions?: CreditCardTransaction[];
   /** Dia de vencimento opcional do cartão */
   cardDueDay?: number;
+  /** Dia de fechamento opcional da fatura (ex: 25) */
+  cardClosingDay?: number;
   /** Limite ou teto planejado para este cartão no mês */
   cardLimit?: number;
   /** Data do gasto direto quando subcategory === 'direto' (Ex: "12/11" ou "2026-11-12") */
