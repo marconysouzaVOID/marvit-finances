@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T07:00:39.821Z",
+  "updatedAt": "2026-11-10T07:00:40.479Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T07:00:38.521Z",
+    "exportedAt": "2026-11-10T07:00:39.303Z",
     "selectedMonthKey": "2026-09",
     "monthsData": {
       "2026-11": {
@@ -1902,7 +1902,7 @@
       },
       "2026-09": {
         "monthKey": "2026-09",
-        "updatedAt": "2026-11-10T07:00:38.521Z",
+        "updatedAt": "2026-11-10T07:00:39.303Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -1915,13 +1915,6 @@
           "investimento": 25
         },
         "expenses": [
-          {
-            "name": "Financiamento Veículo",
-            "amount": 1253,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006429901"
-          },
           {
             "name": "Contas (Luz)",
             "amount": 144.12,
@@ -3390,13 +3383,6 @@
       "investimento": 25
     },
     "expenses": [
-      {
-        "name": "Financiamento Veículo",
-        "amount": 1253,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006429901"
-      },
       {
         "name": "Contas (Luz)",
         "amount": 144.12,
