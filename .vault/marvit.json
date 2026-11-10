@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T07:05:06.292Z",
+  "updatedAt": "2026-11-10T07:05:07.582Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T07:04:45.484Z",
-    "selectedMonthKey": "2026-12",
+    "selectedMonthKey": "2026-09",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -1908,7 +1908,7 @@
       },
       "2026-09": {
         "monthKey": "2026-09",
-        "updatedAt": "2026-11-10T07:04:08.977Z",
+        "updatedAt": "2026-11-10T07:04:45.484Z",
         "profile": {
           "monthlyIncome": 0,
           "additionalIncome": 0,
@@ -1977,7 +1977,7 @@
       }
     },
     "profile": {
-      "monthlyIncome": 16800,
+      "monthlyIncome": 0,
       "additionalIncome": 0,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
@@ -1989,49 +1989,16 @@
     },
     "expenses": [
       {
+        "id": "exp-1794272287172",
+        "globalCardId": "exp-1794272287172",
         "name": "Itau",
         "amount": 0,
         "category": "estilo",
         "subcategory": "cartao",
-        "cardTransactions": [],
         "cardLimit": 700,
         "cardDueDay": 2,
-        "isCustom": true,
-        "id": "exp-1794272287172",
-        "globalCardId": "exp-1794272287172"
-      },
-      {
-        "name": "Financiamento Veículo",
-        "amount": 1253,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006429901"
-      },
-      {
-        "name": "Contas (Luz)",
-        "amount": 144.12,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006373678"
-      },
-      {
-        "name": "Contas (Água)",
-        "amount": 106.35,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006363575"
-      },
-      {
-        "id": "1",
-        "name": "Aluguel / Parcela Imóvel",
-        "amount": 2986.43,
-        "category": "essencial"
-      },
-      {
-        "id": "3",
-        "name": "Contas (Internet)",
-        "amount": 117.8,
-        "category": "essencial"
+        "cardTransactions": [],
+        "isCustom": true
       },
       {
         "id": "exp-1794272085025",
