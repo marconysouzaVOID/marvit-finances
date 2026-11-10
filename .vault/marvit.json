@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T06:55:07.382Z",
+  "updatedAt": "2026-11-10T06:55:08.284Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T06:54:59.619Z",
-    "selectedMonthKey": "2026-12",
+    "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T06:54:41.461Z",
+        "updatedAt": "2026-11-10T06:54:59.619Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -3449,7 +3449,7 @@
       }
     },
     "profile": {
-      "monthlyIncome": 16800,
+      "monthlyIncome": 22000,
       "additionalIncome": 0,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
@@ -3461,16 +3461,94 @@
     },
     "expenses": [
       {
-        "name": "Itau",
+        "name": "Contas (Luz)",
+        "amount": 1,
+        "category": "essencial",
+        "isCustom": true,
+        "id": "exp-1794272239955"
+      },
+      {
+        "name": "Contas (Água)",
+        "amount": 1,
+        "category": "essencial",
+        "isCustom": true,
+        "id": "exp-1794272228065"
+      },
+      {
+        "name": "Nubank Vitoria",
         "amount": 0,
         "category": "estilo",
         "subcategory": "cartao",
         "cardTransactions": [],
-        "cardLimit": 700,
+        "cardLimit": 2500,
         "cardDueDay": 2,
         "isCustom": true,
-        "id": "exp-1794272287172",
-        "globalCardId": "exp-1794272287172"
+        "id": "exp-1794272085025",
+        "globalCardId": "exp-1794272085025"
+      },
+      {
+        "name": "Nubank Marcony",
+        "amount": 535.82,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardTransactions": [
+          {
+            "id": "csv-tx-1794289511519-1",
+            "description": "Dl *Uberrides",
+            "amount": 8.94,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "09/11"
+          },
+          {
+            "id": "csv-tx-1794289511520-2",
+            "description": "Ifd*Ifood Club",
+            "amount": 12.9,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "07/11"
+          },
+          {
+            "id": "csv-tx-1794289511520-4",
+            "description": "Dl*Uberrides",
+            "amount": 13.98,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "30/10"
+          },
+          {
+            "id": "csv-tx-1794289511520-5",
+            "description": "Odonto Riso",
+            "amount": 500,
+            "tag": "outros",
+            "installment": "Parcela 7/8",
+            "purchaseDate": "27/10"
+          }
+        ],
+        "cardLimit": 1000,
+        "cardDueDay": 2,
+        "isCustom": true,
+        "id": "exp-1794272073562",
+        "globalCardId": "exp-1794272073562"
+      },
+      {
+        "name": "Inter",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardTransactions": [],
+        "cardLimit": 3000,
+        "cardDueDay": 2,
+        "isCustom": true,
+        "id": "exp-1794272057919",
+        "globalCardId": "exp-1794272057919"
+      },
+      {
+        "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
+        "amount": 8791.22,
+        "category": "investimento",
+        "isCustom": true,
+        "id": "exp-1794007990084"
       },
       {
         "name": "Financiamento Veículo",
@@ -3478,20 +3556,6 @@
         "category": "essencial",
         "isCustom": true,
         "id": "exp-1794006429901"
-      },
-      {
-        "name": "Contas (Luz)",
-        "amount": 144.12,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006373678"
-      },
-      {
-        "name": "Contas (Água)",
-        "amount": 106.35,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006363575"
       },
       {
         "id": "1",
@@ -3506,39 +3570,32 @@
         "category": "essencial"
       },
       {
-        "id": "exp-1794272085025",
-        "globalCardId": "exp-1794272085025",
-        "name": "Nubank Vitoria",
-        "amount": 0,
+        "id": "exp-1794272287172",
+        "globalCardId": "exp-1794272287172",
+        "name": "Itau",
+        "amount": 1213.18,
         "category": "estilo",
         "subcategory": "cartao",
-        "cardLimit": 2500,
+        "cardLimit": 700,
         "cardDueDay": 2,
-        "cardTransactions": [],
-        "isCustom": true
-      },
-      {
-        "id": "exp-1794272073562",
-        "globalCardId": "exp-1794272073562",
-        "name": "Nubank Marcony",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardLimit": 1000,
-        "cardDueDay": 2,
-        "cardTransactions": [],
-        "isCustom": true
-      },
-      {
-        "id": "exp-1794272057919",
-        "globalCardId": "exp-1794272057919",
-        "name": "Inter",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardLimit": 3000,
-        "cardDueDay": 2,
-        "cardTransactions": [],
+        "cardTransactions": [
+          {
+            "id": "tx-1794289467275",
+            "description": "Moto Eletrica",
+            "amount": 647.51,
+            "tag": "compras",
+            "installment": "Parcela 2/10",
+            "purchaseDate": "16/10"
+          },
+          {
+            "id": "tx-1794289441491",
+            "description": "Localiza",
+            "amount": 565.67,
+            "tag": "lazer",
+            "installment": "Parcela 2/3",
+            "purchaseDate": "09/10"
+          }
+        ],
         "isCustom": true
       }
     ],
