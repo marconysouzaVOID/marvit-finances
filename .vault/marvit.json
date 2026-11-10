@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:38:16.758Z",
+  "updatedAt": "2026-11-10T05:39:13.055Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:38:15.457Z",
+    "exportedAt": "2026-11-10T05:39:11.803Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -117,7 +117,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T05:38:15.457Z",
+        "updatedAt": "2026-11-10T05:39:11.803Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -189,7 +189,8 @@
             "category": "estilo",
             "subcategory": "direto",
             "isCustom": true,
-            "id": "exp-1794271769420"
+            "id": "exp-1794271769420",
+            "expenseDate": "19/10"
           },
           {
             "name": "Financiamento Veículo",
@@ -1727,7 +1728,8 @@
         "category": "estilo",
         "subcategory": "direto",
         "isCustom": true,
-        "id": "exp-1794271769420"
+        "id": "exp-1794271769420",
+        "expenseDate": "19/10"
       },
       {
         "name": "Financiamento Veículo",
@@ -3234,7 +3236,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T05:38:15.457Z",
+        "dateCreated": "2026-11-10T05:39:11.803Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -3306,7 +3308,8 @@
             "category": "estilo",
             "subcategory": "direto",
             "isCustom": true,
-            "id": "exp-1794271769420"
+            "id": "exp-1794271769420",
+            "expenseDate": "19/10"
           },
           {
             "name": "Financiamento Veículo",
