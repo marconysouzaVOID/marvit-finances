@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:40:40.429Z",
+  "updatedAt": "2026-11-10T05:44:02.786Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:40:39.246Z",
+    "exportedAt": "2026-11-10T05:44:01.491Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T05:40:39.246Z",
+        "updatedAt": "2026-11-10T05:44:01.491Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -102,12 +102,21 @@
             "id": "exp-1794272287172",
             "globalCardId": "exp-1794272287172",
             "name": "Itau",
-            "amount": 0,
+            "amount": 565.67,
             "category": "estilo",
             "subcategory": "cartao",
             "cardLimit": 700,
             "cardDueDay": 2,
-            "cardTransactions": [],
+            "cardTransactions": [
+              {
+                "id": "tx-1794289441491",
+                "description": "Localiza",
+                "amount": 565.67,
+                "tag": "lazer",
+                "installment": "Parcela 2/3",
+                "purchaseDate": "09/10"
+              }
+            ],
             "isCustom": true
           }
         ],
@@ -1749,12 +1758,21 @@
         "id": "exp-1794272287172",
         "globalCardId": "exp-1794272287172",
         "name": "Itau",
-        "amount": 0,
+        "amount": 565.67,
         "category": "estilo",
         "subcategory": "cartao",
         "cardLimit": 700,
         "cardDueDay": 2,
-        "cardTransactions": [],
+        "cardTransactions": [
+          {
+            "id": "tx-1794289441491",
+            "description": "Localiza",
+            "amount": 565.67,
+            "tag": "lazer",
+            "installment": "Parcela 2/3",
+            "purchaseDate": "09/10"
+          }
+        ],
         "isCustom": true
       }
     ],
@@ -1803,7 +1821,7 @@
         "id": "snap-1794273445526",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T05:40:39.246Z",
+        "dateCreated": "2026-11-10T05:44:01.491Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -1896,12 +1914,21 @@
             "id": "exp-1794272287172",
             "globalCardId": "exp-1794272287172",
             "name": "Itau",
-            "amount": 0,
+            "amount": 565.67,
             "category": "estilo",
             "subcategory": "cartao",
             "cardLimit": 700,
             "cardDueDay": 2,
-            "cardTransactions": [],
+            "cardTransactions": [
+              {
+                "id": "tx-1794289441491",
+                "description": "Localiza",
+                "amount": 565.67,
+                "tag": "lazer",
+                "installment": "Parcela 2/3",
+                "purchaseDate": "09/10"
+              }
+            ],
             "isCustom": true
           }
         ],
