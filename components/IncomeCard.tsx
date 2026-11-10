@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FinancialProfile } from '../types';
 import { formatCurrency } from '../utils/formatters';
+import { FormattedBrlInput } from './FormattedBrlInput';
 
 interface IncomeCardProps {
   profile: FinancialProfile;
@@ -93,21 +94,19 @@ export const IncomeCard: React.FC<IncomeCardProps> = ({
             </span>
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-2.5 text-[11px] font-bold text-espresso-500 font-mono">
+            <span className="absolute left-3 top-2 text-[11px] font-bold text-espresso-500 font-mono">
               R$
             </span>
-            <input
-              type="number"
-              min="0"
-              step="100"
-              value={profile.monthlyIncome || ''}
-              onChange={(e) =>
+            <FormattedBrlInput
+              value={profile.monthlyIncome || 0}
+              emptyWhenZero
+              onChange={(val) =>
                 onChangeProfile({
                   ...profile,
-                  monthlyIncome: Math.max(0, Number(e.target.value)),
+                  monthlyIncome: Math.max(0, val),
                 })
               }
-              className="compact-select w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl py-1.5 sm:py-2 pl-8 sm:pl-10 pr-2.5 text-xs sm:text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500 focus:ring-2 focus:ring-maldives-500/15 transition"
+              className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl py-1.5 sm:py-2 pl-8 sm:pl-10 pr-2.5 text-xs sm:text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500 focus:ring-2 focus:ring-maldives-500/15 transition"
               placeholder="0,00"
             />
           </div>
@@ -121,21 +120,19 @@ export const IncomeCard: React.FC<IncomeCardProps> = ({
             </span>
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-2.5 text-[11px] font-bold text-espresso-500 font-mono">
+            <span className="absolute left-3 top-2 text-[11px] font-bold text-espresso-500 font-mono">
               R$
             </span>
-            <input
-              type="number"
-              min="0"
-              step="50"
-              value={profile.additionalIncome || ''}
-              onChange={(e) =>
+            <FormattedBrlInput
+              value={profile.additionalIncome || 0}
+              emptyWhenZero
+              onChange={(val) =>
                 onChangeProfile({
                   ...profile,
-                  additionalIncome: Math.max(0, Number(e.target.value)),
+                  additionalIncome: Math.max(0, val),
                 })
               }
-              className="compact-select w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl py-1.5 sm:py-2 pl-8 sm:pl-10 pr-2.5 text-xs sm:text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500 focus:ring-2 focus:ring-maldives-500/15 transition"
+              className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl py-1.5 sm:py-2 pl-8 sm:pl-10 pr-2.5 text-xs sm:text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500 focus:ring-2 focus:ring-maldives-500/15 transition"
               placeholder="0,00"
             />
           </div>

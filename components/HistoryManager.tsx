@@ -71,19 +71,20 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
   };
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-maldives-600 text-xl">
+    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-3 sm:p-6 shadow-cozy">
+      <div className="flex flex-row sm:items-center justify-between gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-oat-200 dark:border-white/[0.06]">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
+            <span className="material-symbols-outlined text-maldives-600 text-lg sm:text-xl">
               calendar_month
             </span>
           </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-display font-bold text-espresso-900">
-              Histórico & Fechamentos Mensais
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-xl font-display font-bold text-espresso-900 truncate">
+              <span className="sm:hidden">Histórico</span>
+              <span className="hidden sm:inline">Histórico & Fechamentos Mensais</span>
             </h2>
-            <p className="text-xs text-espresso-600">
+            <p className="text-xs text-espresso-600 hidden sm:block">
               Os cálculos de cada mês já são salvos automaticamente no Calendário. Aqui você também pode guardar fechamentos oficiais ou restaurá-los diretamente para a competência correspondente.
             </p>
           </div>
@@ -96,12 +97,15 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
             setNewLabel(formatMonthKeySlashLabel(selectedMonthKey));
             setNewNotes(currentMonthNotes || '');
           }}
-          className="px-4 py-2 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer self-start sm:self-auto shrink-0"
+          className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-[11px] sm:text-xs transition flex items-center gap-1 shadow-sm cursor-pointer shrink-0 whitespace-nowrap"
         >
-          <span className="material-symbols-outlined text-[18px]">
+          <span className="material-symbols-outlined text-[15px] sm:text-[18px]">
             bookmark_add
           </span>
-          <span>
+          <span className="sm:hidden">
+            Salvar {formatMonthKeySlashLabel(selectedMonthKey)}
+          </span>
+          <span className="hidden sm:inline">
             Salvar {formatMonthKeySlashLabel(selectedMonthKey)} no Histórico
           </span>
         </button>
@@ -200,21 +204,21 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
         </div>
       )}
 
-      <div className="mt-5">
+      <div className="mt-3 sm:mt-5">
         {history.length === 0 ? (
-          <div className="p-10 text-center bg-oat-100/60 dark:bg-oat-200/35 rounded-2xl border border-dashed border-oat-300 dark:border-white/[0.1]">
-            <span className="material-symbols-outlined text-espresso-400 text-4xl mb-2">
+          <div className="p-5 sm:p-10 text-center bg-oat-100/60 dark:bg-oat-200/35 rounded-2xl border border-dashed border-oat-300 dark:border-white/[0.1]">
+            <span className="material-symbols-outlined text-espresso-400 text-2xl sm:text-4xl mb-1 sm:mb-2">
               history_edu
             </span>
-            <p className="text-espresso-700 text-sm font-bold">
+            <p className="text-espresso-700 text-xs sm:text-sm font-bold">
               Nenhum fechamento mensal salvo ainda.
             </p>
-            <p className="text-espresso-500 text-xs mt-1">
-              Seus cálculos mensais já ficam salvos automaticamente no Calendário de Meses no topo da tela. Use o botão acima se quiser criar um marco de fechamento adicional.
+            <p className="text-espresso-500 text-[11px] sm:text-xs mt-1 max-w-md mx-auto">
+              Use o botão acima se quiser registrar um fechamento oficial do mês.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-2.5 pb-1.5 -mx-1 px-1 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:pb-0 md:overflow-visible">
             {history.map((item) => {
               const resolvedMonthKey =
                 item.monthKey ||
@@ -243,7 +247,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                 <motion.div
                   key={item.id}
                   whileHover={{ y: -3 }}
-                  className={`bg-oat-100/80 border-2 rounded-2xl p-4 flex flex-col justify-between transition shadow-sm ${
+                  className={`w-[258px] shrink-0 snap-start md:w-auto bg-oat-100/80 border-2 rounded-2xl p-3 sm:p-4 flex flex-col justify-between transition shadow-sm ${
                     isCurrentCalendarMonth
                       ? 'border-maldives-500 bg-maldives-50/40'
                       : 'border-oat-300 hover:border-maldives-400'
@@ -251,32 +255,31 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2">
-                      <div>
+                      <div className="min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <h3 className="text-base font-display font-bold text-espresso-900">
+                          <h3 className="text-sm sm:text-base font-display font-bold text-espresso-900 truncate">
                             {item.monthLabel}
                           </h3>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300">
+                          <span className="text-[9.5px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300">
                             {formatMonthKeyLabel(resolvedMonthKey)}
                           </span>
                         </div>
-                        <span className="text-[10px] text-espresso-500 font-mono block mt-0.5">
-                          Salvo em{' '}
+                        <span className="text-[9.5px] sm:text-[10px] text-espresso-500 font-mono block mt-0.5">
                           {new Date(item.dateCreated).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
-                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 shrink-0">
-                        {formatPercent(aportePercent)} aportes
+                      <span className="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 shrink-0">
+                        {formatPercent(aportePercent)}
                       </span>
                     </div>
 
                     {item.notes && (
-                      <p className="text-xs text-espresso-600 italic bg-oat-50 p-2.5 rounded-xl mt-2.5 border border-oat-200">
+                      <p className="text-[11px] sm:text-xs text-espresso-600 italic bg-oat-50 px-2 py-1.5 sm:p-2.5 rounded-xl mt-2 border border-oat-200 truncate">
                         “{item.notes}”
                       </p>
                     )}
 
-                    <div className="mt-3 space-y-1.5 text-xs text-espresso-700 font-mono">
+                    <div className="mt-2 sm:mt-3 space-y-1 text-[11px] sm:text-xs text-espresso-700 font-mono">
                       <div className="flex justify-between">
                         <span className="font-sans text-espresso-500">Renda Total:</span>
                         <span className="font-bold text-espresso-900">
@@ -288,7 +291,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                         <span>{formatCurrency(catTotals.essencial)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="font-sans text-espresso-500">Estilo de Vida:</span>
+                        <span className="font-sans text-espresso-500">Estilo:</span>
                         <span>{formatCurrency(catTotals.estilo)}</span>
                       </div>
                       <div className="flex justify-between">
@@ -297,7 +300,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                           {formatCurrency(catTotals.investimento)}
                         </span>
                       </div>
-                      <div className="flex justify-between border-t border-oat-300 pt-1.5">
+                      <div className="flex justify-between border-t border-oat-300 pt-1">
                         <span className="font-sans text-espresso-600 font-semibold">
                           Total Alocado:
                         </span>
@@ -306,26 +309,26 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-oat-300 flex items-center justify-between gap-2">
+                  <div className="mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-oat-300 flex items-center justify-between gap-2">
                     <button
                       onClick={() => onLoadSnapshot(item)}
-                      className="px-3 py-1.5 rounded-xl bg-oat-50 hover:bg-maldives-50 text-xs font-bold text-maldives-700 border border-oat-300 hover:border-maldives-300 transition flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-oat-50 hover:bg-maldives-50 text-[11px] sm:text-xs font-bold text-maldives-700 border border-oat-300 hover:border-maldives-300 transition flex items-center gap-1 cursor-pointer"
                       title={`Abrir e restaurar na competência ${formatMonthKeyLabel(resolvedMonthKey)}`}
                     >
-                      <span className="material-symbols-outlined text-[16px]">
+                      <span className="material-symbols-outlined text-[15px] sm:text-[16px]">
                         file_open
                       </span>
                       <span>
-                        Restaurar em {formatMonthKeySlashLabel(resolvedMonthKey)}
+                        Restaurar {formatMonthKeySlashLabel(resolvedMonthKey)}
                       </span>
                     </button>
 
                     <button
                       onClick={() => onDeleteSnapshot(item.id)}
-                      className="text-espresso-400 hover:text-terracotta-600 p-1.5 rounded-xl hover:bg-terracotta-50 transition cursor-pointer"
+                      className="text-espresso-400 hover:text-terracotta-600 p-1 sm:p-1.5 rounded-xl hover:bg-terracotta-50 transition cursor-pointer"
                       title="Excluir mês do histórico"
                     >
-                      <span className="material-symbols-outlined text-[18px]">
+                      <span className="material-symbols-outlined text-[16px] sm:text-[18px]">
                         delete
                       </span>
                     </button>

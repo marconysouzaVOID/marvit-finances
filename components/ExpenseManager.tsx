@@ -4,6 +4,7 @@ import { AUVP_GOALS } from '../constants';
 import { ExpenseCategory, ExpenseItem, LifestyleSubcategory } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { PwaSheetModal } from './PwaSheetModal';
+import { FormattedBrlInput } from './FormattedBrlInput';
 
 export interface CloneableMonthOption {
   monthKey: string;
@@ -73,10 +74,25 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
     });
   };
 
-  const filteredExpenses =
+  const CATEGORY_SORT_ORDER: Record<ExpenseCategory, number> = {
+    essencial: 0,
+    estilo: 1,
+    investimento: 2,
+  };
+
+  const filteredExpenses = (
     selectedFilter === 'all'
       ? expenses
-      : expenses.filter((e) => e.category === selectedFilter);
+      : expenses.filter((e) => e.category === selectedFilter)
+  )
+    .slice()
+    .sort((a, b) => {
+      const orderDiff =
+        (CATEGORY_SORT_ORDER[a.category] ?? 99) -
+        (CATEGORY_SORT_ORDER[b.category] ?? 99);
+      if (orderDiff !== 0) return orderDiff;
+      return a.name.localeCompare(b.name, 'pt-BR');
+    });
 
   const handleCreate = () => {
     const isCardCreation = newCategory === 'estilo' && newSubcategory === 'cartao';
@@ -107,11 +123,11 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
               </span>
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-xl font-display font-bold text-espresso-900 truncate">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h2 className="text-sm sm:text-xl font-display font-bold text-espresso-900 whitespace-nowrap">
                   Gastos & Aportes
                 </h2>
-                <span className="text-[11px] bg-oat-200 text-espresso-700 font-mono font-bold px-2 py-0.5 rounded-full border border-oat-300 dark:border-white/[0.07] shrink-0">
+                <span className="text-[10px] sm:text-[11px] bg-oat-200 text-espresso-700 font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded-full border border-oat-300 dark:border-white/[0.07] shrink-0">
                   {expenses.length}
                 </span>
               </div>
@@ -121,21 +137,21 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:hidden shrink-0">
+          <div className="flex items-center gap-1 sm:hidden shrink-0">
             <button
               type="button"
               onClick={() => setIsCloneMenuOpen(true)}
-              className="w-8 h-8 rounded-xl bg-oat-100 dark:bg-oat-200/75 text-maldives-600 border border-oat-300 dark:border-white/[0.08] flex items-center justify-center cursor-pointer"
+              className="w-7 h-7 rounded-xl bg-oat-100 dark:bg-oat-200/75 text-maldives-600 border border-oat-300 dark:border-white/[0.08] flex items-center justify-center cursor-pointer"
               title="Clonar orçamento"
             >
-              <span className="material-symbols-outlined text-[18px]">copy_all</span>
+              <span className="material-symbols-outlined text-[16px]">copy_all</span>
             </button>
             <button
               type="button"
               onClick={() => setIsAddModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-maldives-500 text-white text-xs font-bold flex items-center gap-1 shadow-xs cursor-pointer"
+              className="px-2.5 py-1 rounded-xl bg-maldives-500 text-white text-[11px] font-bold flex items-center gap-0.5 shadow-xs cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[16px]">add</span>
+              <span className="material-symbols-outlined text-[14px]">add</span>
               <span>Novo</span>
             </button>
           </div>
@@ -165,7 +181,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-4 sm:flex items-center gap-1 bg-oat-200/70 dark:bg-oat-200/60 p-1 rounded-2xl border border-oat-300 dark:border-white/[0.06] text-[11px] sm:text-xs w-full sm:w-auto">
+          <div className="flex items-center justify-between sm:justify-start gap-1 bg-oat-200/70 dark:bg-oat-200/60 p-1 rounded-2xl border border-oat-300 dark:border-white/[0.06] text-[10px] sm:text-xs w-full sm:w-auto">
             {(
               [
                 { id: 'all', label: 'Todos', dot: '' },
@@ -177,14 +193,14 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setSelectedFilter(tab.id)}
-                className={`px-2 sm:px-3 py-1.5 rounded-xl font-bold transition flex items-center justify-center gap-1 cursor-pointer min-w-0 ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition flex items-center justify-center gap-1 cursor-pointer shrink-0 ${
                   selectedFilter === tab.id
                     ? 'bg-oat-50 text-espresso-900 shadow-sm border border-oat-300 dark:border-white/[0.08]'
                     : 'text-espresso-600 hover:text-espresso-900'
                 }`}
               >
                 {tab.dot && <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${tab.dot}`} />}
-                <span className="truncate">{tab.label}</span>
+                <span className="whitespace-nowrap">{tab.label}</span>
               </button>
             ))}
           </div>
@@ -476,21 +492,21 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.2 }}
-                    className="p-3.5 sm:px-4 hover:bg-oat-100/80 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 group"
+                    className="px-2.5 py-2 sm:px-4 sm:py-2.5 hover:bg-oat-100/80 transition flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-3 group"
                   >
-                    <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                       <span
-                        className="w-3 h-3 rounded-full shrink-0 shadow-sm"
+                        className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
                         style={{ backgroundColor: goal.color }}
                         title={goal.name}
                       />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex-1 min-w-0 flex items-center justify-between sm:justify-start gap-1.5 flex-wrap">
+                        <div className="flex-1 min-w-0">
                           {isGoalLinked ? (
-                            <span className="text-sm font-bold text-espresso-900 flex items-center gap-1.5 flex-wrap">
+                            <span className="text-xs sm:text-sm font-bold text-espresso-900 flex items-center gap-1.5 flex-wrap">
                               <span className="truncate">{item.name}</span>
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 shrink-0">
-                                Pote dos Sonhos
+                              <span className="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 shrink-0">
+                                Pote
                               </span>
                             </span>
                           ) : (
@@ -500,130 +516,118 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                               onChange={(e) =>
                                 onUpdateExpense(item.id, { name: e.target.value })
                               }
-                              className="w-full sm:w-auto sm:min-w-[220px] min-w-0 bg-transparent text-sm font-semibold text-espresso-900 hover:border-b hover:border-oat-400 focus:border-b focus:border-maldives-500 focus:outline-none truncate"
+                              className="compact-select w-full sm:w-auto sm:min-w-[200px] min-w-0 bg-transparent text-xs sm:text-sm font-semibold text-espresso-900 hover:border-b hover:border-oat-400 focus:border-b focus:border-maldives-500 focus:outline-none truncate"
                             />
                           )}
                         </div>
-                        <div className="flex items-center gap-1.5 flex-wrap mt-1">
-                          <span
-                            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${goal.badgeBg}`}
-                          >
-                            {goal.shortName}
-                          </span>
-
-                          {item.category === 'estilo' && !isGoalLinked && (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                onUpdateExpense(item.id, {
-                                  subcategory:
-                                    item.subcategory === 'cartao' ? 'direto' : 'cartao',
-                                })
-                              }
-                              title="Clique para alternar a subcategoria entre Cartão de Crédito e Gasto Direto"
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1 transition cursor-pointer ${
-                                item.subcategory === 'cartao'
-                                  ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-2xs'
-                                  : 'bg-oat-100 text-espresso-600 border-oat-300 hover:border-terracotta-400'
-                              }`}
-                            >
-                              <span className="material-symbols-outlined text-[12px]">
-                                {item.subcategory === 'cartao'
-                                  ? 'credit_card'
-                                  : 'payments'}
-                              </span>
-                              <span>
-                                {item.subcategory === 'cartao'
-                                  ? 'Cartão de Crédito'
-                                  : 'Gasto Direto'}
-                              </span>
-                            </button>
-                          )}
-
-                          {item.category === 'estilo' &&
-                            item.subcategory === 'cartao' &&
-                            onOpenCardsTab && (
-                              <button
-                                type="button"
-                                onClick={() => onOpenCardsTab(item.id)}
-                                className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-maldives-50 text-maldives-800 border border-maldives-300 hover:bg-maldives-100 flex items-center gap-1 transition cursor-pointer"
-                                title="Abrir aba Cartões para gerir os gastos individualizados deste cartão"
-                              >
-                                <span className="material-symbols-outlined text-[12px]">
-                                  receipt_long
-                                </span>
-                                <span>
-                                  Fatura ({item.cardTransactions?.length || 0})
-                                </span>
-                              </button>
-                            )}
-                        </div>
+                        <span
+                          className={`text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full border shrink-0 ${goal.badgeBg}`}
+                        >
+                          {goal.shortName}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 justify-between sm:justify-end">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-espresso-500 font-mono">
-                          R$
-                        </span>
-                        <input
-                          type="number"
-                          min="0"
-                          step="10"
-                          value={item.amount}
-                          onChange={(e) =>
-                            onUpdateExpense(item.id, {
-                              amount: Math.max(0, Number(e.target.value)),
-                            })
-                          }
-                          title={
-                            isGoalLinked
-                              ? 'Valor de aporte deste Pote dos Sonhos neste mês (ajuste se necessário)'
-                              : 'Editar valor mensal'
-                          }
-                          className="w-28 bg-surface-input border border-oat-300 dark:border-white/[0.08] focus:border-maldives-500 rounded-xl px-2.5 py-1.5 text-sm font-bold text-right text-espresso-900 font-mono focus:outline-none"
-                        />
+                    <div className="flex items-center gap-1.5 sm:gap-2 justify-between sm:justify-end pl-4 sm:pl-0">
+                      <div className="flex items-center gap-1 flex-wrap min-w-0">
+                        {item.category === 'estilo' && !isGoalLinked && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              onUpdateExpense(item.id, {
+                                subcategory:
+                                  item.subcategory === 'cartao' ? 'direto' : 'cartao',
+                              })
+                            }
+                            title="Clique para alternar entre Cartão de Crédito e Gasto Direto"
+                            className={`text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full border flex items-center gap-0.5 transition cursor-pointer shrink-0 ${
+                              item.subcategory === 'cartao'
+                                ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-2xs'
+                                : 'bg-oat-100 text-espresso-600 border-oat-300 hover:border-terracotta-400'
+                            }`}
+                          >
+                            <span className="material-symbols-outlined text-[11px]">
+                              {item.subcategory === 'cartao'
+                                ? 'credit_card'
+                                : 'payments'}
+                            </span>
+                            <span>
+                              {item.subcategory === 'cartao' ? 'Cartão' : 'Direto'}
+                            </span>
+                          </button>
+                        )}
+
+                        {item.category === 'estilo' &&
+                          item.subcategory === 'cartao' &&
+                          onOpenCardsTab && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenCardsTab(item.id)}
+                              className="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-maldives-50 text-maldives-800 border border-maldives-300 hover:bg-maldives-100 flex items-center gap-0.5 transition cursor-pointer shrink-0"
+                              title="Abrir aba Cartões para gerir os gastos individualizados deste cartão"
+                            >
+                              <span className="material-symbols-outlined text-[11px]">
+                                receipt_long
+                              </span>
+                              <span>
+                                Fatura ({item.cardTransactions?.length || 0})
+                              </span>
+                            </button>
+                          )}
                       </div>
 
-                      {isGoalLinked ? (
-                        <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 ml-auto">
+                        <div className="flex items-center gap-1">
+                          <span className="text-[11px] font-bold text-espresso-500 font-mono">
+                            R$
+                          </span>
+                          <FormattedBrlInput
+                            value={item.amount}
+                            onChange={(val) =>
+                              onUpdateExpense(item.id, { amount: Math.max(0, val) })
+                            }
+                            className="w-24 sm:w-28 bg-surface-input border border-oat-300 dark:border-white/[0.08] focus:border-maldives-500 rounded-lg px-2 py-1 text-xs sm:text-sm font-bold text-right text-espresso-900 font-mono focus:outline-none"
+                          />
+                        </div>
+
+                        {isGoalLinked ? (
                           <button
                             type="button"
                             onClick={() => onDeleteExpense(item.id)}
-                            className="px-2.5 py-1 rounded-xl bg-terracotta-50 hover:bg-terracotta-100 text-terracotta-700 border border-terracotta-300/80 dark:border-terracotta-300/35 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
-                            title="Excluir o aporte deste Pote dos Sonhos apenas deste mês (não afeta os outros meses)"
+                            className="px-2 py-1 rounded-lg bg-terracotta-50 hover:bg-terracotta-100 text-terracotta-700 border border-terracotta-300/80 dark:border-terracotta-300/35 text-[11px] font-bold flex items-center gap-1 transition cursor-pointer shadow-2xs"
+                            title="Excluir o aporte deste Pote dos Sonhos apenas deste mês"
                           >
-                            <span className="material-symbols-outlined text-[16px] text-terracotta-600">
+                            <span className="material-symbols-outlined text-[15px] text-terracotta-600">
                               delete
                             </span>
                             <span className="hidden sm:inline">Excluir deste Mês</span>
                           </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => handleCloneExpense(item)}
-                            className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-xl hover:bg-maldives-50 transition cursor-pointer"
-                            title="Clonar este lançamento (duplicar no orçamento)"
-                          >
-                            <span className="material-symbols-outlined text-[19px]">
-                              content_copy
-                            </span>
-                          </button>
+                        ) : (
+                          <div className="flex items-center gap-0.5">
+                            <button
+                              type="button"
+                              onClick={() => handleCloneExpense(item)}
+                              className="text-espresso-400 hover:text-maldives-600 p-1 rounded-lg hover:bg-maldives-50 transition cursor-pointer"
+                              title="Clonar este lançamento"
+                            >
+                              <span className="material-symbols-outlined text-[17px]">
+                                content_copy
+                              </span>
+                            </button>
 
-                          <button
-                            type="button"
-                            onClick={() => onDeleteExpense(item.id)}
-                            className="text-espresso-400 hover:text-terracotta-600 p-1.5 rounded-xl hover:bg-terracotta-50 transition cursor-pointer"
-                            title="Excluir item"
-                          >
-                            <span className="material-symbols-outlined text-[19px]">
-                              delete
-                            </span>
-                          </button>
-                        </div>
-                      )}
+                            <button
+                              type="button"
+                              onClick={() => onDeleteExpense(item.id)}
+                              className="text-espresso-400 hover:text-terracotta-600 p-1 rounded-lg hover:bg-terracotta-50 transition cursor-pointer"
+                              title="Excluir item"
+                            >
+                              <span className="material-symbols-outlined text-[17px]">
+                                delete
+                              </span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 );

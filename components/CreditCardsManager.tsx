@@ -12,6 +12,7 @@ import { parsePdfInvoice, isPdfFile, parsePastedInvoiceText } from '../utils/pdf
 import { InteractiveAsset } from './InteractiveAsset';
 import { LifestyleDailyCalendar } from './LifestyleDailyCalendar';
 import { PwaSheetModal } from './PwaSheetModal';
+import { FormattedBrlInput } from './FormattedBrlInput';
 
 interface CreditCardsManagerProps {
   expenses: ExpenseItem[];
@@ -311,19 +312,28 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   const [activeCardId, setActiveCardId] = useState<string>(
     selectedCardId || creditCards[0]?.id || ''
   );
+  const [isCardDetailsExpanded, setIsCardDetailsExpanded] = useState<boolean>(
+    Boolean(selectedCardId)
+  );
 
   useEffect(() => {
     if (selectedCardId && creditCards.some((c) => c.id === selectedCardId)) {
       setActiveCardId(selectedCardId);
-    } else if (
+      setIsCardDetailsExpanded(true);
+    }
+  }, [selectedCardId, creditCards]);
+
+  useEffect(() => {
+    if (
       creditCards.length > 0 &&
       !creditCards.some((c) => c.id === activeCardId)
     ) {
       setActiveCardId(creditCards[0].id);
     } else if (creditCards.length === 0) {
       setActiveCardId('');
+      setIsCardDetailsExpanded(false);
     }
-  }, [creditCards, selectedCardId, activeCardId]);
+  }, [creditCards, activeCardId]);
 
   const activeCard = useMemo(
     () => creditCards.find((c) => c.id === activeCardId) || creditCards[0] || null,
@@ -404,6 +414,31 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     if (openAddExpenseModal) {
       setIsAddTxModalOpen(true);
     }
+  };
+
+  const handleToggleCardDrawer = (id: string) => {
+    if (isCardDetailsExpanded && activeCardId === id) {
+      setIsCardDetailsExpanded(false);
+      setIsEditingCardMeta(false);
+      setIsImportMenuOpen(false);
+      setCsvPreview(null);
+      if (onSelectCardId) onSelectCardId(null);
+      return;
+    }
+    setActiveCardId(id);
+    setIsCardDetailsExpanded(true);
+    setIsEditingCardMeta(false);
+    setIsImportMenuOpen(false);
+    setCsvPreview(null);
+    if (onSelectCardId) onSelectCardId(id);
+  };
+
+  const handleCloseCardDrawer = () => {
+    setIsCardDetailsExpanded(false);
+    setIsEditingCardMeta(false);
+    setIsImportMenuOpen(false);
+    setCsvPreview(null);
+    if (onSelectCardId) onSelectCardId(null);
   };
 
   const handleCreateCard = (e: React.FormEvent) => {
@@ -906,8 +941,9 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-base sm:text-2xl font-display font-bold text-espresso-900 truncate">
-                    Cartões de Crédito
+                  <h2 className="text-base sm:text-2xl font-display font-bold text-espresso-900 whitespace-nowrap">
+                    <span className="sm:hidden">Cartões</span>
+                    <span className="hidden sm:inline">Cartões de Crédito</span>
                   </h2>
                   <p className="text-xs sm:text-sm text-espresso-600 mt-0.5 hidden sm:block">
                     Gerencie faturas ou importe arquivos PDF/CSV. O total atualiza o pilar <strong>Estilo de Vida</strong>.
@@ -1170,9 +1206,9 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   Seus Cartões ({creditCards.length})
                 </span>
               </div>
-              <span className="text-[10.5px] font-semibold text-terracotta-600 lg:hidden flex items-center gap-1">
+              <span className="text-[10px] font-semibold text-espresso-600 lg:hidden flex items-center gap-1">
                 <span className="material-symbols-outlined text-[13px]">touch_app</span>
-                Toque para lançar
+                Toque no cartão p/ abrir • + lança
               </span>
               <span className="text-[10px] font-semibold text-espresso-600 bg-oat-200/80 px-2 py-0.5 rounded-full hidden lg:inline-flex items-center gap-0.5">
                 <span className="material-symbols-outlined text-[11px]">all_inclusive</span>
@@ -1180,9 +1216,9 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
               </span>
             </div>
 
-            <div className="flex overflow-x-auto lg:grid lg:grid-cols-1 gap-3 pb-1.5 lg:pb-0 -mx-1 px-1 lg:mx-0 lg:px-0 snap-x snap-mandatory overscroll-x-contain">
+            <div className="flex overflow-x-auto lg:grid lg:grid-cols-1 gap-2.5 sm:gap-3 pb-1.5 lg:pb-0 -mx-1 px-1 lg:mx-0 lg:px-0 snap-x snap-mandatory overscroll-x-contain">
               {creditCards.map((card) => {
-                const isSelected = activeCard?.id === card.id;
+                const isSelected = isCardDetailsExpanded && activeCard?.id === card.id;
                 const txCount = card.cardTransactions?.length || 0;
                 const limitPercent =
                   card.cardLimit && card.cardLimit > 0
@@ -1195,31 +1231,33 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <motion.div
                     key={card.id}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => handleSelectCard(card.id, true)}
-                    className={`w-[78vw] max-w-[290px] sm:w-[270px] lg:w-auto lg:max-w-none shrink-0 snap-start p-4 rounded-3xl border transition cursor-pointer relative overflow-hidden ${
+                    onClick={() => handleToggleCardDrawer(card.id)}
+                    className={`w-[74vw] max-w-[268px] sm:w-[270px] lg:w-auto lg:max-w-none shrink-0 snap-start p-3 sm:p-4 rounded-2xl sm:rounded-3xl border transition cursor-pointer relative overflow-hidden ${
                       isSelected
-                        ? 'bg-gradient-to-br from-terracotta-50/95 via-oat-50 to-maldives-50/50 dark:from-terracotta-50/70 dark:via-oat-50 dark:to-maldives-50/35 border-terracotta-500/80 shadow-cozy'
-                        : 'bg-oat-50/90 border-oat-300 dark:border-white/[0.07] hover:border-terracotta-300/60'
+                        ? 'bg-gradient-to-br from-terracotta-50/95 via-oat-50 to-maldives-50/50 dark:from-terracotta-50/70 dark:via-oat-50 dark:to-maldives-50/35 border-terracotta-500/80 shadow-cozy opacity-100'
+                        : isCardDetailsExpanded
+                        ? 'bg-oat-50/90 border-oat-300 dark:border-white/[0.07] hover:border-terracotta-300/60 opacity-85 hover:opacity-100'
+                        : 'bg-oat-100/70 dark:bg-oat-100/45 border-oat-300/80 dark:border-white/[0.06] hover:border-terracotta-300/60 opacity-80 hover:opacity-100'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <div
-                          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center shrink-0 border ${
+                          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 border ${
                             isSelected
                               ? 'bg-terracotta-500 text-white border-terracotta-600'
                               : 'bg-terracotta-50 text-terracotta-600 border-terracotta-200'
                           }`}
                         >
-                          <span className="material-symbols-outlined text-lg sm:text-xl">
+                          <span className="material-symbols-outlined text-base sm:text-xl">
                             credit_card
                           </span>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="text-sm font-display font-bold text-espresso-900 truncate">
+                          <h3 className="text-xs sm:text-sm font-display font-bold text-espresso-900 truncate">
                             {card.name}
                           </h3>
-                          <div className="flex items-center gap-1.5 text-[11px] text-espresso-500 font-mono">
+                          <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-espresso-500 font-mono">
                             <span>
                               {txCount} {txCount === 1 ? 'item' : 'itens'}
                             </span>
@@ -1230,9 +1268,18 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         </div>
                       </div>
 
-                      <span className="w-7 h-7 rounded-full bg-terracotta-500/12 text-terracotta-600 border border-terracotta-400/30 shrink-0 flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectCard(card.id, true);
+                        }}
+                        aria-label={`Lançar despesa em ${card.name}`}
+                        title={`Lançar despesa em ${card.name}`}
+                        className="w-7 h-7 rounded-full bg-terracotta-500/15 hover:bg-terracotta-500 text-terracotta-600 hover:text-white border border-terracotta-400/40 shrink-0 flex items-center justify-center transition cursor-pointer"
+                      >
                         <span className="material-symbols-outlined text-[16px]">add</span>
-                      </span>
+                      </button>
                     </div>
 
                     <div className="mt-3 flex items-baseline justify-between">
@@ -1283,7 +1330,29 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
           {/* Coluna Direita (8 cols no desktop): Detalhamento & Ações do Cartão Ativo */}
           {activeCard && (
-            <div className="lg:col-span-8 bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-visible space-y-4">
+            <div
+              className={`lg:col-span-8 ${
+                isCardDetailsExpanded
+                  ? 'bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-3 sm:p-5 shadow-cozy overflow-visible space-y-3'
+                  : 'space-y-0'
+              }`}
+            >
+              {!isCardDetailsExpanded && (
+                <div className="rounded-2xl border border-dashed border-oat-300 dark:border-white/[0.08] bg-oat-100/50 dark:bg-oat-100/25 px-4 py-3.5 text-center opacity-75 select-none">
+                  <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-espresso-600">
+                    <span className="material-symbols-outlined text-[16px] text-espresso-400">
+                      visibility_off
+                    </span>
+                    <span>Lista de despesas recolhida</span>
+                  </div>
+                  <p className="text-[11px] text-espresso-500 mt-0.5">
+                    Toque em um cartão acima para abrir suas faturas ou no botão <strong>+</strong> para lançar direto.
+                  </p>
+                </div>
+              )}
+
+              {isCardDetailsExpanded && (
+                <>
               {/* Cabeçalho Enxuto do Cartão Selecionado */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-oat-200 dark:border-white/[0.06]">
                 <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -1446,6 +1515,16 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     >
                       <span className="material-symbols-outlined text-[16px]">delete</span>
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={handleCloseCardDrawer}
+                      className="w-8 h-8 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-500 hover:text-espresso-900 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
+                      title="Recolher lista de despesas"
+                      aria-label="Recolher lista de despesas"
+                    >
+                      <span className="material-symbols-outlined text-[17px]">expand_less</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1587,8 +1666,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     </button>
                   </div>
                 )}
+                </>
+              )}
 
-              {/* Modal Bottom Sheet: Nova Despesa no Cartão (abre ao tocar no cartão ou + Nova Despesa) */}
+              {/* Modal Bottom Sheet: Nova Despesa no Cartão (abre somente ao tocar no +) */}
               <PwaSheetModal
                 isOpen={isAddTxModalOpen}
                 onClose={() => setIsAddTxModalOpen(false)}
@@ -1827,8 +1908,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 </form>
               </PwaSheetModal>
 
+              {isCardDetailsExpanded && (
+                <>
               {/* Busca + Filtros por Tag / Subcategoria da Fatura */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex overflow-x-auto sm:flex-wrap sm:overflow-visible items-center gap-1.5 pb-1 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0 overscroll-x-contain">
                   <button
                     type="button"
@@ -1914,13 +1997,13 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       return (
                         <div
                           key={tx.id}
-                          className="p-3.5 sm:px-4 hover:bg-oat-100/80 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
+                          className="px-2.5 py-2 sm:px-4 sm:py-2.5 hover:bg-oat-100/80 transition flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2"
                         >
-                          <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
+                          <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
                             <div
-                              className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${tagMeta.badgeClass}`}
+                              className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl border flex items-center justify-center shrink-0 ${tagMeta.badgeClass}`}
                             >
-                              <span className="material-symbols-outlined text-[18px]">
+                              <span className="material-symbols-outlined text-[15px] sm:text-[18px]">
                                 {tagMeta.icon}
                               </span>
                             </div>
@@ -1934,10 +2017,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                     description: e.target.value,
                                   })
                                 }
-                                className="w-full bg-transparent text-sm font-semibold text-espresso-900 hover:border-b hover:border-oat-400 focus:border-b focus:border-terracotta-500 focus:outline-none truncate"
+                                className="compact-select w-full bg-transparent text-xs sm:text-sm font-semibold text-espresso-900 hover:border-b hover:border-oat-400 focus:border-b focus:border-terracotta-500 focus:outline-none truncate"
                               />
 
-                              <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                              <div className="flex items-center gap-1 flex-wrap mt-0.5">
                                 <select
                                   value={tx.tag}
                                   onChange={(e) =>
@@ -1945,7 +2028,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                       tag: e.target.value as CardPurchaseTag,
                                     })
                                   }
-                                  className={`compact-select text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer focus:outline-none ${tagMeta.badgeClass}`}
+                                  className={`compact-select text-[9.5px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full border cursor-pointer focus:outline-none ${tagMeta.badgeClass}`}
                                 >
                                   {(
                                     Object.keys(
@@ -1960,10 +2043,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                                 {/* Parcela Editável */}
                                 <div
-                                  className="flex items-center gap-1 bg-oat-200/90 rounded-lg px-2 py-0.5 border border-oat-300 dark:border-white/[0.08]"
+                                  className="flex items-center gap-0.5 bg-oat-200/90 rounded-md px-1.5 py-0.5 border border-oat-300 dark:border-white/[0.08]"
                                   title="Editar parcela (ex: À vista, 1/3, 2/6, Recorrente)"
                                 >
-                                  <span className="material-symbols-outlined text-[13px] text-espresso-500">
+                                  <span className="material-symbols-outlined text-[11px] text-espresso-500">
                                     layers
                                   </span>
                                   <input
@@ -1975,16 +2058,16 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                         installment: e.target.value,
                                       })
                                     }
-                                    className="w-16 sm:w-20 bg-transparent text-[10px] font-mono font-bold text-espresso-800 focus:outline-none focus:border-b focus:border-terracotta-500 placeholder:text-espresso-400"
+                                    className="compact-select w-12 sm:w-16 bg-transparent text-[9.5px] sm:text-[10px] font-mono font-bold text-espresso-800 focus:outline-none focus:border-b focus:border-terracotta-500 placeholder:text-espresso-400"
                                   />
                                 </div>
 
                                 {/* Dia / Data Editável */}
                                 <div
-                                  className="flex items-center gap-1 bg-oat-200/90 rounded-lg px-2 py-0.5 border border-oat-300 dark:border-white/[0.08]"
+                                  className="flex items-center gap-0.5 bg-oat-200/90 rounded-md px-1.5 py-0.5 border border-oat-300 dark:border-white/[0.08]"
                                   title="Editar dia ou data da compra (ex: 12/11, 2026-11-12 ou dia 12)"
                                 >
-                                  <span className="material-symbols-outlined text-[13px] text-espresso-500">
+                                  <span className="material-symbols-outlined text-[11px] text-espresso-500">
                                     calendar_today
                                   </span>
                                   <input
@@ -1996,7 +2079,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                         purchaseDate: e.target.value,
                                       })
                                     }
-                                    className="w-14 sm:w-16 bg-transparent text-[10px] font-mono text-espresso-700 focus:outline-none focus:border-b focus:border-terracotta-500 text-center placeholder:text-espresso-400"
+                                    className="compact-select w-11 sm:w-14 bg-transparent text-[9.5px] sm:text-[10px] font-mono text-espresso-700 focus:outline-none focus:border-b focus:border-terracotta-500 text-center placeholder:text-espresso-400"
                                   />
                                 </div>
 
@@ -2017,7 +2100,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                       isPrev && (
                                         <span
                                           title="Compra realizada após o fechamento da fatura anterior (Ciclo da Fatura)"
-                                          className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-400/30 shrink-0 flex items-center gap-0.5"
+                                          className="text-[9px] font-mono font-bold px-1 py-0.5 rounded bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-400/30 shrink-0 flex items-center gap-0.5"
                                         >
                                           <span>↺</span>
                                           <span>Ciclo</span>
@@ -2029,35 +2112,29 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between sm:justify-end gap-2.5">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-espresso-500 font-mono">
+                          <div className="flex items-center justify-end gap-1.5 pl-9 sm:pl-0">
+                            <div className="flex items-center gap-1">
+                              <span className="text-[11px] font-bold text-espresso-500 font-mono">
                                 R$
                               </span>
-                              <input
-                                type="number"
-                                min="0"
-                                step="0.01"
+                              <FormattedBrlInput
                                 value={tx.amount}
-                                onChange={(e) =>
+                                onChange={(val) =>
                                   handleUpdateTransaction(tx.id, {
-                                    amount: Math.max(
-                                      0,
-                                      Number(e.target.value)
-                                    ),
+                                    amount: Math.max(0, val),
                                   })
                                 }
-                                className="w-24 sm:w-28 bg-surface-input border border-oat-300 dark:border-white/[0.08] focus:border-terracotta-500 rounded-xl px-2.5 py-1.5 text-sm font-bold text-right text-espresso-900 font-mono focus:outline-none"
+                                className="w-22 sm:w-28 bg-surface-input border border-oat-300 dark:border-white/[0.08] focus:border-terracotta-500 rounded-lg px-2 py-0.5 sm:py-1 text-xs sm:text-sm font-bold text-right text-espresso-900 font-mono focus:outline-none"
                               />
                             </div>
 
                             <button
                               type="button"
                               onClick={() => handleCloneTransaction(tx)}
-                              className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-xl hover:bg-maldives-50 transition cursor-pointer"
+                              className="text-espresso-400 hover:text-maldives-600 p-1 rounded-lg hover:bg-maldives-50 transition cursor-pointer"
                               title="Clonar esta compra na fatura (duplicar)"
                             >
-                              <span className="material-symbols-outlined text-[18px]">
+                              <span className="material-symbols-outlined text-[16px]">
                                 content_copy
                               </span>
                             </button>
@@ -2065,10 +2142,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                             <button
                               type="button"
                               onClick={() => handleDeleteTransaction(tx.id)}
-                              className="text-espresso-400 hover:text-terracotta-600 p-1.5 rounded-xl hover:bg-terracotta-50 transition cursor-pointer"
+                              className="text-espresso-400 hover:text-terracotta-600 p-1 rounded-lg hover:bg-terracotta-50 transition cursor-pointer"
                               title="Remover compra da fatura"
                             >
-                              <span className="material-symbols-outlined text-[18px]">
+                              <span className="material-symbols-outlined text-[16px]">
                                 delete
                               </span>
                             </button>
@@ -2079,6 +2156,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   )}
                 </div>
               </div>
+                </>
+              )}
             </div>
           )}
         </div>

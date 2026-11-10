@@ -10,6 +10,7 @@ import {
 } from '../utils/formatters';
 import { InteractiveAsset } from './InteractiveAsset';
 import { PwaSheetModal } from './PwaSheetModal';
+import { FormattedBrlInput } from './FormattedBrlInput';
 
 interface GoalsManagerProps {
   goals: CustomGoalItem[];
@@ -408,23 +409,23 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.06 }}
-              className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] hover:border-maldives-400/70 rounded-3xl p-5 shadow-cozy flex flex-col justify-between transition-all"
+              className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] hover:border-maldives-400/70 rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-cozy flex flex-col justify-between transition-all"
             >
               <div>
                 {/* Topo do Card */}
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-maldives-600 text-xl">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-maldives-600 text-lg sm:text-xl">
                         {goal.icon || 'savings'}
                       </span>
                     </div>
-                    <div>
-                      <h3 className="text-base font-display font-bold text-espresso-900 leading-snug">
+                    <div className="min-w-0">
+                      <h3 className="text-sm sm:text-base font-display font-bold text-espresso-900 leading-tight truncate">
                         {goal.title}
                       </h3>
-                      <span className="text-[11px] font-mono text-espresso-500">
-                        Rentabilidade: {goal.annualInterestRate}% a.a.
+                      <span className="text-[10px] sm:text-[11px] font-mono text-espresso-500">
+                        Rentab.: {goal.annualInterestRate}% a.a.
                       </span>
                     </div>
                   </div>
@@ -617,30 +618,34 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                   <p
                     onClick={() => startEditingGoal(goal)}
                     title="Clique para editar observações"
-                    className="text-xs text-espresso-600 bg-oat-100/80 dark:bg-oat-200/45 hover:bg-oat-200/70 px-3 py-2 rounded-xl mt-3 border border-oat-200 dark:border-white/[0.06] italic cursor-pointer transition"
+                    className="text-[11px] text-espresso-600 bg-oat-100/80 dark:bg-oat-200/45 hover:bg-oat-200/70 px-2.5 py-1 rounded-lg mt-2 border border-oat-200 dark:border-white/[0.06] italic cursor-pointer transition truncate"
                   >
                     “{goal.notes}”
                   </p>
                 )}
 
                 {/* Progresso do Pote */}
-                <div className="mt-4">
-                  <div className="flex items-baseline justify-between">
-                    <div>
-                      <span className="text-xs text-espresso-500 block">Acumulado no Pote</span>
-                      <span className="text-xl font-mono font-extrabold text-maldives-700">
+                <div className="mt-2.5 sm:mt-3">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <div className="min-w-0">
+                      <span className="text-[10px] sm:text-xs text-espresso-500 block">
+                        Acumulado no Pote
+                      </span>
+                      <span className="text-base sm:text-xl font-mono font-extrabold text-maldives-700">
                         {formatCurrency(goal.currentAmount)}
                       </span>
                     </div>
-                    <div className="text-right">
-                      <span className="text-xs text-espresso-500 block">Meta Final</span>
-                      <span className="text-sm font-mono font-bold text-espresso-800">
+                    <div className="text-right shrink-0">
+                      <span className="text-[10px] sm:text-xs text-espresso-500 block">
+                        Meta Final
+                      </span>
+                      <span className="text-xs sm:text-sm font-mono font-bold text-espresso-800">
                         {formatCurrency(goal.targetAmount)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="w-full bg-oat-200 dark:bg-white/[0.08] rounded-full h-3.5 mt-2.5 overflow-hidden p-0.5 border border-oat-300 dark:border-white/[0.04]">
+                  <div className="w-full bg-oat-200 dark:bg-white/[0.08] rounded-full h-2.5 sm:h-3 mt-1.5 overflow-hidden p-0.5 border border-oat-300 dark:border-white/[0.04]">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${proj.progressPercent}%` }}
@@ -649,50 +654,44 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                     />
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] font-mono font-bold text-espresso-600 mt-1">
+                  <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold text-espresso-600 mt-1">
                     <span>{formatPercent(proj.progressPercent)} concluído</span>
                     <span>Faltam {formatCurrency(proj.remainingAmount)}</span>
                   </div>
                 </div>
 
                 {/* Edição Rápida de Saldo, Aporte Mensal e Rentabilidade */}
-                <div className="grid grid-cols-3 gap-2 mt-4 p-3 rounded-2xl bg-oat-100/90 dark:bg-oat-200/45 border border-oat-200 dark:border-white/[0.06]">
-                  <div>
-                    <label className="text-[10px] font-bold uppercase text-espresso-500 block mb-1">
-                      Já Guardado (R$)
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-2.5 sm:mt-3 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-oat-100/90 dark:bg-oat-200/45 border border-oat-200 dark:border-white/[0.06]">
+                  <div className="min-w-0">
+                    <label className="text-[9px] sm:text-[10px] font-bold uppercase text-espresso-500 block mb-0.5 truncate">
+                      Guardado (R$)
                     </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="100"
+                    <FormattedBrlInput
                       value={goal.currentAmount}
-                      onChange={(e) =>
+                      onChange={(val) =>
                         onUpdateGoal(goal.id, {
-                          currentAmount: Math.max(0, Number(e.target.value)),
+                          currentAmount: Math.max(0, val),
                         })
                       }
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-2 py-1 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-1.5 sm:px-2 py-1 text-[11px] sm:text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
-                  <div>
-                    <label className="text-[10px] font-bold uppercase text-maldives-700 block mb-1">
-                      Aporte (R$/mês)
+                  <div className="min-w-0">
+                    <label className="text-[9px] sm:text-[10px] font-bold uppercase text-maldives-700 block mb-0.5 truncate">
+                      Aporte/Mês
                     </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="50"
+                    <FormattedBrlInput
                       value={goal.monthlyContribution}
-                      onChange={(e) =>
+                      onChange={(val) =>
                         onUpdateGoal(goal.id, {
-                          monthlyContribution: Math.max(0, Number(e.target.value)),
+                          monthlyContribution: Math.max(0, val),
                         })
                       }
-                      className="w-full bg-surface-input border border-maldives-300 dark:border-maldives-400/35 rounded-lg px-2 py-1 text-xs font-mono font-bold text-maldives-700 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-maldives-300 dark:border-maldives-400/35 rounded-lg px-1.5 sm:px-2 py-1 text-[11px] sm:text-xs font-mono font-bold text-maldives-700 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
-                  <div>
-                    <label className="text-[10px] font-bold uppercase text-espresso-500 block mb-1">
+                  <div className="min-w-0">
+                    <label className="text-[9px] sm:text-[10px] font-bold uppercase text-espresso-500 block mb-0.5 truncate">
                       Taxa (% a.a.)
                     </label>
                     <input
@@ -706,35 +705,28 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                           annualInterestRate: Math.max(0, Number(e.target.value)),
                         })
                       }
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-2 py-1 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="compact-select w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-1.5 sm:px-2 py-1 text-[11px] sm:text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
                 </div>
 
                 {/* Projeção de Quando Será Batida */}
-                <div className="mt-3.5 p-3.5 rounded-2xl bg-maldives-50/70 border border-maldives-200 dark:border-maldives-300/25 space-y-1.5 text-xs">
-                  <div className="flex items-center justify-between">
+                <div className="mt-2.5 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-maldives-50/70 border border-maldives-200 dark:border-maldives-300/25 space-y-1 text-[11px]">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="text-espresso-700 font-semibold flex items-center gap-1">
-                      <span className="material-symbols-outlined text-maldives-600 text-[16px]">
+                      <span className="material-symbols-outlined text-maldives-600 text-[15px]">
                         event_available
                       </span>
-                      Previsão da Meta:
+                      Previsão:
                     </span>
                     <span className="font-bold text-maldives-800">
-                      {proj.estimatedDateLabel}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-[11px] text-espresso-600">
-                    <span>Tempo estimado:</span>
-                    <span className="font-mono font-bold text-espresso-900">
-                      {proj.yearsFormatted}
+                      {proj.estimatedDateLabel} ({proj.yearsFormatted})
                     </span>
                   </div>
 
                   {!proj.isAlreadyReached && Number.isFinite(proj.monthsRemaining) && (
-                    <div className="flex items-center justify-between text-[11px] text-espresso-600 pt-1 border-t border-maldives-200/70 dark:border-white/[0.06]">
-                      <span>Juros compostos ganhos:</span>
+                    <div className="flex items-center justify-between text-[10.5px] text-espresso-600 pt-1 border-t border-maldives-200/70 dark:border-white/[0.06]">
+                      <span>Juros compostos:</span>
                       <span className="font-mono font-bold text-sage-600">
                         +{formatCurrency(proj.totalInterestEarned)}
                       </span>
@@ -742,8 +734,8 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                   )}
 
                   {proj.monthsSavedWithExtra100 > 0 && (
-                    <div className="text-[11px] text-terracotta-700 bg-terracotta-50 px-2.5 py-1 rounded-lg border border-terracotta-200 dark:border-terracotta-300/25 mt-1">
-                      💡 +R$ 200/mês antecipa sua conquista em{' '}
+                    <div className="text-[10px] text-terracotta-700 bg-terracotta-50 px-2 py-1 rounded-lg border border-terracotta-200 dark:border-terracotta-300/25">
+                      💡 +R$ 200/mês antecipa em{' '}
                       <strong>{proj.monthsSavedWithExtra100} meses</strong>!
                     </div>
                   )}
@@ -751,7 +743,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
               </div>
 
               {/* Rodapé do Card: Toggle de Vínculo com Orçamento + Exclusão do Mês + Botão de Depósito Rápido */}
-              <div className="mt-4 pt-3 border-t border-oat-200 dark:border-white/[0.06] flex flex-wrap items-center justify-between gap-2">
+              <div className="mt-2.5 pt-2 border-t border-oat-200 dark:border-white/[0.06] flex flex-wrap items-center justify-between gap-1.5">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <button
                     type="button"

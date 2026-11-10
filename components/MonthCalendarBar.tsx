@@ -203,8 +203,8 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
               <span className="text-[10px] font-bold uppercase tracking-wider text-maldives-700 hidden md:block leading-none truncate">
                 Competência em Edição
               </span>
-              <span className="text-xs sm:text-base font-display font-extrabold text-espresso-900 block truncate">
-                {MONTH_NAMES_FULL[selectedMonthIdx]} de {selectedYear}
+              <span className="text-[11px] sm:text-base font-display font-extrabold text-espresso-900 block whitespace-nowrap">
+                {MONTH_NAMES_FULL[selectedMonthIdx]}/{selectedYear}
               </span>
             </div>
             <span className="material-symbols-outlined text-[17px] text-maldives-700 md:hidden shrink-0">
@@ -450,7 +450,7 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-2 pb-1.5 scrollbar-hide sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-3 sm:pb-0 sm:overflow-visible [&>*]:shrink-0 [&>*]:w-[128px] sm:[&>*]:w-auto [&>*]:snap-start [&>*]:!p-2.5 sm:[&>*]:!p-3.5 [&_h4]:text-xs [&_p]:text-[10px]">
                 {MONTH_NAMES_FULL.map((fullName, idx) => {
                   const mKey = `${viewYear}-${String(idx + 1).padStart(2, '0')}`;
                   const isSelected = mKey === selectedMonthKey;

@@ -17,7 +17,6 @@ import {
   MonthSnapshot,
   VaultCredentials,
 } from './types';
-import { AdvicePanel } from './components/AdvicePanel';
 import { CreditCardsManager } from './components/CreditCardsManager';
 import { ExpenseManager } from './components/ExpenseManager';
 import { FinancialOverview } from './components/FinancialOverview';
@@ -69,7 +68,6 @@ export type ActiveTab =
   | 'cards'
   | 'goals'
   | 'freedom'
-  | 'advice'
   | 'history';
 
 const STORAGE_KEY = 'marvit_finances_state_v2';
@@ -681,7 +679,7 @@ export const App: React.FC = () => {
     const tabParam = params.get('tab') as ActiveTab | null;
     if (
       tabParam &&
-      ['budget', 'cards', 'goals', 'freedom', 'advice', 'history'].includes(
+      ['budget', 'cards', 'goals', 'freedom', 'history'].includes(
         tabParam
       )
     ) {
@@ -2257,12 +2255,6 @@ export const App: React.FC = () => {
       icon: 'sailing',
     },
     {
-      id: 'advice',
-      label: 'Diagnóstico',
-      shortLabel: 'Receita',
-      icon: 'psychology',
-    },
-    {
       id: 'history',
       label: 'Histórico',
       shortLabel: 'Histórico',
@@ -2811,21 +2803,14 @@ export const App: React.FC = () => {
               onUpdateGoal={handleUpdateLongTermGoal}
               onDeleteGoal={handleDeleteLongTermGoal}
             />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <FreedomSimulator
-                monthlyEssentialCost={categoryTotals.essencial}
-                monthlyTotalCost={
-                  categoryTotals.essencial + categoryTotals.estilo
-                }
-                monthlyInvestment={categoryTotals.investimento}
-                profile={profile}
-              />
-              <AdvicePanel
-                totalIncome={totalIncome}
-                categoryTotals={categoryTotals}
-                balance={balance}
-              />
-            </div>
+            <FreedomSimulator
+              monthlyEssentialCost={categoryTotals.essencial}
+              monthlyTotalCost={
+                categoryTotals.essencial + categoryTotals.estilo
+              }
+              monthlyInvestment={categoryTotals.investimento}
+              profile={profile}
+            />
             <FinancialCharts
               monthsData={syncedMonthsData}
               history={history}
@@ -3045,14 +3030,6 @@ export const App: React.FC = () => {
                 </div>
               )}
 
-              {activeTab === 'advice' && (
-                <AdvicePanel
-                  totalIncome={totalIncome}
-                  categoryTotals={categoryTotals}
-                  balance={balance}
-                />
-              )}
-
               {activeTab === 'history' && (
                 <HistoryManager
                   history={history}
@@ -3070,7 +3047,7 @@ export const App: React.FC = () => {
 
       {/* Bottom Navigation Bar Responsiva para Mobile & PWA (iOS e Android) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-oat-50/92 dark:bg-surface-elevated/92 backdrop-blur-xl border-t border-oat-300 dark:border-white/[0.08] pb-safe shadow-cozy-lg">
-        <div className="grid grid-cols-6 px-1 pt-1.5 pb-1">
+        <div className="grid grid-cols-5 px-1 pt-1.5 pb-1">
           {navItems.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
