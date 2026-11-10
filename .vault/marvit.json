@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T15:45:40.079Z",
+  "updatedAt": "2026-11-10T15:45:46.695Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T15:45:39.001Z",
+    "exportedAt": "2026-11-10T15:45:45.544Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T15:45:39.001Z",
+        "updatedAt": "2026-11-10T15:45:45.544Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -174,7 +174,7 @@
                 "id": "csv-tx-1794325241107-18",
                 "description": "Felifarma",
                 "amount": 109.66,
-                "tag": "outros",
+                "tag": "autocuidado",
                 "installment": "À vista",
                 "purchaseDate": "26/10"
               },
@@ -2317,7 +2317,7 @@
             "id": "csv-tx-1794325241107-18",
             "description": "Felifarma",
             "amount": 109.66,
-            "tag": "outros",
+            "tag": "autocuidado",
             "installment": "À vista",
             "purchaseDate": "26/10"
           },
@@ -2526,7 +2526,7 @@
         "id": "snap-1794294285484",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T15:45:39.001Z",
+        "dateCreated": "2026-11-10T15:45:45.544Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -2691,7 +2691,7 @@
                 "id": "csv-tx-1794325241107-18",
                 "description": "Felifarma",
                 "amount": 109.66,
-                "tag": "outros",
+                "tag": "autocuidado",
                 "installment": "À vista",
                 "purchaseDate": "26/10"
               },
