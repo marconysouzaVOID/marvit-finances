@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:36:33.155Z",
+  "updatedAt": "2026-11-10T05:36:42.462Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:36:31.885Z",
+    "exportedAt": "2026-11-10T05:36:41.188Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -117,7 +117,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T05:36:31.885Z",
+        "updatedAt": "2026-11-10T05:36:41.188Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -1220,7 +1220,7 @@
                 "id": "pdf-tx-1794288737985-37",
                 "description": "FOGO E BRASA RESTAURAN",
                 "amount": 71.84,
-                "tag": "outros",
+                "tag": "gastronomia",
                 "installment": "À vista",
                 "purchaseDate": "28/09",
                 "notes": "Fatura Banco Inter (Fatura.pdf)"
@@ -2758,7 +2758,7 @@
             "id": "pdf-tx-1794288737985-37",
             "description": "FOGO E BRASA RESTAURAN",
             "amount": 71.84,
-            "tag": "outros",
+            "tag": "gastronomia",
             "installment": "À vista",
             "purchaseDate": "28/09",
             "notes": "Fatura Banco Inter (Fatura.pdf)"
@@ -3234,7 +3234,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T05:36:31.885Z",
+        "dateCreated": "2026-11-10T05:36:41.188Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -4337,7 +4337,7 @@
                 "id": "pdf-tx-1794288737985-37",
                 "description": "FOGO E BRASA RESTAURAN",
                 "amount": 71.84,
-                "tag": "outros",
+                "tag": "gastronomia",
                 "installment": "À vista",
                 "purchaseDate": "28/09",
                 "notes": "Fatura Banco Inter (Fatura.pdf)"
