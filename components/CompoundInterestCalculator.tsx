@@ -152,10 +152,10 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
   return (
     <div className="space-y-6">
       {/* Header com Navegação Interna */}
-      <div className="bg-oat-50/95 border border-oat-300 rounded-3xl p-4 sm:p-6 shadow-cozy">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-oat-200">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-maldives-600 text-2xl">
                 calculate
               </span>
@@ -171,7 +171,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
           </div>
 
           {/* Toggle entre Previsão Automática e Simulador Livre */}
-          <div className="flex items-center bg-oat-100 p-1 rounded-2xl border border-oat-300 self-start sm:self-auto">
+          <div className="flex items-center bg-oat-100 dark:bg-oat-200/60 p-1 rounded-2xl border border-oat-300 dark:border-white/[0.07] self-start sm:self-auto">
             <button
               onClick={() => setActiveTab('automatic')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
@@ -205,7 +205,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
         {/* --- CONTEÚDO MODO AUTOMÁTICO --- */}
         {activeTab === 'automatic' && (
           <div className="mt-5 space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-maldives-50/60 border border-maldives-200 p-4 rounded-2xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-maldives-50/60 border border-maldives-200 dark:border-maldives-300/25 p-4 rounded-2xl">
               <div>
                 <p className="text-xs font-bold text-maldives-800 flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-base">
@@ -227,7 +227,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
 
               <button
                 onClick={handleSyncWithAppData}
-                className="px-3 py-1.5 rounded-xl bg-white hover:bg-maldives-100 text-maldives-800 font-bold text-xs border border-maldives-300 transition flex items-center gap-1.5 cursor-pointer shrink-0 self-start md:self-auto shadow-xs"
+                className="px-3 py-1.5 rounded-xl bg-oat-50 dark:bg-oat-200/80 hover:bg-maldives-100 text-maldives-800 font-bold text-xs border border-maldives-300 dark:border-maldives-300/35 transition flex items-center gap-1.5 cursor-pointer shrink-0 self-start md:self-auto shadow-xs"
               >
                 <span className="material-symbols-outlined text-[16px]">
                   refresh
@@ -238,7 +238,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
 
             {/* Parâmetros da Previsão Automática */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-oat-100/70 p-3.5 rounded-2xl border border-oat-200">
+              <div className="bg-oat-100/70 dark:bg-oat-200/50 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
                 <label className="text-xs font-semibold text-espresso-700 block mb-1">
                   Patrimônio Atual Inicial
                 </label>
@@ -248,14 +248,14 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                   step="500"
                   value={autoInitialCapital}
                   onChange={(e) => setAutoInitialCapital(Math.max(0, Number(e.target.value)))}
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
                 />
                 <span className="text-[10px] text-espresso-500 mt-1 block">
                   Soma dos seus potes de metas
                 </span>
               </div>
 
-              <div className="bg-oat-100/70 p-3.5 rounded-2xl border border-oat-200">
+              <div className="bg-oat-100/70 dark:bg-oat-200/50 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
                 <label className="text-xs font-semibold text-espresso-700 block mb-1">
                   Aporte Mensal Previsto
                 </label>
@@ -265,14 +265,14 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                   step="100"
                   value={autoMonthlyContribution}
                   onChange={(e) => setAutoMonthlyContribution(Math.max(0, Number(e.target.value)))}
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
                 />
                 <span className="text-[10px] text-espresso-500 mt-1 block">
                   Valor investido a cada mês
                 </span>
               </div>
 
-              <div className="bg-oat-100/70 p-3.5 rounded-2xl border border-oat-200">
+              <div className="bg-oat-100/70 dark:bg-oat-200/50 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
                 <label className="text-xs font-semibold text-espresso-700 block mb-1">
                   Rentabilidade Esperada (% ao ano)
                 </label>
@@ -283,7 +283,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                   step="0.5"
                   value={autoAnnualRate}
                   onChange={(e) => setAutoAnnualRate(Math.max(0.1, Number(e.target.value)))}
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
                 />
                 <span className="text-[10px] text-espresso-500 mt-1 block">
                   Ex: 10% a 12% a.a. em renda fixa/fundos
@@ -292,7 +292,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
             </div>
 
             {/* Slider de Horizonte em Anos */}
-            <div className="bg-oat-100/70 p-4 rounded-2xl border border-oat-200">
+            <div className="bg-oat-100/70 dark:bg-oat-200/50 p-4 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-espresso-700">
                   Prazo de Acumulação: <span className="text-maldives-700 font-mono text-sm">{autoYears} anos</span> ({autoYears * 12} meses)
@@ -325,23 +325,23 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
 
             {/* Resultado Principal em Destaque */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-espresso-900 text-white p-5 rounded-2xl shadow-cozy flex flex-col justify-between">
+              <div className="bg-surface-ink dark:bg-gradient-to-br dark:from-[#1B232B] dark:to-[#132125] border border-transparent dark:border-maldives-500/25 text-white p-5 rounded-2xl shadow-cozy flex flex-col justify-between">
                 <div>
-                  <span className="text-xs text-oat-300 font-bold block mb-1">
+                  <span className="text-xs text-white/70 font-bold block mb-1">
                     Patrimônio Estimado em {autoYears} Anos
                   </span>
-                  <p className="text-2xl sm:text-3xl font-extrabold font-mono text-maldives-300">
+                  <p className="text-2xl sm:text-3xl font-extrabold font-mono text-[#5EEAD4]">
                     {formatCurrency(autoResult.finalBalance)}
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-espresso-700 text-xs space-y-1">
-                  <div className="flex justify-between text-oat-200">
+                <div className="mt-4 pt-3 border-t border-white/10 text-xs space-y-1">
+                  <div className="flex justify-between text-white/75">
                     <span>Aportes do Bolso:</span>
                     <span className="font-mono font-bold text-white">
                       {formatCurrency(autoResult.totalInvested)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-maldives-300">
+                  <div className="flex justify-between text-[#5EEAD4]">
                     <span>Juros Acumulados:</span>
                     <span className="font-mono font-bold">
                       {formatCurrency(autoResult.totalInterest)}
@@ -350,7 +350,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                 </div>
               </div>
 
-              <div className="bg-maldives-50/90 border border-maldives-200 p-5 rounded-2xl shadow-cozy flex flex-col justify-between">
+              <div className="bg-maldives-50/90 border border-maldives-200 dark:border-maldives-300/25 p-5 rounded-2xl shadow-cozy flex flex-col justify-between">
                 <div>
                   <span className="text-xs text-maldives-800 font-bold block mb-1">
                     Renda Passiva Mensal Estimada
@@ -362,14 +362,14 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                     </span>
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-maldives-200 text-xs text-espresso-700">
+                <div className="mt-4 pt-3 border-t border-maldives-200 dark:border-white/[0.08] text-xs text-espresso-700">
                   <p>
                     Com esse patrimônio, seu dinheiro trabalha por você sem que você precise mexer no valor principal.
                   </p>
                 </div>
               </div>
 
-              <div className="bg-oat-100/90 border border-oat-300 p-5 rounded-2xl shadow-cozy flex flex-col justify-between">
+              <div className="bg-oat-100/90 dark:bg-oat-200/55 border border-oat-300 dark:border-white/[0.07] p-5 rounded-2xl shadow-cozy flex flex-col justify-between">
                 <div>
                   <span className="text-xs text-espresso-600 font-bold block mb-1">
                     Efeito Bola de Neve (Multiplicação)
@@ -390,12 +390,12 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
 
                 {/* Barra de Proporção Bolso vs Juros */}
                 <div className="mt-4 pt-2">
-                  <div className="h-3 w-full bg-espresso-200 rounded-full overflow-hidden flex">
+                  <div className="h-3 w-full bg-oat-200 dark:bg-white/[0.08] rounded-full overflow-hidden flex">
                     <div
                       style={{
                         width: `${Math.min(100, autoResult.finalBalance > 0 ? (autoResult.totalInvested / autoResult.finalBalance) * 100 : 100)}%`,
                       }}
-                      className="bg-espresso-700 h-full"
+                      className="bg-espresso-600 dark:bg-espresso-500 h-full"
                       title="Total Aportado"
                     />
                     <div
@@ -429,8 +429,8 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                     onClick={() => setAutoYears(ms.years)}
                     className={`p-3 rounded-2xl border transition cursor-pointer flex flex-col justify-between ${
                       autoYears === ms.years
-                        ? 'bg-maldives-50 border-maldives-500 ring-2 ring-maldives-500/30'
-                        : 'bg-oat-100/70 border-oat-200 hover:border-maldives-300'
+                        ? 'bg-maldives-50 border-maldives-500/80 ring-2 ring-maldives-500/25'
+                        : 'bg-oat-100/70 dark:bg-oat-200/45 border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60'
                     }`}
                   >
                     <div>
@@ -441,7 +441,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                         {formatCurrency(ms.balance)}
                       </p>
                     </div>
-                    <div className="mt-2 pt-2 border-t border-oat-200 text-[10px] font-mono text-maldives-700">
+                    <div className="mt-2 pt-2 border-t border-oat-200 dark:border-white/[0.06] text-[10px] font-mono text-maldives-700">
                       <span>Renda passiva:</span>
                       <span className="font-bold block">{formatCurrency(ms.monthlyPassiveIncome)}/mês</span>
                     </div>
@@ -456,7 +456,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
         {activeTab === 'custom' && (
           <div className="mt-5 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-oat-100/70 p-3.5 rounded-2xl border border-oat-200">
+              <div className="bg-oat-100/70 dark:bg-oat-200/50 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
                 <label className="text-xs font-semibold text-espresso-700 block mb-1">
                   Valor Inicial (R$)
                 </label>
@@ -466,11 +466,11 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                   step="500"
                   value={freeInitial}
                   onChange={(e) => setFreeInitial(Math.max(0, Number(e.target.value)))}
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
                 />
               </div>
 
-              <div className="bg-oat-100/70 p-3.5 rounded-2xl border border-oat-200">
+              <div className="bg-oat-100/70 dark:bg-oat-200/50 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
                 <label className="text-xs font-semibold text-espresso-700 block mb-1">
                   Aporte Mensal (R$)
                 </label>
@@ -480,28 +480,28 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                   step="100"
                   value={freeMonthly}
                   onChange={(e) => setFreeMonthly(Math.max(0, Number(e.target.value)))}
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
                 />
               </div>
 
-              <div className="bg-oat-100/70 p-3.5 rounded-2xl border border-oat-200">
+              <div className="bg-oat-100/70 dark:bg-oat-200/50 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
                 <div className="flex justify-between items-center mb-1">
                   <label className="text-xs font-semibold text-espresso-700">
                     Taxa de Juros (%)
                   </label>
-                  <div className="flex text-[10px] bg-oat-200 rounded-lg p-0.5 font-bold">
+                  <div className="flex text-[10px] bg-oat-200 dark:bg-oat-100 rounded-lg p-0.5 font-bold">
                     <button
                       onClick={() => setFreeRateType('annual')}
-                      className={`px-1.5 py-0.5 rounded ${
-                        freeRateType === 'annual' ? 'bg-white shadow-xs text-espresso-900' : 'text-espresso-500'
+                      className={`px-1.5 py-0.5 rounded transition ${
+                        freeRateType === 'annual' ? 'bg-oat-50 shadow-xs text-espresso-900' : 'text-espresso-500'
                       }`}
                     >
                       a.a.
                     </button>
                     <button
                       onClick={() => setFreeRateType('monthly')}
-                      className={`px-1.5 py-0.5 rounded ${
-                        freeRateType === 'monthly' ? 'bg-white shadow-xs text-espresso-900' : 'text-espresso-500'
+                      className={`px-1.5 py-0.5 rounded transition ${
+                        freeRateType === 'monthly' ? 'bg-oat-50 shadow-xs text-espresso-900' : 'text-espresso-500'
                       }`}
                     >
                       a.m.
@@ -514,28 +514,28 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                   step="0.1"
                   value={freeRate}
                   onChange={(e) => setFreeRate(Math.max(0.01, Number(e.target.value)))}
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
                 />
               </div>
 
-              <div className="bg-oat-100/70 p-3.5 rounded-2xl border border-oat-200">
+              <div className="bg-oat-100/70 dark:bg-oat-200/50 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
                 <div className="flex justify-between items-center mb-1">
                   <label className="text-xs font-semibold text-espresso-700">
                     Período
                   </label>
-                  <div className="flex text-[10px] bg-oat-200 rounded-lg p-0.5 font-bold">
+                  <div className="flex text-[10px] bg-oat-200 dark:bg-oat-100 rounded-lg p-0.5 font-bold">
                     <button
                       onClick={() => setFreePeriodType('years')}
-                      className={`px-1.5 py-0.5 rounded ${
-                        freePeriodType === 'years' ? 'bg-white shadow-xs text-espresso-900' : 'text-espresso-500'
+                      className={`px-1.5 py-0.5 rounded transition ${
+                        freePeriodType === 'years' ? 'bg-oat-50 shadow-xs text-espresso-900' : 'text-espresso-500'
                       }`}
                     >
                       Anos
                     </button>
                     <button
                       onClick={() => setFreePeriodType('months')}
-                      className={`px-1.5 py-0.5 rounded ${
-                        freePeriodType === 'months' ? 'bg-white shadow-xs text-espresso-900' : 'text-espresso-500'
+                      className={`px-1.5 py-0.5 rounded transition ${
+                        freePeriodType === 'months' ? 'bg-oat-50 shadow-xs text-espresso-900' : 'text-espresso-500'
                       }`}
                     >
                       Meses
@@ -548,23 +548,23 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                   max="600"
                   value={freePeriod}
                   onChange={(e) => setFreePeriod(Math.max(1, Number(e.target.value)))}
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:ring-2 focus:ring-maldives-500"
                 />
               </div>
             </div>
 
             {/* Resultados do Simulador Livre */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              <div className="bg-espresso-900 text-white p-4 rounded-2xl">
-                <span className="text-[11px] text-oat-300 font-semibold block mb-0.5">
+              <div className="bg-surface-ink dark:bg-gradient-to-br dark:from-[#1B232B] dark:to-[#132125] border border-transparent dark:border-maldives-500/25 text-white p-4 rounded-2xl shadow-cozy">
+                <span className="text-[11px] text-white/70 font-semibold block mb-0.5">
                   Valor Total Final
                 </span>
-                <p className="text-xl sm:text-2xl font-bold font-mono text-maldives-300">
+                <p className="text-xl sm:text-2xl font-bold font-mono text-[#5EEAD4]">
                   {formatCurrency(freeResult.finalBalance)}
                 </p>
               </div>
 
-              <div className="bg-oat-100 p-4 rounded-2xl border border-oat-200">
+              <div className="bg-oat-100 dark:bg-oat-200/55 p-4 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
                 <span className="text-[11px] text-espresso-500 font-semibold block mb-0.5">
                   Total Investido (Bolso)
                 </span>
@@ -573,7 +573,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                 </p>
               </div>
 
-              <div className="bg-maldives-50 p-4 rounded-2xl border border-maldives-200">
+              <div className="bg-maldives-50 p-4 rounded-2xl border border-maldives-200 dark:border-maldives-300/25">
                 <span className="text-[11px] text-maldives-800 font-semibold block mb-0.5">
                   Total em Juros Ganhos
                 </span>
@@ -582,7 +582,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
                 </p>
               </div>
 
-              <div className="bg-terracotta-50 p-4 rounded-2xl border border-terracotta-200">
+              <div className="bg-terracotta-50 p-4 rounded-2xl border border-terracotta-200 dark:border-terracotta-300/25">
                 <span className="text-[11px] text-terracotta-800 font-semibold block mb-0.5">
                   Renda Passiva Mensal
                 </span>

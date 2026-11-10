@@ -3,75 +3,119 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
+
+  --oat-50-rgb: 255 253 249;
+  --oat-100-rgb: 250 246 240;
+  --oat-200-rgb: 242 236 225;
+  --oat-300-rgb: 230 222 200;
+  --oat-400-rgb: 213 199 173;
+
+  --surface-input-rgb: 255 253 249;
+  --surface-elevated-rgb: 255 253 249;
+  --surface-ink-rgb: 44 37 35;
+
+  --maldives-50-rgb: 236 253 249;
+  --maldives-100-rgb: 209 250 238;
+  --maldives-200-rgb: 167 243 223;
+  --maldives-300-rgb: 110 231 202;
+  --maldives-500-rgb: 20 184 166;
+  --maldives-600-rgb: 13 148 136;
+  --maldives-700-rgb: 15 118 110;
+  --maldives-800-rgb: 17 94 89;
+
+  --sage-50-rgb: 244 248 246;
+  --sage-100-rgb: 230 240 236;
+  --sage-200-rgb: 207 231 226;
+  --sage-300-rgb: 173 203 195;
+  --sage-600-rgb: 79 111 87;
+
+  --terracotta-50-rgb: 253 244 240;
+  --terracotta-100-rgb: 251 236 230;
+  --terracotta-200-rgb: 245 208 194;
+  --terracotta-300-rgb: 235 168 144;
+  --terracotta-500-rgb: 217 119 87;
+  --terracotta-600-rgb: 191 91 61;
+  --terracotta-700-rgb: 158 71 45;
+  --terracotta-800-rgb: 124 52 30;
+
+  --espresso-900-rgb: 44 37 35;
+  --espresso-800-rgb: 67 57 54;
+  --espresso-700-rgb: 92 79 75;
+  --espresso-600-rgb: 110 98 89;
+  --espresso-500-rgb: 140 126 117;
+  --espresso-400-rgb: 171 160 150;
+
   --oat-50: #FFFDF9;
   --oat-100: #FAF6F0;
   --oat-200: #F2ECE1;
   --oat-300: #E6DEC8;
   --oat-400: #D5C7AD;
 
-  --maldives-50: #ECFDF9;
-  --maldives-100: #D1FAEE;
-  --maldives-200: #A7F3DF;
-  --maldives-300: #6EE7CA;
-  --maldives-600: #0D9488;
-  --maldives-700: #0F766E;
-  --maldives-800: #115E59;
-
-  --sage-50: #F4F8F6;
-  --sage-100: #E6F0EC;
-  --sage-200: #CFE7E2;
-  --sage-300: #ADCBC3;
-  --sage-600: #4F6F57;
-
-  --terracotta-50: #FDF4F0;
-  --terracotta-100: #FBECE6;
-  --terracotta-200: #F5D0C2;
-  --terracotta-300: #EBA890;
-  --terracotta-600: #BF5B3D;
-  --terracotta-700: #9E472D;
-
-  --espresso-900: #2C2523;
-  --espresso-800: #433936;
-  --espresso-700: #5C4F4B;
-  --espresso-600: #6E6259;
-  --espresso-500: #8C7E75;
-  --espresso-400: #ABA096;
+  --shadow-cozy: 0 10px 30px -8px rgba(44, 37, 35, 0.07), 0 4px 12px -2px rgba(44, 37, 35, 0.04);
+  --shadow-cozy-lg: 0 20px 40px -12px rgba(20, 184, 166, 0.14), 0 8px 20px -4px rgba(44, 37, 35, 0.08);
+  --shadow-cozy-inner: inset 0 2px 5px 0 rgba(44, 37, 35, 0.05);
 }
 
 html.dark {
-  --oat-50: #0D1E26;
-  --oat-100: #071217;
-  --oat-200: #132934;
-  --oat-300: #1E3E4E;
-  --oat-400: #2B566C;
+  color-scheme: dark;
 
-  --maldives-50: rgba(20, 184, 166, 0.14);
-  --maldives-100: rgba(20, 184, 166, 0.24);
-  --maldives-200: rgba(45, 212, 191, 0.32);
-  --maldives-300: rgba(45, 212, 191, 0.48);
-  --maldives-600: #2DD4BF;
-  --maldives-700: #5EEAD4;
-  --maldives-800: #99F6E4;
+  /* Stepped Neutral Obsidian-Charcoal Surfaces (Copilot Money / Linear inspired) */
+  --oat-100-rgb: 15 17 21;     /* #0F1115 - Base canvas floor */
+  --oat-50-rgb: 23 26 32;      /* #171A20 - Primary card container */
+  --oat-200-rgb: 31 35 43;     /* #1F232B - Inset panels, chips, tracks */
+  --oat-300-rgb: 44 50 61;     /* #2C323D - Muted hairline dividers */
+  --oat-400-rgb: 62 70 84;     /* #3E4654 - Hover / active border guides */
 
-  --sage-50: rgba(101, 139, 110, 0.15);
-  --sage-100: rgba(132, 169, 140, 0.24);
-  --sage-200: rgba(132, 169, 140, 0.34);
-  --sage-300: rgba(132, 169, 140, 0.48);
-  --sage-600: #A7D7B8;
+  --surface-input-rgb: 17 20 25;    /* #111419 - Recessed form input well */
+  --surface-elevated-rgb: 27 31 38; /* #1B1F26 - Floating modals & dropdowns */
+  --surface-ink-rgb: 34 39 48;      /* #222730 - Permanent dark surface (tooltips/hero) */
 
-  --terracotta-50: rgba(217, 119, 87, 0.15);
-  --terracotta-100: rgba(217, 119, 87, 0.24);
-  --terracotta-200: rgba(224, 122, 95, 0.35);
-  --terracotta-300: rgba(224, 122, 95, 0.5);
-  --terracotta-600: #F4A28C;
-  --terracotta-700: #FBD0C4;
+  /* Restrained Seafoam Teal Accents (zero neon glare) */
+  --maldives-50-rgb: 21 35 38;      /* #152326 - Subtle teal card tint */
+  --maldives-100-rgb: 22 45 47;     /* #162D2F - Pill fill */
+  --maldives-200-rgb: 29 64 63;     /* #1D403F - Soft hairline accent border */
+  --maldives-300-rgb: 38 86 83;     /* #265653 - Highlight border */
+  --maldives-500-rgb: 14 142 130;   /* #0E8E82 - Crisp luxury CTA button fill */
+  --maldives-600-rgb: 45 212 191;   /* #2DD4BF - Accent ink */
+  --maldives-700-rgb: 94 234 212;   /* #5EEAD4 - Bright metric ink */
+  --maldives-800-rgb: 153 246 228;  /* #99F6E4 - High-contrast pill text */
 
-  --espresso-900: #F4F9FB;
-  --espresso-800: #E2EEF2;
-  --espresso-700: #C2D6DF;
-  --espresso-600: #93B1BF;
-  --espresso-500: #6C8C9B;
-  --espresso-400: #4C6B7A;
+  /* Eucalyptus Sage Accents */
+  --sage-50-rgb: 24 34 32;          /* #182220 */
+  --sage-100-rgb: 30 44 40;         /* #1E2C28 */
+  --sage-200-rgb: 40 59 53;         /* #283B35 */
+  --sage-300-rgb: 53 77 68;         /* #354D44 */
+  --sage-600-rgb: 151 198 162;      /* #97C6A2 */
+
+  /* Warm Burnt Terracotta Accents */
+  --terracotta-50-rgb: 37 29 30;    /* #251D1E */
+  --terracotta-100-rgb: 48 35 35;   /* #302323 */
+  --terracotta-200-rgb: 66 47 45;   /* #422F2D */
+  --terracotta-300-rgb: 88 59 55;   /* #583B37 */
+  --terracotta-500-rgb: 201 96 68;  /* #C96044 - Rich warm coral CTA fill */
+  --terracotta-600-rgb: 235 148 122;/* #EB947A - Soft coral ink */
+  --terracotta-700-rgb: 244 182 164;/* #F4B6A4 - Warm highlight ink */
+  --terracotta-800-rgb: 249 213 202;/* #F9D5CA - Pill text on dark tint */
+
+  /* Eye-Friendly Warm Silk Off-White Typography (zero OLED halation) */
+  --espresso-900-rgb: 235 238 243;  /* #EBEEF3 - Primary headings & amounts */
+  --espresso-800-rgb: 209 215 224;  /* #D1D7E0 - Strong labels */
+  --espresso-700-rgb: 173 181 194;  /* #ADB5C2 - Standard body text */
+  --espresso-600-rgb: 138 148 164;  /* #8A94A4 - Secondary descriptions */
+  --espresso-500-rgb: 109 119 135;  /* #6D7787 - Captions & meta */
+  --espresso-400-rgb: 82 91 106;    /* #525B6A - Placeholders & quiet icons */
+
+  --oat-50: #171A20;
+  --oat-100: #0F1115;
+  --oat-200: #1F232B;
+  --oat-300: #2C323D;
+  --oat-400: #3E4654;
+
+  /* Specular Top-Edge Highlight + Ambient Depth */
+  --shadow-cozy: inset 0 1px 0 0 rgba(255, 255, 255, 0.045), 0 10px 28px -8px rgba(0, 0, 0, 0.55);
+  --shadow-cozy-lg: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 24px 48px -12px rgba(0, 0, 0, 0.72);
+  --shadow-cozy-inner: inset 0 2px 6px 0 rgba(0, 0, 0, 0.35);
 }
 
 @layer base {
@@ -88,14 +132,31 @@ html.dark {
 
   body {
     background-color: var(--oat-100);
-    color: var(--espresso-900);
+    color: rgb(var(--espresso-900-rgb));
     font-family: 'Plus Jakarta Sans', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    background-image: 
-      radial-gradient(at 12% 8%, rgba(20, 184, 166, 0.09) 0px, transparent 48%),
-      radial-gradient(at 88% 15%, rgba(217, 119, 87, 0.07) 0px, transparent 45%),
-      radial-gradient(at 50% 90%, rgba(132, 169, 140, 0.1) 0px, transparent 55%);
+    transition: background-color 0.25s ease, color 0.25s ease;
+    background-image:
+      radial-gradient(at 12% 8%, rgba(20, 184, 166, 0.08) 0px, transparent 48%),
+      radial-gradient(at 88% 15%, rgba(217, 119, 87, 0.06) 0px, transparent 45%),
+      radial-gradient(at 50% 90%, rgba(132, 169, 140, 0.09) 0px, transparent 55%);
     background-attachment: fixed;
+  }
+
+  html.dark body {
+    background-image:
+      radial-gradient(at 14% 6%, rgba(45, 212, 191, 0.045) 0px, transparent 46%),
+      radial-gradient(at 86% 12%, rgba(224, 122, 95, 0.035) 0px, transparent 44%),
+      radial-gradient(at 50% 95%, rgba(132, 169, 140, 0.03) 0px, transparent 55%);
+  }
+
+  /* Soften border contrasts subtly inside dark mode so nested containers feel velvety instead of wireframe-like */
+  html.dark .border-2 {
+    border-width: 1px;
+  }
+
+  html.dark select option {
+    background-color: #1B1F26;
+    color: #EBEEF3;
   }
 
   /* Evitar auto-zoom em inputs no iOS Safari quando focado */
@@ -109,23 +170,21 @@ html.dark {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--oat-200);
-  border-radius: 9999px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--oat-400);
+  background: rgb(var(--oat-400-rgb) / 0.75);
   border-radius: 9999px;
-  border: 2px solid var(--oat-200);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #14B8A6;
+  background: rgb(var(--maldives-500-rgb) / 0.85);
 }
 
 .pb-safe {

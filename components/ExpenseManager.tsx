@@ -94,10 +94,10 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
   };
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200">
+    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-maldives-600 text-xl">
               receipt_long
             </span>
@@ -107,7 +107,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
               <h2 className="text-base sm:text-xl font-display font-bold text-espresso-900">
                 Caderno de Gastos & Aportes
               </h2>
-              <span className="text-[11px] bg-oat-200 text-espresso-700 font-mono font-bold px-2.5 py-0.5 rounded-full border border-oat-300 shrink-0 whitespace-nowrap">
+              <span className="text-[11px] bg-oat-200 text-espresso-700 font-mono font-bold px-2.5 py-0.5 rounded-full border border-oat-300 dark:border-white/[0.07] shrink-0 whitespace-nowrap">
                 {expenses.length} itens
               </span>
             </div>
@@ -123,18 +123,22 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             onClick={() => setIsCloneMenuOpen(!isCloneMenuOpen)}
             className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs ${
               isCloneMenuOpen
-                ? 'bg-maldives-500 text-white border-maldives-600'
-                : 'bg-oat-100 hover:bg-oat-200 text-espresso-800 border-oat-300'
+                ? 'bg-maldives-500 text-white border-maldives-600/40'
+                : 'bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border-oat-300 dark:border-white/[0.08]'
             }`}
             title="Clonar orçamento de outro mês ou aplicar um modelo pronto para não ter que digitar tudo do zero"
           >
-            <span className="material-symbols-outlined text-[17px] text-maldives-600">
+            <span
+              className={`material-symbols-outlined text-[17px] ${
+                isCloneMenuOpen ? 'text-white' : 'text-maldives-600'
+              }`}
+            >
               copy_all
             </span>
             <span>Clonar Orçamento</span>
           </button>
 
-          <div className="grid grid-cols-4 sm:flex items-center gap-1 bg-oat-200/70 p-1 rounded-2xl border border-oat-300 text-[11px] sm:text-xs w-full sm:w-auto">
+          <div className="grid grid-cols-4 sm:flex items-center gap-1 bg-oat-200/70 dark:bg-oat-200/60 p-1 rounded-2xl border border-oat-300 dark:border-white/[0.06] text-[11px] sm:text-xs w-full sm:w-auto">
             {(
               [
                 { id: 'all', label: 'Todos', dot: '' },
@@ -148,7 +152,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                 onClick={() => setSelectedFilter(tab.id)}
                 className={`px-2 sm:px-3 py-1.5 rounded-xl font-bold transition flex items-center justify-center gap-1 cursor-pointer min-w-0 ${
                   selectedFilter === tab.id
-                    ? 'bg-oat-50 text-espresso-900 shadow-sm border border-oat-300'
+                    ? 'bg-oat-50 text-espresso-900 shadow-sm border border-oat-300 dark:border-white/[0.08]'
                     : 'text-espresso-600 hover:text-espresso-900'
                 }`}
               >
@@ -169,20 +173,20 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden mt-4"
           >
-            <div className="p-4 rounded-2xl bg-oat-100/95 dark:bg-espresso-800/90 border-2 border-maldives-300 space-y-4">
+            <div className="p-4 rounded-2xl bg-oat-100/95 dark:bg-oat-200/50 border border-maldives-300 dark:border-maldives-300/35 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-maldives-600 text-lg">
                     content_copy
                   </span>
-                  <h3 className="text-sm font-display font-bold text-espresso-900 dark:text-oat-100">
+                  <h3 className="text-sm font-display font-bold text-espresso-900">
                     Clonar Orçamento para este Mês
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsCloneMenuOpen(false)}
-                  className="p-1 rounded-lg hover:bg-oat-200 text-espresso-500 cursor-pointer"
+                  className="p-1 rounded-lg hover:bg-oat-200 text-espresso-500 hover:text-espresso-900 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[18px]">close</span>
                 </button>
@@ -190,8 +194,8 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 1. Clonar de Mês Existente */}
-                <div className="p-3.5 rounded-xl bg-white dark:bg-espresso-900 border border-oat-200 dark:border-espresso-700 space-y-2.5">
-                  <span className="text-xs font-bold text-espresso-800 dark:text-oat-100 block">
+                <div className="p-3.5 rounded-xl bg-oat-50 border border-oat-200 dark:border-white/[0.07] space-y-2.5">
+                  <span className="text-xs font-bold text-espresso-800 block">
                     📅 Clonar de Outro Mês Salvo
                   </span>
                   <p className="text-[11px] text-espresso-500">
@@ -203,10 +207,10 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                       {availableMonthsToClone.map((opt) => (
                         <div
                           key={opt.monthKey}
-                          className="flex items-center justify-between p-2 rounded-lg bg-oat-50 dark:bg-espresso-800 border border-oat-200 dark:border-espresso-700 text-xs"
+                          className="flex items-center justify-between p-2 rounded-lg bg-oat-100/80 dark:bg-oat-200/60 border border-oat-200 dark:border-white/[0.06] text-xs"
                         >
                           <div>
-                            <span className="font-bold text-espresso-900 dark:text-oat-100 block">
+                            <span className="font-bold text-espresso-900 block">
                               {opt.monthLabel}
                             </span>
                             <span className="text-[10px] text-espresso-500">
@@ -227,15 +231,15 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-espresso-400 italic">
+                    <p className="text-xs text-espresso-500 italic">
                       Nenhum outro mês com dados salvos no momento.
                     </p>
                   )}
                 </div>
 
                 {/* 2. Modelos Prontos de Orçamento (Presets) */}
-                <div className="p-3.5 rounded-xl bg-white dark:bg-espresso-900 border border-oat-200 dark:border-espresso-700 space-y-2.5">
-                  <span className="text-xs font-bold text-espresso-800 dark:text-oat-100 block">
+                <div className="p-3.5 rounded-xl bg-oat-50 border border-oat-200 dark:border-white/[0.07] space-y-2.5">
+                  <span className="text-xs font-bold text-espresso-800 block">
                     ✨ Modelos Prontos (Presets)
                   </span>
                   <p className="text-[11px] text-espresso-500">
@@ -249,10 +253,10 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                         if (onApplyPreset) onApplyPreset('auvp-50-30-20');
                         setIsCloneMenuOpen(false);
                       }}
-                      className="w-full text-left p-2.5 rounded-lg bg-oat-50 dark:bg-espresso-800 hover:bg-maldives-50 dark:hover:bg-maldives-950/30 border border-oat-200 dark:border-espresso-700 transition flex items-center justify-between cursor-pointer"
+                      className="w-full text-left p-2.5 rounded-lg bg-oat-100/80 dark:bg-oat-200/60 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60 transition flex items-center justify-between cursor-pointer"
                     >
                       <div>
-                        <span className="text-xs font-bold text-espresso-900 dark:text-oat-100 block">
+                        <span className="text-xs font-bold text-espresso-900 block">
                           🏡 Padrão AUVP (50/30/20)
                         </span>
                         <span className="text-[10px] text-espresso-500">
@@ -270,10 +274,10 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                         if (onApplyPreset) onApplyPreset('investidor-40-30-30');
                         setIsCloneMenuOpen(false);
                       }}
-                      className="w-full text-left p-2.5 rounded-lg bg-oat-50 dark:bg-espresso-800 hover:bg-maldives-50 dark:hover:bg-maldives-950/30 border border-oat-200 dark:border-espresso-700 transition flex items-center justify-between cursor-pointer"
+                      className="w-full text-left p-2.5 rounded-lg bg-oat-100/80 dark:bg-oat-200/60 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60 transition flex items-center justify-between cursor-pointer"
                     >
                       <div>
-                        <span className="text-xs font-bold text-espresso-900 dark:text-oat-100 block">
+                        <span className="text-xs font-bold text-espresso-900 block">
                           🚀 Foco em Investimentos (40/30/30)
                         </span>
                         <span className="text-[10px] text-espresso-500">
@@ -291,10 +295,10 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                         if (onApplyPreset) onApplyPreset('enxuto-minimalista');
                         setIsCloneMenuOpen(false);
                       }}
-                      className="w-full text-left p-2.5 rounded-lg bg-oat-50 dark:bg-espresso-800 hover:bg-maldives-50 dark:hover:bg-maldives-950/30 border border-oat-200 dark:border-espresso-700 transition flex items-center justify-between cursor-pointer"
+                      className="w-full text-left p-2.5 rounded-lg bg-oat-100/80 dark:bg-oat-200/60 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60 transition flex items-center justify-between cursor-pointer"
                     >
                       <div>
-                        <span className="text-xs font-bold text-espresso-900 dark:text-oat-100 block">
+                        <span className="text-xs font-bold text-espresso-900 block">
                           🍃 Enxuto & Minimalista
                         </span>
                         <span className="text-[10px] text-espresso-500">
@@ -314,7 +318,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
       </AnimatePresence>
 
       {/* Formulário de Novo Gasto/Aporte */}
-      <div className="bg-oat-100/90 border border-oat-300 rounded-2xl p-4 mt-5 space-y-3">
+      <div className="bg-oat-100/90 dark:bg-oat-200/45 border border-oat-300 dark:border-white/[0.06] rounded-2xl p-4 mt-5 space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
           <div className="sm:col-span-5">
             <label className="text-xs font-semibold text-espresso-700 mb-1 block">
@@ -332,7 +336,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                   ? 'Ex: Cartão Nubank, Cartão Inter, Itaú...'
                   : 'Ex: Feira Orgânica, Jantar, Tesouro IPCA...'
               }
-              className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 placeholder-espresso-400 focus:outline-none focus:border-maldives-500"
+              className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 placeholder-espresso-400 focus:outline-none focus:border-maldives-500"
             />
           </div>
 
@@ -352,7 +356,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
               }
               onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
               placeholder="0,00"
-              className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 font-mono font-bold focus:outline-none focus:border-maldives-500"
+              className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 font-mono font-bold focus:outline-none focus:border-maldives-500"
             />
           </div>
 
@@ -363,7 +367,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             <select
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value as ExpenseCategory)}
-              className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2.5 text-sm font-semibold text-espresso-900 focus:outline-none focus:border-maldives-500"
+              className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2.5 text-sm font-semibold text-espresso-900 focus:outline-none focus:border-maldives-500"
             >
               <option value="essencial">🌿 Custos Essenciais</option>
               <option value="estilo">☕ Estilo de Vida</option>
@@ -445,8 +449,8 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
       </div>
 
       {/* Lista de Itens */}
-      <div className="mt-5 overflow-hidden border border-oat-300 rounded-2xl bg-oat-50">
-        <div className="max-h-[420px] overflow-y-auto divide-y divide-oat-200">
+      <div className="mt-5 overflow-hidden border border-oat-300 dark:border-white/[0.07] rounded-2xl bg-oat-50 dark:bg-oat-100/50">
+        <div className="max-h-[420px] overflow-y-auto divide-y divide-oat-200 dark:divide-white/[0.05]">
           <AnimatePresence initial={false}>
             {filteredExpenses.length === 0 ? (
               <motion.div
@@ -591,7 +595,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                               ? 'Valor de aporte deste Pote dos Sonhos neste mês (ajuste se necessário)'
                               : 'Editar valor mensal'
                           }
-                          className="w-28 bg-oat-100 border border-oat-300 focus:border-maldives-500 rounded-xl px-2.5 py-1.5 text-sm font-bold text-right text-espresso-900 font-mono focus:outline-none"
+                          className="w-28 bg-surface-input border border-oat-300 dark:border-white/[0.08] focus:border-maldives-500 rounded-xl px-2.5 py-1.5 text-sm font-bold text-right text-espresso-900 font-mono focus:outline-none"
                         />
                       </div>
 
@@ -600,7 +604,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                           <button
                             type="button"
                             onClick={() => onDeleteExpense(item.id)}
-                            className="px-2.5 py-1 rounded-xl bg-terracotta-50 hover:bg-terracotta-100 text-terracotta-700 border border-terracotta-300 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+                            className="px-2.5 py-1 rounded-xl bg-terracotta-50 hover:bg-terracotta-100 text-terracotta-700 border border-terracotta-300/80 dark:border-terracotta-300/35 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
                             title="Excluir o aporte deste Pote dos Sonhos apenas deste mês (não afeta os outros meses)"
                           >
                             <span className="material-symbols-outlined text-[16px] text-terracotta-600">
@@ -614,7 +618,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                           <button
                             type="button"
                             onClick={() => handleCloneExpense(item)}
-                            className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-xl hover:bg-maldives-50 dark:hover:bg-maldives-950/40 transition cursor-pointer"
+                            className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-xl hover:bg-maldives-50 transition cursor-pointer"
                             title="Clonar este lançamento (duplicar no orçamento)"
                           >
                             <span className="material-symbols-outlined text-[19px]">
@@ -645,8 +649,8 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
 
       {/* Banner de Potes dos Sonhos não aportados neste mês */}
       {excludedGoals && excludedGoals.length > 0 && (
-        <div className="mt-3.5 p-3.5 bg-oat-100/90 dark:bg-espresso-800/80 border border-dashed border-oat-300 dark:border-espresso-700 rounded-2xl space-y-2.5">
-          <div className="flex items-center gap-2 text-xs font-bold text-espresso-800 dark:text-espresso-200">
+        <div className="mt-3.5 p-3.5 bg-oat-100/90 dark:bg-oat-200/45 border border-dashed border-oat-300 dark:border-white/[0.1] rounded-2xl space-y-2.5">
+          <div className="flex items-center gap-2 text-xs font-bold text-espresso-800">
             <span className="material-symbols-outlined text-base text-terracotta-500">
               savings
             </span>
@@ -659,9 +663,9 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             {excludedGoals.map((g) => (
               <div
                 key={g.id}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-oat-50 dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 text-xs shadow-2xs"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-oat-50 border border-oat-300 dark:border-white/[0.08] text-xs shadow-2xs"
               >
-                <span className="font-bold text-espresso-800 dark:text-espresso-200 truncate max-w-[190px]">
+                <span className="font-bold text-espresso-800 truncate max-w-[190px]">
                   🎯 {g.title}
                 </span>
                 <span className="font-mono text-espresso-500 text-[11px]">
@@ -670,7 +674,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                 <button
                   type="button"
                   onClick={() => onRestoreGoalContribution?.(g.id)}
-                  className="text-maldives-700 dark:text-maldives-400 hover:text-maldives-800 font-bold flex items-center gap-1 ml-1 transition cursor-pointer hover:underline"
+                  className="text-maldives-700 hover:text-maldives-800 font-bold flex items-center gap-1 ml-1 transition cursor-pointer hover:underline"
                   title="Reativar aporte deste Pote dos Sonhos neste mês"
                 >
                   <span className="material-symbols-outlined text-[15px]">

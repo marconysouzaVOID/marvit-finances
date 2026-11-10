@@ -110,9 +110,9 @@ export const AdvicePanel: React.FC<AdvicePanelProps> = ({
   }
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-5 sm:p-6 shadow-cozy">
-      <div className="flex items-center gap-3 pb-4 border-b border-oat-200">
-        <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center">
+    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-5 sm:p-6 shadow-cozy">
+      <div className="flex items-center gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
+        <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center">
           <span className="material-symbols-outlined text-maldives-600 text-xl">
             psychology
           </span>
@@ -134,11 +134,11 @@ export const AdvicePanel: React.FC<AdvicePanelProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.06 }}
-            className={`p-4 rounded-2xl border-2 flex items-start gap-3.5 ${item.tone === 'danger'
-                ? 'bg-terracotta-50 border-terracotta-300 text-espresso-900'
+            className={`p-4 rounded-2xl border flex items-start gap-3.5 ${item.tone === 'danger'
+                ? 'bg-terracotta-50 border-terracotta-300 dark:border-terracotta-300/35 text-espresso-900'
                 : item.tone === 'warning'
-                  ? 'bg-oat-100 border-terracotta-200 text-espresso-900'
-                  : 'bg-maldives-50/70 border-maldives-200 text-espresso-900'
+                  ? 'bg-oat-100 dark:bg-oat-200/50 border-terracotta-200 dark:border-terracotta-300/25 text-espresso-900'
+                  : 'bg-maldives-50/70 border-maldives-200 dark:border-maldives-300/25 text-espresso-900'
               }`}
           >
             <div
@@ -165,7 +165,7 @@ export const AdvicePanel: React.FC<AdvicePanelProps> = ({
         ))}
       </div>
 
-      <div className="mt-5 p-4 rounded-2xl bg-oat-100 border border-oat-300 text-xs text-espresso-600 font-display italic text-center">
+      <div className="mt-5 p-4 rounded-2xl bg-oat-100 dark:bg-oat-200/45 border border-oat-300 dark:border-white/[0.06] text-xs text-espresso-600 font-display italic text-center">
         “Assim como uma cozinha acolhedora e bem organizada, a liberdade financeira nasce de ingredientes simples: clareza, constância e carinho com o futuro.” — Filosofia Marvit&Finances
       </div>
     </div>

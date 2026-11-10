@@ -13,37 +13,37 @@ export const CARD_PURCHASE_TAGS: Record<
   gastronomia: {
     label: 'Gastronomia & Delivery',
     icon: 'restaurant',
-    badgeClass: 'bg-terracotta-100 text-terracotta-700 border-terracotta-300',
+    badgeClass: 'bg-terracotta-100 text-terracotta-700 border-terracotta-300/70 dark:border-terracotta-300/40',
   },
   assinaturas: {
     label: 'Streaming & Assinaturas',
     icon: 'smart_display',
-    badgeClass: 'bg-maldives-100 text-maldives-800 border-maldives-300',
+    badgeClass: 'bg-maldives-100 text-maldives-800 border-maldives-300/70 dark:border-maldives-300/40',
   },
   compras: {
     label: 'Compras & Mimos',
     icon: 'shopping_bag',
-    badgeClass: 'bg-oat-200 text-espresso-800 border-oat-300',
+    badgeClass: 'bg-oat-200 text-espresso-800 border-oat-300 dark:border-white/[0.08]',
   },
   mobilidade: {
     label: 'Apps de Transporte',
     icon: 'local_taxi',
-    badgeClass: 'bg-sage-100 text-sage-600 border-sage-300',
+    badgeClass: 'bg-sage-100 text-sage-600 border-sage-300/70 dark:border-sage-300/40',
   },
   lazer: {
     label: 'Passeios & Viagens',
     icon: 'Confirmation_number',
-    badgeClass: 'bg-maldives-50 text-maldives-700 border-maldives-200',
+    badgeClass: 'bg-maldives-50 text-maldives-700 border-maldives-200/80 dark:border-maldives-300/35',
   },
   autocuidado: {
     label: 'Bem-estar & Estética',
     icon: 'spa',
-    badgeClass: 'bg-terracotta-50 text-terracotta-600 border-terracotta-200',
+    badgeClass: 'bg-terracotta-50 text-terracotta-600 border-terracotta-200/80 dark:border-terracotta-300/35',
   },
   outros: {
     label: 'Outros Gastos',
     icon: 'receipt',
-    badgeClass: 'bg-oat-100 text-espresso-600 border-oat-300',
+    badgeClass: 'bg-oat-100 text-espresso-600 border-oat-300 dark:border-white/[0.08]',
   },
 };
 
@@ -56,8 +56,8 @@ export const AUVP_GOALS: Record<string, BudgetGoal> = {
     color: '#658B6E', // Verde Sálvia Profundo
     accentBg: 'bg-sage-100',
     accentText: 'text-sage-600',
-    borderColor: 'border-sage-300',
-    badgeBg: 'bg-sage-200/70 text-sage-600 border-sage-300',
+    borderColor: 'border-sage-300/85 dark:border-sage-300/50',
+    badgeBg: 'bg-sage-200/70 dark:bg-sage-100 text-sage-600 border-sage-300/80 dark:border-sage-300/40',
     assetPath: '/assets/marvit-essencial.png',
     description:
       'Moradia, alimentação & mercado, saúde, contas de consumo e transporte essencial.',
@@ -70,8 +70,8 @@ export const AUVP_GOALS: Record<string, BudgetGoal> = {
     color: '#D97757', // Terracota Aconchegante
     accentBg: 'bg-terracotta-100',
     accentText: 'text-terracotta-600',
-    borderColor: 'border-terracotta-200',
-    badgeBg: 'bg-terracotta-100 text-terracotta-700 border-terracotta-200',
+    borderColor: 'border-terracotta-200/90 dark:border-terracotta-200/55',
+    badgeBg: 'bg-terracotta-100 text-terracotta-700 border-terracotta-200 dark:border-terracotta-300/40',
     assetPath: '/assets/marvit-estilo.png',
     description:
       'Cafés especiais, jantares, streaming, viagens, bem-estar e mimos pessoais.',
@@ -84,8 +84,8 @@ export const AUVP_GOALS: Record<string, BudgetGoal> = {
     color: '#14B8A6', // Verde Maldivas Vívido
     accentBg: 'bg-maldives-50',
     accentText: 'text-maldives-700',
-    borderColor: 'border-maldives-300',
-    badgeBg: 'bg-maldives-100 text-maldives-800 border-maldives-300',
+    borderColor: 'border-maldives-300/85 dark:border-maldives-300/50',
+    badgeBg: 'bg-maldives-100 text-maldives-800 border-maldives-300/80 dark:border-maldives-300/40',
     assetPath: '/assets/marvit-investimento.png',
     description:
       'Construção de patrimônio, reserva de segurança e independência financeira.',

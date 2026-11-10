@@ -233,10 +233,10 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
   return (
     <div className="space-y-6">
       {/* Cabeçalho do Painel */}
-      <div className="bg-oat-50/95 border border-oat-300 rounded-3xl p-4 sm:p-6 shadow-cozy">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-oat-200">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-maldives-600 text-2xl">
                 analytics
               </span>
@@ -259,7 +259,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
                 setSelectedChartMonthKey(e.target.value);
                 onSelectMonth(e.target.value);
               }}
-              className="bg-oat-100 border border-oat-300 text-espresso-900 text-xs font-bold rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-maldives-500 cursor-pointer"
+              className="bg-surface-input border border-oat-300 dark:border-white/[0.08] text-espresso-900 text-xs font-bold rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-maldives-500 cursor-pointer"
             >
               {activeMetricsList.map((m) => (
                 <option key={m.key} value={m.key}>
@@ -272,7 +272,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
 
         {/* Cards de Médias Financeiras */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-5">
-          <div className="bg-oat-100/80 p-3.5 sm:p-4 rounded-2xl border border-oat-200">
+          <div className="bg-oat-100/80 dark:bg-oat-200/55 p-3.5 sm:p-4 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
             <div className="flex items-center justify-between text-espresso-500 text-xs font-semibold mb-1">
               <span>Gasto Médio Mensal</span>
               <span className="material-symbols-outlined text-base text-espresso-400">
@@ -287,7 +287,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
             </p>
           </div>
 
-          <div className="bg-sage-50/70 p-3.5 sm:p-4 rounded-2xl border border-sage-200">
+          <div className="bg-sage-50/70 p-3.5 sm:p-4 rounded-2xl border border-sage-200 dark:border-sage-300/25">
             <div className="flex items-center justify-between text-sage-600 text-xs font-semibold mb-1">
               <span>Média em Essenciais</span>
               <span className="material-symbols-outlined text-base">
@@ -302,7 +302,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
             </p>
           </div>
 
-          <div className="bg-terracotta-50/70 p-3.5 sm:p-4 rounded-2xl border border-terracotta-200">
+          <div className="bg-terracotta-50/70 p-3.5 sm:p-4 rounded-2xl border border-terracotta-200 dark:border-terracotta-300/25">
             <div className="flex items-center justify-between text-terracotta-600 text-xs font-semibold mb-1">
               <span>Média em Estilo de Vida</span>
               <span className="material-symbols-outlined text-base">
@@ -317,7 +317,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
             </p>
           </div>
 
-          <div className="bg-maldives-50/70 p-3.5 sm:p-4 rounded-2xl border border-maldives-200">
+          <div className="bg-maldives-50/70 p-3.5 sm:p-4 rounded-2xl border border-maldives-200 dark:border-maldives-300/25">
             <div className="flex items-center justify-between text-maldives-600 text-xs font-semibold mb-1">
               <span>Aporte Médio (Futuro)</span>
               <span className="material-symbols-outlined text-base">
@@ -335,7 +335,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
       </div>
 
       {/* Gráfico 1: Evolução Histórica dos Gastos Mensais */}
-      <div className="bg-oat-50/95 border border-oat-300 rounded-3xl p-4 sm:p-6 shadow-cozy">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h3 className="text-base sm:text-lg font-display font-bold text-espresso-900 flex items-center gap-2">
@@ -371,23 +371,23 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
         </div>
 
         {/* Visualização de Barras */}
-        <div className="relative pt-6 pb-2">
-          {/* Linha da Média */}
-          {averages.avgTotal > 0 && (
-            <div
-              className="absolute left-0 right-0 border-t-2 border-dashed border-espresso-400/80 pointer-events-none z-10"
-              style={{
-                bottom: `${Math.min(95, Math.max(5, (averages.avgTotal / maxBarValue) * 100))}%`,
-              }}
-            >
-              <span className="absolute right-0 -top-5 text-[10px] font-mono font-bold bg-oat-200 text-espresso-700 px-2 py-0.5 rounded-full border border-oat-300 shadow-xs">
-                Média: {formatCurrency(averages.avgTotal)}
-              </span>
-            </div>
-          )}
-
+        <div className="relative pt-28 pb-2">
           {/* Container das Barras */}
-          <div className="h-64 sm:h-72 flex items-end justify-around gap-2 sm:gap-4 px-2 border-b border-oat-300">
+          <div className="relative h-64 sm:h-72 flex items-end justify-around gap-2 sm:gap-4 px-2 border-b border-oat-300 dark:border-white/[0.08]">
+            {/* Linha da Média */}
+            {averages.avgTotal > 0 && (
+              <div
+                className="absolute left-0 right-0 border-t-2 border-dashed border-espresso-400/70 pointer-events-none z-10"
+                style={{
+                  bottom: `${Math.min(95, Math.max(8, (averages.avgTotal / maxBarValue) * 100))}%`,
+                }}
+              >
+                <span className="absolute right-0 -top-6 text-[10px] font-mono font-bold bg-oat-200 text-espresso-700 px-2 py-0.5 rounded-full border border-oat-300 dark:border-white/[0.08] shadow-xs">
+                  Média: {formatCurrency(averages.avgTotal)}
+                </span>
+              </div>
+            )}
+
             {activeMetricsList.map((m) => {
               const isSelected = m.key === selectedChartMonthKey;
               const isHovered = m.key === hoveredMonthKey;
@@ -406,23 +406,23 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
                     setSelectedChartMonthKey(m.key);
                     onSelectMonth(m.key);
                   }}
-                  className="flex-1 max-w-[80px] h-full flex flex-col justify-end items-center cursor-pointer group relative"
+                  className="flex-1 max-w-[80px] h-full flex flex-col justify-end items-center cursor-pointer group relative z-20"
                 >
                   {/* Tooltip ao passar o mouse ou selecionar */}
                   {(isHovered || isSelected) && (
                     <motion.div
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="absolute -top-20 z-20 bg-espresso-900 text-white text-[11px] p-2.5 rounded-xl shadow-lg font-mono pointer-events-none whitespace-nowrap"
+                      className="absolute -top-24 z-30 bg-surface-ink/95 backdrop-blur-md text-white text-[11px] p-2.5 rounded-xl shadow-cozy-lg border border-white/10 font-mono pointer-events-none whitespace-nowrap"
                     >
-                      <p className="font-sans font-bold text-white border-b border-espresso-700 pb-1 mb-1">
+                      <p className="font-sans font-bold text-white border-b border-white/15 pb-1 mb-1">
                         {m.label}
                       </p>
                       <div className="space-y-0.5">
-                        <p className="text-sage-200">Essencial: {formatCurrency(m.essencial)}</p>
-                        <p className="text-terracotta-200">Estilo: {formatCurrency(m.estilo)}</p>
-                        <p className="text-maldives-200">Investimentos: {formatCurrency(m.investimento)}</p>
-                        <p className="text-white font-bold pt-0.5 border-t border-espresso-700">
+                        <p className="text-[#A7D7B8]">Essencial: {formatCurrency(m.essencial)}</p>
+                        <p className="text-[#F4B6A4]">Estilo: {formatCurrency(m.estilo)}</p>
+                        <p className="text-[#5EEAD4]">Investimentos: {formatCurrency(m.investimento)}</p>
+                        <p className="text-white font-bold pt-0.5 border-t border-white/15">
                           Total: {formatCurrency(m.totalExpenses)}
                         </p>
                       </div>
@@ -483,9 +483,9 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
       {/* Grid: Composição por Categoria + Ranking de Itens */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Card 1: Comparativo das Categorias (Mês Selecionado vs Meta 50/30/20) */}
-        <div className="bg-oat-50/95 border border-oat-300 rounded-3xl p-4 sm:p-6 shadow-cozy flex flex-col justify-between">
+        <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-oat-200 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-oat-200 dark:border-white/[0.06] mb-4">
               <h3 className="text-base font-display font-bold text-espresso-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-terracotta-600">
                   pie_chart
@@ -587,7 +587,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
             </div>
           </div>
 
-          <div className="mt-5 p-3.5 bg-oat-100 rounded-2xl border border-oat-200 text-xs text-espresso-700 flex items-center justify-between">
+          <div className="mt-5 p-3.5 bg-oat-100 dark:bg-oat-200/55 rounded-2xl border border-oat-200 dark:border-white/[0.06] text-xs text-espresso-700 flex items-center justify-between">
             <span>Renda Total Informada no Mês:</span>
             <span className="font-mono font-bold text-espresso-900">
               {formatCurrency(currentChartMonth?.totalIncome || 0)}
@@ -596,9 +596,9 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
         </div>
 
         {/* Card 2: Ranking de Gastos por Item Específico */}
-        <div className="bg-oat-50/95 border border-oat-300 rounded-3xl p-4 sm:p-6 shadow-cozy flex flex-col justify-between">
+        <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy flex flex-col justify-between">
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-oat-200 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-oat-200 dark:border-white/[0.06] mb-4">
               <h3 className="text-base font-display font-bold text-espresso-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-sage-600">
                   format_list_numbered
@@ -607,13 +607,13 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
               </h3>
 
               {/* Filtro por categoria */}
-              <div className="flex items-center gap-1 text-[11px]">
+              <div className="flex items-center gap-1 text-[11px] flex-wrap">
                 <button
                   onClick={() => setCategoryFilter('all')}
                   className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
                     categoryFilter === 'all'
-                      ? 'bg-espresso-900 text-white'
-                      : 'bg-oat-100 text-espresso-600 hover:bg-oat-200'
+                      ? 'bg-surface-ink dark:bg-maldives-500 text-white'
+                      : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-600 hover:bg-oat-200'
                   }`}
                 >
                   Todos
@@ -622,8 +622,8 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
                   onClick={() => setCategoryFilter('essencial')}
                   className={`px-2 py-1 rounded-lg font-bold transition cursor-pointer ${
                     categoryFilter === 'essencial'
-                      ? 'bg-sage-600 text-white'
-                      : 'bg-oat-100 text-espresso-600 hover:bg-oat-200'
+                      ? 'bg-sage-500 text-white'
+                      : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-600 hover:bg-oat-200'
                   }`}
                 >
                   Essencial
@@ -632,8 +632,8 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
                   onClick={() => setCategoryFilter('estilo')}
                   className={`px-2 py-1 rounded-lg font-bold transition cursor-pointer ${
                     categoryFilter === 'estilo'
-                      ? 'bg-terracotta-600 text-white'
-                      : 'bg-oat-100 text-espresso-600 hover:bg-oat-200'
+                      ? 'bg-terracotta-500 text-white'
+                      : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-600 hover:bg-oat-200'
                   }`}
                 >
                   Estilo
@@ -642,8 +642,8 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
                   onClick={() => setCategoryFilter('investimento')}
                   className={`px-2 py-1 rounded-lg font-bold transition cursor-pointer ${
                     categoryFilter === 'investimento'
-                      ? 'bg-maldives-600 text-white'
-                      : 'bg-oat-100 text-espresso-600 hover:bg-oat-200'
+                      ? 'bg-maldives-500 text-white'
+                      : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-600 hover:bg-oat-200'
                   }`}
                 >
                   Aportes
@@ -672,7 +672,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
                   return (
                     <div
                       key={item.id || idx}
-                      className="p-2.5 bg-oat-100/70 rounded-xl border border-oat-200 flex items-center justify-between gap-3 text-xs"
+                      className="p-2.5 bg-oat-100/70 dark:bg-oat-200/50 rounded-xl border border-oat-200 dark:border-white/[0.06] flex items-center justify-between gap-3 text-xs"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <span className="w-5 h-5 rounded-full bg-oat-200 text-espresso-600 font-bold flex items-center justify-center text-[10px] shrink-0 font-mono">
@@ -713,7 +713,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
       </div>
 
       {/* Tabela de Variação Mensal em Relação à Média */}
-      <div className="bg-oat-50/95 border border-oat-300 rounded-3xl p-4 sm:p-6 shadow-cozy">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
         <h3 className="text-base font-display font-bold text-espresso-900 mb-3 flex items-center gap-2">
           <span className="material-symbols-outlined text-espresso-600">
             table_chart
@@ -724,7 +724,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="border-b border-oat-200 text-espresso-500 font-semibold">
+              <tr className="border-b border-oat-200 dark:border-white/[0.07] text-espresso-500 font-semibold">
                 <th className="py-2.5 px-3">Competência</th>
                 <th className="py-2.5 px-3 font-mono">Total Gasto</th>
                 <th className="py-2.5 px-3 font-mono">Essenciais</th>
@@ -734,7 +734,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
                 <th className="py-2.5 px-3 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-oat-200">
+            <tbody className="divide-y divide-oat-200 dark:divide-white/[0.05]">
               {activeMetricsList.map((m) => {
                 const diff = m.totalExpenses - averages.avgTotal;
                 const diffPct = averages.avgTotal > 0 ? (diff / averages.avgTotal) * 100 : 0;

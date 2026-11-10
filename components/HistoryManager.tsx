@@ -71,10 +71,10 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
   };
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200">
+    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-maldives-600 text-xl">
               calendar_month
             </span>
@@ -108,7 +108,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
       </div>
 
       {isFormOpen && (
-        <div className="mt-4 p-4 rounded-2xl bg-oat-100 border-2 border-maldives-300 space-y-3">
+        <div className="mt-4 p-4 rounded-2xl bg-oat-100 dark:bg-oat-200/50 border border-maldives-300 dark:border-maldives-300/35 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-maldives-800 uppercase tracking-wider">
               Registrar Fechamento de {formatMonthKeyLabel(targetMonthKey)}
@@ -132,7 +132,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                   onChange={(e) =>
                     handleChangeMonthSelect(selYear, Number(e.target.value))
                   }
-                  className="bg-oat-50 border border-oat-300 rounded-xl px-2.5 py-2 text-xs font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                  className="bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-2.5 py-2 text-xs font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                 >
                   {MONTH_NAMES_FULL.map((mName, idx) => (
                     <option key={mName} value={idx + 1}>
@@ -151,7 +151,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                       selMonthNum
                     )
                   }
-                  className="bg-oat-50 border border-oat-300 rounded-xl px-2.5 py-2 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                  className="bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-2.5 py-2 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                 />
               </div>
             </div>
@@ -165,7 +165,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                 value={newLabel}
                 onChange={(e) => setNewLabel(e.target.value)}
                 placeholder="Ex: Novembro / 2026"
-                className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm text-espresso-900 focus:outline-none focus:border-maldives-500"
+                className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
               />
             </div>
 
@@ -178,7 +178,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
                 value={newNotes}
                 onChange={(e) => setNewNotes(e.target.value)}
                 placeholder="Ex: 13º salário investido, meta batida..."
-                className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm text-espresso-900 focus:outline-none focus:border-maldives-500"
+                className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
               />
             </div>
           </div>
@@ -202,7 +202,7 @@ export const HistoryManager: React.FC<HistoryManagerProps> = ({
 
       <div className="mt-5">
         {history.length === 0 ? (
-          <div className="p-10 text-center bg-oat-100/60 rounded-2xl border-2 border-dashed border-oat-300">
+          <div className="p-10 text-center bg-oat-100/60 dark:bg-oat-200/35 rounded-2xl border border-dashed border-oat-300 dark:border-white/[0.1]">
             <span className="material-symbols-outlined text-espresso-400 text-4xl mb-2">
               history_edu
             </span>

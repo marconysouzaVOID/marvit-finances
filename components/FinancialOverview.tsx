@@ -35,10 +35,10 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
   };
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200">
+    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-maldives-600 text-xl">
               donut_large
             </span>
@@ -57,8 +57,8 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
           <div
             className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold border ${
               sumPercent === 100
-                ? 'bg-maldives-50 border-maldives-300 text-maldives-700'
-                : 'bg-terracotta-50 border-terracotta-300 text-terracotta-700'
+                ? 'bg-maldives-50 border-maldives-300/70 dark:border-maldives-300/35 text-maldives-700'
+                : 'bg-terracotta-50 border-terracotta-300/70 dark:border-terracotta-300/35 text-terracotta-700'
             }`}
           >
             Soma: {sumPercent}% {sumPercent !== 100 && '(Ideal: 100%)'}
@@ -69,7 +69,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
               isEditingGoals
                 ? 'bg-maldives-500 text-white hover:bg-maldives-600 shadow-sm'
-                : 'bg-oat-200/80 text-espresso-800 hover:bg-oat-300 border border-oat-300'
+                : 'bg-oat-200/80 text-espresso-800 hover:bg-oat-300 border border-oat-300 dark:border-white/[0.07]'
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">
@@ -109,7 +109,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.07, duration: 0.35 }}
               whileHover={{ y: -3 }}
-              className={`p-5 rounded-3xl bg-oat-100/60 border-2 ${goal.borderColor} shadow-sm relative overflow-hidden flex flex-col justify-between transition-shadow hover:shadow-cozy`}
+              className={`p-5 rounded-3xl bg-oat-100/60 dark:bg-oat-200/45 border ${goal.borderColor} shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] relative overflow-hidden flex flex-col justify-between transition-shadow hover:shadow-cozy`}
             >
               <div>
                 <div className="flex items-start justify-between gap-3 mb-3">
@@ -191,7 +191,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
                   </div>
                 </div>
 
-                <div className="w-full bg-oat-200/90 rounded-full h-3 mt-3.5 overflow-hidden p-0.5 border border-oat-300">
+                <div className="w-full bg-oat-200/90 dark:bg-white/[0.08] rounded-full h-3 mt-3.5 overflow-hidden p-0.5 border border-oat-300 dark:border-white/[0.04]">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(100, Math.max(0, currentPercent))}%` }}
@@ -208,7 +208,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-oat-200/90 flex items-center justify-between text-xs">
+              <div className="mt-4 pt-3 border-t border-oat-200/90 dark:border-white/[0.06] flex items-center justify-between text-xs">
                 <span className="text-espresso-600 font-medium">
                   {cat === 'investimento' ? 'Status do Aporte:' : 'Margem do Teto:'}
                 </span>

@@ -115,8 +115,8 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
   return (
     <div className="space-y-6">
       {/* Cabeçalho dos Potes dos Sonhos */}
-      <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200">
+      <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-3 sm:gap-4">
             <InteractiveAsset
               src="/assets/marvit-metas.png"
@@ -130,7 +130,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                 <h2 className="text-lg sm:text-2xl font-display font-bold text-espresso-900">
                   Potes dos Sonhos & Metas de Longo Prazo
                 </h2>
-                <span className="text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300">
+                <span className="text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 dark:border-maldives-300/35">
                   Juros Compostos Ativos
                 </span>
               </div>
@@ -153,7 +153,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
 
         {/* Resumo Consolidado das Metas */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
-          <div className="p-4 rounded-2xl bg-maldives-50/80 border border-maldives-200 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-maldives-50/80 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-between">
             <div>
               <span className="text-[11px] font-bold uppercase text-maldives-800 tracking-wider block">
                 Total Guardado nos Potes
@@ -170,7 +170,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-sage-50 border border-sage-200 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-sage-50 border border-sage-200 dark:border-sage-300/25 flex items-center justify-between">
             <div>
               <span className="text-[11px] font-bold uppercase text-sage-600 tracking-wider block">
                 Aporte Mensal Destinado
@@ -187,7 +187,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-terracotta-50 border border-terracotta-200 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-terracotta-50 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-between">
             <div>
               <span className="text-[11px] font-bold uppercase text-terracotta-700 tracking-wider block">
                 Progresso Global
@@ -214,7 +214,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="mt-5 p-5 rounded-2xl bg-oat-100 border-2 border-maldives-300 space-y-4">
+              <div className="mt-5 p-5 rounded-2xl bg-oat-100 dark:bg-oat-200/50 border border-maldives-300 dark:border-maldives-300/35 space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-display font-bold text-espresso-900 flex items-center gap-2">
                     <span className="material-symbols-outlined text-maldives-600 text-lg">
@@ -237,8 +237,8 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                         onClick={() => setIcon(item.id)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition cursor-pointer ${
                           icon === item.id
-                            ? 'bg-maldives-500 text-white border-maldives-600 shadow-sm'
-                            : 'bg-oat-50 text-espresso-700 border-oat-300 hover:border-maldives-400'
+                            ? 'bg-maldives-500 text-white border-maldives-600/40 shadow-sm'
+                            : 'bg-oat-50 text-espresso-700 border-oat-300 dark:border-white/[0.08] hover:border-maldives-400'
                         }`}
                       >
                         <span className="material-symbols-outlined text-[16px]">
@@ -260,7 +260,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Ex: Viagem p/ Itália, Reforma da Cozinha..."
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
 
@@ -276,7 +276,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                       onChange={(e) =>
                         setTargetAmount(e.target.value === '' ? '' : Number(e.target.value))
                       }
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
 
@@ -292,7 +292,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                       onChange={(e) =>
                         setCurrentAmount(e.target.value === '' ? '' : Number(e.target.value))
                       }
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
 
@@ -310,7 +310,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                           e.target.value === '' ? '' : Number(e.target.value)
                         )
                       }
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-maldives-700 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-maldives-700 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
 
@@ -325,7 +325,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                       step="0.5"
                       value={annualInterestRate}
                       onChange={(e) => setAnnualInterestRate(Number(e.target.value))}
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
 
@@ -338,13 +338,13 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Ex: Aplicado em CDB 110% CDI / Tesouro IPCA+"
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
                 </div>
 
                 {/* Vínculo com a planilha mensal */}
-                <div className="p-3.5 rounded-xl bg-oat-50 border border-oat-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="p-3.5 rounded-xl bg-oat-50 border border-oat-300 dark:border-white/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <label className="flex items-center gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
@@ -413,13 +413,13 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.06 }}
-              className="bg-oat-50/95 border-2 border-oat-300 hover:border-maldives-400 rounded-3xl p-5 shadow-cozy flex flex-col justify-between transition-all"
+              className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] hover:border-maldives-400/70 rounded-3xl p-5 shadow-cozy flex flex-col justify-between transition-all"
             >
               <div>
                 {/* Topo do Card */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+                    <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
                       <span className="material-symbols-outlined text-maldives-600 text-xl">
                         {goal.icon || 'savings'}
                       </span>
@@ -622,7 +622,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                   <p
                     onClick={() => startEditingGoal(goal)}
                     title="Clique para editar observações"
-                    className="text-xs text-espresso-600 bg-oat-100/80 hover:bg-oat-200/70 px-3 py-2 rounded-xl mt-3 border border-oat-200 italic cursor-pointer transition"
+                    className="text-xs text-espresso-600 bg-oat-100/80 dark:bg-oat-200/45 hover:bg-oat-200/70 px-3 py-2 rounded-xl mt-3 border border-oat-200 dark:border-white/[0.06] italic cursor-pointer transition"
                   >
                     “{goal.notes}”
                   </p>
@@ -645,7 +645,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                     </div>
                   </div>
 
-                  <div className="w-full bg-oat-200 rounded-full h-3.5 mt-2.5 overflow-hidden p-0.5 border border-oat-300">
+                  <div className="w-full bg-oat-200 dark:bg-white/[0.08] rounded-full h-3.5 mt-2.5 overflow-hidden p-0.5 border border-oat-300 dark:border-white/[0.04]">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${proj.progressPercent}%` }}
@@ -661,7 +661,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                 </div>
 
                 {/* Edição Rápida de Saldo, Aporte Mensal e Rentabilidade */}
-                <div className="grid grid-cols-3 gap-2 mt-4 p-3 rounded-2xl bg-oat-100/90 border border-oat-200">
+                <div className="grid grid-cols-3 gap-2 mt-4 p-3 rounded-2xl bg-oat-100/90 dark:bg-oat-200/45 border border-oat-200 dark:border-white/[0.06]">
                   <div>
                     <label className="text-[10px] font-bold uppercase text-espresso-500 block mb-1">
                       Já Guardado (R$)
@@ -676,7 +676,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                           currentAmount: Math.max(0, Number(e.target.value)),
                         })
                       }
-                      className="w-full bg-oat-50 border border-oat-300 rounded-lg px-2 py-1 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-2 py-1 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
                   <div>
@@ -693,7 +693,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                           monthlyContribution: Math.max(0, Number(e.target.value)),
                         })
                       }
-                      className="w-full bg-oat-50 border border-maldives-300 rounded-lg px-2 py-1 text-xs font-mono font-bold text-maldives-700 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-maldives-300 dark:border-maldives-400/35 rounded-lg px-2 py-1 text-xs font-mono font-bold text-maldives-700 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
                   <div>
@@ -711,13 +711,13 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                           annualInterestRate: Math.max(0, Number(e.target.value)),
                         })
                       }
-                      className="w-full bg-oat-50 border border-oat-300 rounded-lg px-2 py-1 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-2 py-1 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
                 </div>
 
                 {/* Projeção de Quando Será Batida */}
-                <div className="mt-3.5 p-3.5 rounded-2xl bg-maldives-50/70 border border-maldives-200 space-y-1.5 text-xs">
+                <div className="mt-3.5 p-3.5 rounded-2xl bg-maldives-50/70 border border-maldives-200 dark:border-maldives-300/25 space-y-1.5 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-espresso-700 font-semibold flex items-center gap-1">
                       <span className="material-symbols-outlined text-maldives-600 text-[16px]">
@@ -738,7 +738,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                   </div>
 
                   {!proj.isAlreadyReached && Number.isFinite(proj.monthsRemaining) && (
-                    <div className="flex items-center justify-between text-[11px] text-espresso-600 pt-1 border-t border-maldives-200/70">
+                    <div className="flex items-center justify-between text-[11px] text-espresso-600 pt-1 border-t border-maldives-200/70 dark:border-white/[0.06]">
                       <span>Juros compostos ganhos:</span>
                       <span className="font-mono font-bold text-sage-600">
                         +{formatCurrency(proj.totalInterestEarned)}
@@ -747,7 +747,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                   )}
 
                   {proj.monthsSavedWithExtra100 > 0 && (
-                    <div className="text-[11px] text-terracotta-700 bg-terracotta-50 px-2.5 py-1 rounded-lg border border-terracotta-200 mt-1">
+                    <div className="text-[11px] text-terracotta-700 bg-terracotta-50 px-2.5 py-1 rounded-lg border border-terracotta-200 dark:border-terracotta-300/25 mt-1">
                       💡 +R$ 200/mês antecipa sua conquista em{' '}
                       <strong>{proj.monthsSavedWithExtra100} meses</strong>!
                     </div>
@@ -756,7 +756,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
               </div>
 
               {/* Rodapé do Card: Toggle de Vínculo com Orçamento + Exclusão do Mês + Botão de Depósito Rápido */}
-              <div className="mt-4 pt-3 border-t border-oat-200 flex flex-wrap items-center justify-between gap-2">
+              <div className="mt-4 pt-3 border-t border-oat-200 dark:border-white/[0.06] flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <button
                     type="button"

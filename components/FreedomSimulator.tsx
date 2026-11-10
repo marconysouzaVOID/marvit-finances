@@ -46,10 +46,10 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
   const yearsToFireEssencial = (monthsToFireEssencial / 12).toFixed(1);
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200">
+    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-maldives-600 text-xl">
               sailing
             </span>
@@ -64,7 +64,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
           </div>
         </div>
 
-        <span className="text-xs bg-maldives-100 text-maldives-800 border border-maldives-300 font-bold px-3 py-1 rounded-full self-start sm:self-auto">
+        <span className="text-xs bg-maldives-100 text-maldives-800 border border-maldives-300 dark:border-maldives-300/35 font-bold px-3 py-1 rounded-full self-start sm:self-auto">
           Método FIRE • Marvit Pro
         </span>
       </div>
@@ -73,7 +73,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
         {/* 1. Reserva de Segurança */}
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-oat-100/70 p-4 sm:p-5 rounded-3xl border-2 border-sage-300 flex flex-col justify-between shadow-sm"
+          className="bg-oat-100/70 dark:bg-oat-200/45 p-4 sm:p-5 rounded-3xl border border-sage-300 dark:border-sage-300/35 flex flex-col justify-between shadow-sm"
         >
           <div>
             <div className="flex items-start justify-between gap-3">
@@ -117,7 +117,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
         {/* 2. Liberdade Básica */}
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-oat-100/70 p-4 sm:p-5 rounded-3xl border-2 border-terracotta-200 flex flex-col justify-between shadow-sm"
+          className="bg-oat-100/70 dark:bg-oat-200/45 p-4 sm:p-5 rounded-3xl border border-terracotta-200 dark:border-terracotta-300/35 flex flex-col justify-between shadow-sm"
         >
           <div>
             <div className="flex items-start justify-between gap-3">
@@ -158,7 +158,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
         {/* 3. Liberdade Plena (Maldivas Life) */}
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-gradient-to-b from-maldives-50/90 to-oat-50 p-4 sm:p-5 rounded-3xl border-2 border-maldives-400 flex flex-col justify-between shadow-cozy"
+          className="bg-gradient-to-b from-maldives-50/90 to-oat-50 dark:from-maldives-100/40 dark:to-oat-50 p-4 sm:p-5 rounded-3xl border border-maldives-400/70 dark:border-maldives-400/40 flex flex-col justify-between shadow-cozy"
         >
           <div>
             <div className="flex items-start justify-between gap-3">
@@ -198,7 +198,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
       </div>
 
       {/* Parâmetros de Simulação */}
-      <div className="mt-5 p-4 rounded-2xl bg-oat-100/90 border border-oat-300 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <div className="mt-5 p-4 rounded-2xl bg-oat-100/90 dark:bg-oat-200/50 border border-oat-300 dark:border-white/[0.07] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
         <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
           <div className="flex items-center gap-2">
             <span className="text-espresso-700 font-semibold">
@@ -211,7 +211,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
               max="30"
               value={rateAnnual}
               onChange={(e) => setRateAnnual(Number(e.target.value))}
-              className="w-16 bg-oat-50 border border-oat-300 rounded-xl px-2 py-1 text-espresso-900 font-mono font-bold text-center focus:outline-none focus:border-maldives-500"
+              className="w-16 bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-2 py-1 text-espresso-900 font-mono font-bold text-center focus:outline-none focus:border-maldives-500"
             />
             <span className="text-espresso-600">% a.a.</span>
           </div>
@@ -227,7 +227,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
               max="15"
               value={safeWithdrawalRate}
               onChange={(e) => setSafeWithdrawalRate(Number(e.target.value))}
-              className="w-16 bg-oat-50 border border-oat-300 rounded-xl px-2 py-1 text-espresso-900 font-mono font-bold text-center focus:outline-none focus:border-maldives-500"
+              className="w-16 bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-2 py-1 text-espresso-900 font-mono font-bold text-center focus:outline-none focus:border-maldives-500"
             />
             <span className="text-espresso-600">% a.a.</span>
           </div>

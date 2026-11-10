@@ -32,12 +32,12 @@ export const InteractiveAsset: React.FC<InteractiveAssetProps> = ({
 
   const toneRingClasses = {
     maldives:
-      'bg-gradient-to-b from-maldives-50 to-oat-50 border-maldives-300/80 shadow-maldives-500/10 hover:border-maldives-500',
-    sage: 'bg-gradient-to-b from-sage-50 to-oat-50 border-sage-300/80 shadow-sage-500/10 hover:border-sage-500',
+      'bg-gradient-to-b from-maldives-50 to-oat-50 dark:from-maldives-50/70 dark:to-oat-200/70 border-maldives-300/80 dark:border-white/[0.08] shadow-maldives-500/10 dark:shadow-none hover:border-maldives-500/60',
+    sage: 'bg-gradient-to-b from-sage-50 to-oat-50 dark:from-sage-50/70 dark:to-oat-200/70 border-sage-300/80 dark:border-white/[0.08] shadow-sage-500/10 dark:shadow-none hover:border-sage-500/60',
     terracotta:
-      'bg-gradient-to-b from-terracotta-50 to-oat-50 border-terracotta-200/90 shadow-terracotta-500/10 hover:border-terracotta-400',
+      'bg-gradient-to-b from-terracotta-50 to-oat-50 dark:from-terracotta-50/70 dark:to-oat-200/70 border-terracotta-200/90 dark:border-white/[0.08] shadow-terracotta-500/10 dark:shadow-none hover:border-terracotta-400/60',
     neutral:
-      'bg-gradient-to-b from-oat-100 to-oat-50 border-oat-300 shadow-espresso-900/5 hover:border-maldives-400',
+      'bg-gradient-to-b from-oat-100 to-oat-50 dark:from-oat-200/80 dark:to-oat-100 border-oat-300 dark:border-white/[0.08] shadow-espresso-900/5 dark:shadow-none hover:border-maldives-400/60',
   }[tone];
 
   return (

@@ -668,7 +668,7 @@ export const App: React.FC = () => {
     }
     const metaTheme = document.querySelector('meta[name="theme-color"]');
     if (metaTheme) {
-      metaTheme.setAttribute('content', isDark ? '#071217' : '#FAF6F0');
+      metaTheme.setAttribute('content', isDark ? '#0F1115' : '#FAF6F0');
     }
   }, [isDark]);
 
@@ -2281,7 +2281,7 @@ export const App: React.FC = () => {
           <button
             type="button"
             onClick={toggleTheme}
-            className="px-3.5 py-2 rounded-2xl bg-oat-50 border border-oat-300 text-espresso-800 text-xs font-bold flex items-center gap-2 shadow-cozy hover:border-maldives-500 transition cursor-pointer"
+            className="px-3.5 py-2 rounded-2xl bg-oat-50/90 dark:bg-surface-elevated border border-oat-300 dark:border-white/[0.08] text-espresso-800 text-xs font-bold flex items-center gap-2 shadow-cozy hover:border-maldives-500/60 transition cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px] text-maldives-600">
               {isDark ? 'light_mode' : 'dark_mode'}
@@ -2293,7 +2293,7 @@ export const App: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-oat-50 border-2 border-oat-300 rounded-3xl max-w-md w-full p-7 shadow-cozy-lg text-center space-y-5"
+          className="bg-surface-elevated border border-oat-300 dark:border-white/[0.08] rounded-3xl max-w-md w-full p-7 shadow-cozy-lg text-center space-y-5"
         >
           <div className="flex justify-center">
             <InteractiveAsset
@@ -2308,7 +2308,7 @@ export const App: React.FC = () => {
           {showFirstAccessChangePin ? (
             <div className="space-y-4">
               <div>
-                <span className="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 mb-2">
+                <span className="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300/60 dark:border-maldives-300/35 mb-2">
                   Primeiro Acesso Concluído
                 </span>
                 <h1 className="text-xl sm:text-2xl font-display font-bold text-espresso-900">
@@ -2325,14 +2325,14 @@ export const App: React.FC = () => {
                   value={firstAccessNewPin}
                   onChange={(e) => setFirstAccessNewPin(e.target.value)}
                   placeholder="Digite seu novo PIN (mín. 4 dígitos)"
-                  className="w-full bg-oat-100 border border-oat-300 rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                 />
                 <input
                   type="password"
                   value={firstAccessConfirmPin}
                   onChange={(e) => setFirstAccessConfirmPin(e.target.value)}
                   placeholder="Confirme seu novo PIN"
-                  className="w-full bg-oat-100 border border-oat-300 rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                 />
                 {lockError && (
                   <p className="text-xs text-terracotta-600 font-semibold">
@@ -2388,7 +2388,7 @@ export const App: React.FC = () => {
                   value={lockPinInput}
                   onChange={(e) => setLockPinInput(e.target.value)}
                   placeholder="Digite seu PIN secreto..."
-                  className="w-full bg-oat-100 border border-oat-300 rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                 />
                 {lockError && (
                   <p className="text-xs text-terracotta-600 font-semibold">
@@ -2434,7 +2434,7 @@ export const App: React.FC = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-4 inset-x-4 sm:left-auto sm:right-4 sm:max-w-sm z-50 bg-espresso-900 text-oat-50 px-4 py-2.5 rounded-2xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-maldives-400"
+            className="fixed top-4 inset-x-4 sm:left-auto sm:right-4 sm:max-w-sm z-50 bg-surface-ink text-white px-4 py-2.5 rounded-2xl shadow-lg text-xs font-semibold flex items-center gap-2 border border-maldives-400/50"
           >
             <span className="material-symbols-outlined text-maldives-400 text-base shrink-0">
               check_circle
@@ -2445,7 +2445,7 @@ export const App: React.FC = () => {
       </AnimatePresence>
 
       {/* Cabeçalho Principal */}
-      <header className="sticky top-0 z-30 w-full bg-oat-100/85 backdrop-blur-md border-b border-oat-300/80 transition-colors">
+      <header className="sticky top-0 z-30 w-full bg-oat-100/85 dark:bg-oat-100/80 backdrop-blur-xl border-b border-oat-300/80 dark:border-white/[0.06] transition-colors">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <InteractiveAsset
@@ -2471,7 +2471,7 @@ export const App: React.FC = () => {
             {/* Alternador de Tema Claro / Escuro */}
             <button
               onClick={toggleTheme}
-              className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2.5 sm:py-1.5 rounded-xl bg-oat-50 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+              className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2.5 sm:py-1.5 rounded-xl bg-oat-50 dark:bg-oat-200/70 hover:bg-oat-200 text-espresso-800 border border-oat-300 dark:border-white/[0.08] text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               title={isDark ? 'Mudar para Modo Claro' : 'Mudar para Modo Escuro'}
             >
               <span className="material-symbols-outlined text-[17px] sm:text-[18px] text-maldives-600">
@@ -2485,7 +2485,7 @@ export const App: React.FC = () => {
             {/* Botão Instalar App PWA (Visível no cabeçalho a partir de sm, e no menu mobile) */}
             <button
               onClick={handleInstallPwa}
-              className="hidden sm:flex px-2.5 py-1.5 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-600 border border-sage-300 text-xs font-bold transition items-center gap-1.5 cursor-pointer"
+              className="hidden sm:flex px-2.5 py-1.5 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-600 border border-sage-300/80 dark:border-sage-300/35 text-xs font-bold transition items-center gap-1.5 cursor-pointer"
               title="Instalar aplicativo no celular ou computador (PWA)"
             >
               <span className="material-symbols-outlined text-[17px]">
@@ -2499,8 +2499,8 @@ export const App: React.FC = () => {
               onClick={() => setIsVaultModalOpen(true)}
               className={`w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 vault
-                  ? 'bg-maldives-50 border-maldives-300 text-maldives-800'
-                  : 'bg-oat-50 border-oat-300 text-espresso-800 hover:border-maldives-400'
+                  ? 'bg-maldives-50 border-maldives-300/70 dark:border-maldives-300/35 text-maldives-800'
+                  : 'bg-oat-50 dark:bg-oat-200/70 border-oat-300 dark:border-white/[0.08] text-espresso-800 hover:border-maldives-400/60'
               }`}
               title="Acesso Geral Unificado (PC + Celular), Troca de PIN e Biometria"
             >
@@ -2534,7 +2534,7 @@ export const App: React.FC = () => {
                       initial={{ opacity: 0, y: 8, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      className="absolute right-0 mt-2 w-64 bg-oat-50 border-2 border-oat-300 rounded-2xl shadow-cozy-lg p-2 z-50 space-y-1"
+                      className="absolute right-0 mt-2 w-64 bg-surface-elevated border border-oat-300 dark:border-white/[0.09] rounded-2xl shadow-cozy-lg p-2 z-50 space-y-1"
                     >
                       <button
                         type="button"
@@ -2607,7 +2607,7 @@ export const App: React.FC = () => {
                 sessionStorage.removeItem(SESSION_UNLOCKED_KEY);
                 setIsAppLocked(true);
               }}
-              className="w-8 h-8 sm:w-auto sm:h-auto sm:p-1.5 rounded-xl bg-oat-50 hover:bg-terracotta-50 text-espresso-600 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
+              className="w-8 h-8 sm:w-auto sm:h-auto sm:p-1.5 rounded-xl bg-oat-50 dark:bg-oat-200/70 hover:bg-terracotta-50 text-espresso-600 hover:text-terracotta-600 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
               title="Bloquear aplicação com PIN"
             >
               <span className="material-symbols-outlined text-[17px] sm:text-[18px]">
@@ -2642,7 +2642,7 @@ export const App: React.FC = () => {
         </div>
 
         {/* Barra de Navegação Desktop (Sliding Pill + Toggle Modo Bento) */}
-        <div className="hidden md:flex items-center justify-between gap-4 bg-oat-50/90 border border-oat-300 p-1.5 rounded-2xl shadow-sm">
+        <div className="hidden md:flex items-center justify-between gap-4 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1.5 rounded-2xl shadow-cozy">
           <div className="flex items-center gap-1">
             {navItems.map((tab) => {
               const isActive = !isBentoMode && activeTab === tab.id;
@@ -2656,7 +2656,7 @@ export const App: React.FC = () => {
                   className={`relative px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
                     isActive
                       ? 'text-white'
-                      : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-100'
+                      : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-100 dark:hover:bg-white/[0.05]'
                   }`}
                 >
                   {isActive && (
@@ -2675,7 +2675,7 @@ export const App: React.FC = () => {
                       className={`relative z-10 text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
                         isActive
                           ? 'bg-white/25 text-white'
-                          : 'bg-oat-200 text-espresso-700'
+                          : 'bg-oat-200 dark:bg-white/[0.08] text-espresso-700'
                       }`}
                     >
                       {tab.badge}
@@ -2691,7 +2691,7 @@ export const App: React.FC = () => {
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border ${
               isBentoMode
                 ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-sm'
-                : 'bg-oat-100 text-espresso-700 border-oat-300 hover:bg-oat-200'
+                : 'bg-oat-100 dark:bg-oat-200/80 text-espresso-700 border-oat-300 dark:border-white/[0.07] hover:bg-oat-200'
             }`}
             title="Visualizar todos os painéis juntos estilo Pinterest Bento Grid"
           >
@@ -2833,7 +2833,7 @@ export const App: React.FC = () => {
                   />
 
                   {/* Sub-navegador da aba Orçamento: Planilha vs Gráficos */}
-                  <div className="flex items-center justify-between gap-3 bg-oat-100/80 dark:bg-espresso-800/80 border border-oat-300 dark:border-espresso-700 p-1.5 rounded-2xl shadow-xs">
+                  <div className="flex items-center justify-between gap-3 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1.5 rounded-2xl shadow-xs">
                     <div className="flex items-center gap-1.5">
                       <button
                         type="button"
@@ -2841,7 +2841,7 @@ export const App: React.FC = () => {
                         className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           budgetSubView === 'sheet'
                             ? 'bg-maldives-500 text-white shadow-xs'
-                            : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                            : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
                         }`}
                       >
                         <span className="material-symbols-outlined text-[17px]">
@@ -2856,7 +2856,7 @@ export const App: React.FC = () => {
                         className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           budgetSubView === 'charts'
                             ? 'bg-maldives-500 text-white shadow-xs'
-                            : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                            : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
                         }`}
                       >
                         <span className="material-symbols-outlined text-[17px]">
@@ -2935,7 +2935,7 @@ export const App: React.FC = () => {
               {activeTab === 'freedom' && (
                 <div className="space-y-6">
                   {/* Sub-navegador da aba Liberdade: Simulador FIRE vs Calculadora de Juros */}
-                  <div className="flex items-center justify-between gap-3 bg-oat-100/80 dark:bg-espresso-800/80 border border-oat-300 dark:border-espresso-700 p-1.5 rounded-2xl shadow-xs">
+                  <div className="flex items-center justify-between gap-3 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1.5 rounded-2xl shadow-xs">
                     <div className="flex items-center gap-1.5">
                       <button
                         type="button"
@@ -2943,7 +2943,7 @@ export const App: React.FC = () => {
                         className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           freedomSubView === 'fire'
                             ? 'bg-maldives-500 text-white shadow-xs'
-                            : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                            : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
                         }`}
                       >
                         <span className="material-symbols-outlined text-[17px]">
@@ -2958,7 +2958,7 @@ export const App: React.FC = () => {
                         className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           freedomSubView === 'compound'
                             ? 'bg-maldives-500 text-white shadow-xs'
-                            : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                            : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
                         }`}
                       >
                         <span className="material-symbols-outlined text-[17px]">
@@ -3018,7 +3018,7 @@ export const App: React.FC = () => {
       </main>
 
       {/* Bottom Navigation Bar Responsiva para Mobile & PWA (iOS e Android) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-oat-50/95 dark:bg-espresso-900/95 backdrop-blur-lg border-t border-oat-300 dark:border-espresso-700 pb-safe shadow-cozy-lg">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-oat-50/92 dark:bg-surface-elevated/92 backdrop-blur-xl border-t border-oat-300 dark:border-white/[0.08] pb-safe shadow-cozy-lg">
         <div className="grid grid-cols-6 px-1 pt-1.5 pb-1">
           {navItems.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -3033,15 +3033,15 @@ export const App: React.FC = () => {
                 }}
                 className={`relative flex flex-col items-center justify-center py-1 px-1 rounded-2xl transition cursor-pointer min-w-0 ${
                   isActive
-                    ? 'text-maldives-700 dark:text-maldives-400 font-extrabold'
-                    : 'text-espresso-500 dark:text-espresso-400'
+                    ? 'text-maldives-700 font-extrabold'
+                    : 'text-espresso-500 hover:text-espresso-800'
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="mobileActiveTab"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    className="absolute inset-0 bg-maldives-100/90 dark:bg-maldives-950/70 rounded-xl -z-10"
+                    className="absolute inset-0 bg-maldives-100/90 rounded-xl -z-10"
                   />
                 )}
                 <span className="material-symbols-outlined text-[19px]">
@@ -3060,7 +3060,7 @@ export const App: React.FC = () => {
       <AnimatePresence>
         {pendingExportFile && (
           <div
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-espresso-900/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm"
             onClick={() => setPendingExportFile(null)}
           >
             <motion.div
@@ -3068,7 +3068,7 @@ export const App: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 24, scale: 0.96 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-oat-50 border-2 border-oat-300 rounded-3xl max-w-md w-full p-5 shadow-cozy-lg space-y-4 max-h-[88vh] overflow-y-auto"
+              className="bg-surface-elevated border border-oat-300 dark:border-white/[0.09] rounded-3xl max-w-md w-full p-5 shadow-cozy-lg space-y-4 max-h-[88vh] overflow-y-auto"
             >
               <div className="flex items-start justify-between gap-3 pb-3 border-b border-oat-200">
                 <div className="flex items-center gap-3 min-w-0">

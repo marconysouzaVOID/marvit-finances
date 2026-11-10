@@ -527,42 +527,42 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
   // Cor térmica do dia no grid
   const getDayThermalStyle = (amount: number, isSelected: boolean) => {
     if (isSelected) {
-      return 'ring-2 ring-terracotta-500 shadow-md scale-[1.02] z-10';
+      return 'ring-2 ring-terracotta-500 bg-terracotta-50/40 dark:bg-terracotta-50/80 border-terracotta-400/60 shadow-md scale-[1.01] z-10';
     }
     if (amount === 0) {
-      return 'bg-oat-50/60 dark:bg-espresso-800/40 border-oat-200/80 dark:border-espresso-700/60 text-espresso-400 hover:border-oat-400';
+      return 'bg-oat-50/60 dark:bg-oat-100/70 border-oat-200/80 dark:border-white/[0.06] text-espresso-400 hover:border-oat-400 dark:hover:border-white/[0.14]';
     }
     if (amount < 80) {
-      return 'bg-maldives-50/50 dark:bg-maldives-950/20 border-maldives-200/90 dark:border-maldives-800/60 text-espresso-900 hover:border-maldives-400';
+      return 'bg-maldives-50/50 dark:bg-maldives-50/65 border-maldives-200/90 dark:border-maldives-300/25 text-espresso-900 hover:border-maldives-400';
     }
     if (amount < 250) {
-      return 'bg-terracotta-50/70 dark:bg-terracotta-950/25 border-terracotta-300/80 dark:border-terracotta-800/70 text-espresso-900 hover:border-terracotta-400';
+      return 'bg-terracotta-50/70 dark:bg-terracotta-50/75 border-terracotta-300/80 dark:border-terracotta-300/30 text-espresso-900 hover:border-terracotta-400';
     }
     // Gasto alto / Dia de Pico
-    return 'bg-terracotta-100/90 dark:bg-terracotta-900/40 border-terracotta-400 dark:border-terracotta-700 text-terracotta-950 dark:text-terracotta-100 font-semibold shadow-xs hover:border-terracotta-500';
+    return 'bg-terracotta-100/90 dark:bg-terracotta-100/85 border-terracotta-400 dark:border-terracotta-300/45 text-espresso-900 font-semibold shadow-xs hover:border-terracotta-500';
   };
 
   return (
     <div className="space-y-6">
       {/* Topo do Calendário: Resumo e Métricas */}
-      <div className="bg-oat-50/95 dark:bg-espresso-900/90 border border-oat-300 dark:border-espresso-700/80 rounded-3xl p-4 sm:p-6 shadow-cozy">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200 dark:border-espresso-800">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-terracotta-100 dark:bg-terracotta-900/50 border border-terracotta-300 dark:border-terracotta-700 flex items-center justify-center shrink-0 shadow-xs">
-              <span className="material-symbols-outlined text-terracotta-600 dark:text-terracotta-400 text-2xl">
+            <div className="w-12 h-12 rounded-2xl bg-terracotta-100 border border-terracotta-300/70 dark:border-terracotta-300/30 flex items-center justify-center shrink-0 shadow-xs">
+              <span className="material-symbols-outlined text-terracotta-600 text-2xl">
                 calendar_month
               </span>
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-lg sm:text-xl font-display font-bold text-espresso-900 dark:text-oat-100">
+                <h3 className="text-lg sm:text-xl font-display font-bold text-espresso-900">
                   Calendário Diário • Gastos de Estilo de Vida
                 </h3>
-                <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-terracotta-100 dark:bg-terracotta-900/60 text-terracotta-700 dark:text-terracotta-300 border border-terracotta-200 dark:border-terracotta-700">
+                <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-terracotta-100 text-terracotta-700 border border-terracotta-200 dark:border-terracotta-300/35">
                   {formatMonthKeyLabel(selectedMonthKey)}
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-espresso-600 dark:text-espresso-400 mt-1">
+              <p className="text-xs sm:text-sm text-espresso-600 mt-1">
                 Visualize exatamente quanto saiu em cada dia com faturas de cartão, restaurantes e mimos.
               </p>
             </div>
@@ -572,7 +572,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
             <button
               type="button"
               onClick={() => onOpenCardInvoices()}
-              className="px-3.5 py-2 rounded-xl bg-oat-100 dark:bg-espresso-800 hover:bg-oat-200 text-espresso-700 dark:text-espresso-300 border border-oat-300 dark:border-espresso-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer self-start lg:self-auto"
+              className="px-3.5 py-2 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-700 border border-oat-300 dark:border-white/[0.08] text-xs font-bold transition flex items-center gap-1.5 cursor-pointer self-start lg:self-auto"
             >
               <span className="material-symbols-outlined text-[17px]">credit_card</span>
               <span>Ver Faturas dos Cartões</span>
@@ -583,11 +583,11 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
         {/* 4 Cards de Métricas Principais */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-5">
           {/* Total Gasto no Mês */}
-          <div className="bg-oat-100/70 dark:bg-espresso-800/50 border border-oat-200 dark:border-espresso-700/60 rounded-2xl p-3.5">
+          <div className="bg-oat-100/70 dark:bg-oat-200/50 border border-oat-200 dark:border-white/[0.06] rounded-2xl p-3.5">
             <span className="text-[11px] font-bold text-espresso-500 uppercase tracking-wider block">
               Gasto no Mês
             </span>
-            <div className="text-base sm:text-xl font-mono font-bold text-terracotta-600 dark:text-terracotta-400 mt-1">
+            <div className="text-base sm:text-xl font-mono font-bold text-terracotta-600 mt-1">
               {formatCurrency(dailyMetrics.filteredTotal)}
             </div>
             <span className="text-[10px] text-espresso-500 block mt-0.5">
@@ -596,11 +596,11 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
           </div>
 
           {/* Média por Dia */}
-          <div className="bg-oat-100/70 dark:bg-espresso-800/50 border border-oat-200 dark:border-espresso-700/60 rounded-2xl p-3.5">
+          <div className="bg-oat-100/70 dark:bg-oat-200/50 border border-oat-200 dark:border-white/[0.06] rounded-2xl p-3.5">
             <span className="text-[11px] font-bold text-espresso-500 uppercase tracking-wider block">
               Média Diária
             </span>
-            <div className="text-base sm:text-xl font-mono font-bold text-espresso-900 dark:text-oat-100 mt-1">
+            <div className="text-base sm:text-xl font-mono font-bold text-espresso-900 mt-1">
               {formatCurrency(dailyMetrics.dailyAverage)}
             </div>
             <span className="text-[10px] text-espresso-500 block mt-0.5">
@@ -609,14 +609,14 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
           </div>
 
           {/* Dia de Pico */}
-          <div className="bg-oat-100/70 dark:bg-espresso-800/50 border border-oat-200 dark:border-espresso-700/60 rounded-2xl p-3.5">
+          <div className="bg-oat-100/70 dark:bg-oat-200/50 border border-oat-200 dark:border-white/[0.06] rounded-2xl p-3.5">
             <span className="text-[11px] font-bold text-espresso-500 uppercase tracking-wider block flex items-center gap-1">
               <span>Dia de Pico</span>
               <span className="material-symbols-outlined text-[13px] text-terracotta-500">
                 local_fire_department
               </span>
             </span>
-            <div className="text-base sm:text-xl font-mono font-bold text-terracotta-700 dark:text-terracotta-300 mt-1">
+            <div className="text-base sm:text-xl font-mono font-bold text-terracotta-700 mt-1">
               {dailyMetrics.peakDayAmount > 0
                 ? `Dia ${dailyMetrics.peakDay}`
                 : 'Nenhum'}
@@ -629,12 +629,12 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
           </div>
 
           {/* Dias Sem Gastos (Zero Spend) */}
-          <div className="bg-oat-100/70 dark:bg-espresso-800/50 border border-oat-200 dark:border-espresso-700/60 rounded-2xl p-3.5">
+          <div className="bg-oat-100/70 dark:bg-oat-200/50 border border-oat-200 dark:border-white/[0.06] rounded-2xl p-3.5">
             <span className="text-[11px] font-bold text-espresso-500 uppercase tracking-wider block flex items-center gap-1">
               <span>Dias Sem Gastos</span>
               <span className="text-sage-600 text-[12px]">🍃</span>
             </span>
-            <div className="text-base sm:text-xl font-mono font-bold text-sage-600 dark:text-sage-400 mt-1">
+            <div className="text-base sm:text-xl font-mono font-bold text-sage-600 mt-1">
               {dailyMetrics.zeroSpendCount} dias
             </div>
             <span className="text-[10px] text-espresso-500 block mt-0.5">
@@ -644,9 +644,9 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
         </div>
 
         {/* Barra de Filtros por Categoria & Cartão */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mt-5 pt-4 border-t border-oat-200 dark:border-espresso-800">
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-5 pt-4 border-t border-oat-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-bold text-espresso-600 dark:text-espresso-400 mr-1 flex items-center gap-1">
+            <span className="text-xs font-bold text-espresso-600 mr-1 flex items-center gap-1">
               <span className="material-symbols-outlined text-[15px]">filter_list</span>
               Filtrar:
             </span>
@@ -656,8 +656,8 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
               onClick={() => setSelectedTag('all')}
               className={`text-[11px] font-bold px-2.5 py-1 rounded-full border transition cursor-pointer ${
                 selectedTag === 'all'
-                  ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-xs'
-                  : 'bg-oat-100 dark:bg-espresso-800 text-espresso-700 dark:text-espresso-300 border-oat-300 dark:border-espresso-700 hover:bg-oat-200'
+                  ? 'bg-terracotta-500 text-white border-terracotta-600/40 shadow-xs'
+                  : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-700 border-oat-300 dark:border-white/[0.08] hover:bg-oat-200'
               }`}
             >
               Todas Categorias
@@ -673,8 +673,8 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                   onClick={() => setSelectedTag(tagKey)}
                   className={`text-[11px] font-bold px-2.5 py-1 rounded-full border transition cursor-pointer flex items-center gap-1 ${
                     isSelected
-                      ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-xs'
-                      : 'bg-oat-100 dark:bg-espresso-800 text-espresso-700 dark:text-espresso-300 border-oat-300 dark:border-espresso-700 hover:bg-oat-200'
+                      ? 'bg-terracotta-500 text-white border-terracotta-600/40 shadow-xs'
+                      : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-700 border-oat-300 dark:border-white/[0.08] hover:bg-oat-200'
                   }`}
                 >
                   <span className="material-symbols-outlined text-[13px]">
@@ -690,7 +690,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
             <select
               value={selectedSourceFilter}
               onChange={(e) => setSelectedSourceFilter(e.target.value)}
-              className="bg-oat-100 dark:bg-espresso-800 border border-oat-300 dark:border-espresso-700 rounded-xl px-3 py-1.5 text-xs font-bold text-espresso-800 dark:text-oat-100 focus:outline-none focus:border-terracotta-500 cursor-pointer"
+              className="bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-bold text-espresso-800 focus:outline-none focus:border-terracotta-500 cursor-pointer"
             >
               <option value="all">Todos os Cartões & Pix</option>
               {availableCards.map((c) => (
@@ -704,7 +704,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
 
         {/* Banner Informativo do Ciclo de Fechamento da Fatura */}
         {cyclePurchasesCount > 0 && (
-          <div className="mt-4 p-3 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800/70 flex items-center justify-between gap-3 text-xs shadow-2xs">
+          <div className="mt-4 p-3 rounded-2xl bg-amber-50/90 dark:bg-amber-500/10 border border-amber-300/80 dark:border-amber-400/25 flex items-center justify-between gap-3 text-xs shadow-2xs">
             <div className="flex items-center gap-2.5">
               <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-xl shrink-0">
                 sync_alt
@@ -716,7 +716,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                 <strong className="font-mono">{formatCurrency(cyclePurchasesTotal)}</strong>).
               </div>
             </div>
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-200/70 dark:bg-amber-900/60 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shrink-0 hidden sm:inline">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-200/70 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-400/30 shrink-0 hidden sm:inline">
               Fechamento Automático
             </span>
           </div>
@@ -724,7 +724,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
       </div>
 
       {/* Grade do Calendário Mensal */}
-      <div className="bg-oat-50/95 dark:bg-espresso-900/90 border border-oat-300 dark:border-espresso-700/80 rounded-3xl p-3.5 sm:p-6 shadow-cozy">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-3.5 sm:p-6 shadow-cozy">
         {/* Cabeçalho dos Dias da Semana (Dom a Sáb) */}
         <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
           {WEEKDAYS.map((wd, idx) => (
@@ -732,8 +732,8 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
               key={wd}
               className={`text-center py-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider ${
                 idx === 0 || idx === 6
-                  ? 'text-terracotta-600 dark:text-terracotta-400 font-extrabold'
-                  : 'text-espresso-500 dark:text-espresso-400'
+                  ? 'text-terracotta-600 font-extrabold'
+                  : 'text-espresso-500'
               }`}
             >
               {wd}
@@ -747,7 +747,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
           {Array.from({ length: firstDayOfWeek }).map((_, i) => (
             <div
               key={`empty-${i}`}
-              className="h-20 sm:h-28 rounded-2xl bg-oat-100/20 dark:bg-espresso-950/20 border border-dashed border-oat-200/40 dark:border-espresso-800/30"
+              className="h-20 sm:h-28 rounded-2xl bg-oat-100/20 dark:bg-white/[0.015] border border-dashed border-oat-200/40 dark:border-white/[0.05]"
             />
           ))}
 
@@ -789,7 +789,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                         ? 'bg-terracotta-500 text-white'
                         : isToday
                         ? 'bg-maldives-500 text-white'
-                        : 'text-espresso-700 dark:text-oat-200'
+                        : 'text-espresso-700'
                     }`}
                   >
                     {dayNum}
@@ -799,14 +799,14 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                     {hasCycleItem && (
                       <span
                         title="Possui compras do ciclo de fechamento da fatura"
-                        className="text-[8px] sm:text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700"
+                        className="text-[8px] sm:text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-400/30"
                       >
                         ↺
                       </span>
                     )}
 
                     {isToday && !isSelected && (
-                      <span className="text-[9px] font-bold uppercase text-maldives-600 dark:text-maldives-400 hidden sm:inline">
+                      <span className="text-[9px] font-bold uppercase text-maldives-600 hidden sm:inline">
                         Hoje
                       </span>
                     )}
@@ -814,7 +814,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                     {isPeak && dayTotal > 0 && (
                       <span
                         title="Dia de maior gasto no mês"
-                        className="material-symbols-outlined text-terracotta-600 dark:text-terracotta-400 text-[14px] sm:text-[16px]"
+                        className="material-symbols-outlined text-terracotta-600 text-[14px] sm:text-[16px]"
                       >
                         local_fire_department
                       </span>
@@ -828,7 +828,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                     {uniqueTagIcons.map((icon, iconIdx) => (
                       <span
                         key={iconIdx}
-                        className="material-symbols-outlined text-[11px] sm:text-[13px] text-espresso-600 dark:text-espresso-300 opacity-80"
+                        className="material-symbols-outlined text-[11px] sm:text-[13px] text-espresso-600 opacity-85"
                       >
                         {icon}
                       </span>
@@ -840,7 +840,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1 text-[10px] text-espresso-400 dark:text-espresso-500 opacity-60">
+                  <div className="flex items-center gap-1 text-[10px] text-espresso-400 opacity-60">
                     <span>🍃</span>
                   </div>
                 )}
@@ -848,11 +848,11 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                 {/* Base: Valor gasto no dia */}
                 <div className="w-full truncate">
                   {dayTotal > 0 ? (
-                    <div className="text-[11px] sm:text-xs font-mono font-bold text-terracotta-700 dark:text-terracotta-300 truncate">
+                    <div className="text-[11px] sm:text-xs font-mono font-bold text-terracotta-700 truncate">
                       {formatCurrency(dayTotal)}
                     </div>
                   ) : (
-                    <div className="text-[10px] sm:text-[11px] font-mono text-sage-600/80 dark:text-sage-400/80 truncate">
+                    <div className="text-[10px] sm:text-[11px] font-mono text-sage-600/80 truncate">
                       R$ 0,00
                     </div>
                   )}
@@ -864,21 +864,21 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
       </div>
 
       {/* Painel de Detalhamento do Dia Selecionado */}
-      <div className="bg-oat-50/95 dark:bg-espresso-900/90 border border-oat-300 dark:border-espresso-700/80 rounded-3xl p-4 sm:p-6 shadow-cozy">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-espresso-800">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-terracotta-500 text-white font-mono font-bold text-base flex items-center justify-center shadow-xs">
               {selectedDay}
             </div>
             <div>
-              <h4 className="text-base sm:text-lg font-display font-bold text-espresso-900 dark:text-oat-100">
+              <h4 className="text-base sm:text-lg font-display font-bold text-espresso-900">
                 Gastos no Dia {selectedDay} de {formatMonthKeyLabel(selectedMonthKey)}
               </h4>
-              <p className="text-xs text-espresso-600 dark:text-espresso-400">
+              <p className="text-xs text-espresso-600">
                 {selectedDayPurchases.length}{' '}
                 {selectedDayPurchases.length === 1 ? 'lançamento' : 'lançamentos'}{' '}
                 • Total:{' '}
-                <strong className="font-mono text-terracotta-600 dark:text-terracotta-400">
+                <strong className="font-mono text-terracotta-600">
                   {formatCurrency(selectedDayTotal)}
                 </strong>
               </p>
@@ -907,10 +907,10 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               onSubmit={handleAddNewPurchaseInSelectedDay}
-              className="mt-4 p-4 rounded-2xl bg-oat-100/90 dark:bg-espresso-800/80 border border-oat-300 dark:border-espresso-700 space-y-3 overflow-hidden"
+              className="mt-4 p-4 rounded-2xl bg-oat-100/90 dark:bg-oat-200/50 border border-oat-300 dark:border-white/[0.07] space-y-3 overflow-hidden"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-espresso-800 dark:text-oat-100 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-espresso-800 flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px] text-terracotta-500">
                     add_circle
                   </span>
@@ -931,7 +931,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                   <select
                     value={newCardId || availableCards[0]?.id || ''}
                     onChange={(e) => setNewCardId(e.target.value)}
-                    className="w-full bg-white dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 rounded-xl px-2.5 py-2 text-xs font-semibold text-espresso-900 dark:text-oat-100 focus:outline-none focus:border-terracotta-500"
+                    className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-2.5 py-2 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                   >
                     {availableCards.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -952,7 +952,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                     placeholder="Ex: Jantar Italiano, Uber, Cinema..."
                     value={newDesc}
                     onChange={(e) => setNewDesc(e.target.value)}
-                    className="w-full bg-white dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 rounded-xl px-3 py-2 text-xs font-semibold text-espresso-900 dark:text-oat-100 focus:outline-none focus:border-terracotta-500"
+                    className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-semibold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                   />
                 </div>
 
@@ -971,7 +971,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                     onChange={(e) =>
                       setNewAmount(e.target.value === '' ? '' : Number(e.target.value))
                     }
-                    className="w-full bg-white dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 rounded-xl px-3 py-2 text-xs font-bold font-mono text-espresso-900 dark:text-oat-100 focus:outline-none focus:border-terracotta-500"
+                    className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-bold font-mono text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                   />
                 </div>
 
@@ -983,7 +983,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                   <select
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value as CardPurchaseTag)}
-                    className="w-full bg-white dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 rounded-xl px-2 py-2 text-xs font-semibold text-espresso-900 dark:text-oat-100 focus:outline-none focus:border-terracotta-500"
+                    className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-2 py-2 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                   >
                     {(Object.keys(CARD_PURCHASE_TAGS) as CardPurchaseTag[]).map((k) => (
                       <option key={k} value={k}>
@@ -1011,9 +1011,9 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
         {/* Lista de Compras do Dia Selecionado */}
         <div className="mt-4 space-y-2">
           {selectedDayPurchases.length === 0 ? (
-            <div className="p-6 rounded-2xl bg-oat-100/50 dark:bg-espresso-800/30 border border-dashed border-oat-300 dark:border-espresso-700 text-center space-y-1.5">
+            <div className="p-6 rounded-2xl bg-oat-100/50 dark:bg-oat-200/35 border border-dashed border-oat-300 dark:border-white/[0.1] text-center space-y-1.5">
               <span className="text-2xl">🍃</span>
-              <p className="text-sm font-bold text-espresso-800 dark:text-oat-100">
+              <p className="text-sm font-bold text-espresso-800">
                 Dia livre de gastos de estilo de vida!
               </p>
               <p className="text-xs text-espresso-500 max-w-md mx-auto">
@@ -1028,7 +1028,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
               return (
                 <div
                   key={purchase.id}
-                  className="p-3 rounded-2xl bg-white dark:bg-espresso-800/70 border border-oat-200 dark:border-espresso-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs hover:border-oat-300 transition"
+                  className="p-3 rounded-2xl bg-oat-50 dark:bg-oat-200/55 border border-oat-200 dark:border-white/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs hover:border-oat-300 transition"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div
@@ -1040,11 +1040,11 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                     </div>
 
                     <div className="min-w-0">
-                      <div className="text-sm font-bold text-espresso-900 dark:text-oat-100 truncate">
+                      <div className="text-sm font-bold text-espresso-900 truncate">
                         {purchase.description}
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap text-[10px] text-espresso-500 mt-0.5">
-                        <span className="font-semibold text-espresso-700 dark:text-espresso-300">
+                        <span className="font-semibold text-espresso-700">
                           {purchase.sourceName}
                         </span>
                         <span>•</span>
@@ -1056,13 +1056,13 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                           </>
                         )}
                         {purchase.isPreviousMonthCycle && (
-                          <span className="font-mono font-bold text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded-md border border-amber-300 dark:border-amber-700 flex items-center gap-1">
+                          <span className="font-mono font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-500/15 px-1.5 py-0.5 rounded-md border border-amber-300 dark:border-amber-400/30 flex items-center gap-1">
                             <span>📅</span>
                             <span>{purchase.cycleBadgeText || 'Ciclo da Fatura'}</span>
                           </span>
                         )}
                         {!purchase.isPreviousMonthCycle && purchase.cycleBadgeText && (
-                          <span className="font-mono text-espresso-500 bg-oat-100 dark:bg-espresso-700/50 px-1.5 py-0.5 rounded">
+                          <span className="font-mono text-espresso-500 bg-oat-100 dark:bg-oat-200 px-1.5 py-0.5 rounded">
                             📅 {purchase.cycleBadgeText}
                           </span>
                         )}
@@ -1071,7 +1071,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                   </div>
 
                   <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
-                    <span className="text-sm sm:text-base font-mono font-bold text-terracotta-600 dark:text-terracotta-400">
+                    <span className="text-sm sm:text-base font-mono font-bold text-terracotta-600">
                       {formatCurrency(purchase.amount)}
                     </span>
 
@@ -1080,7 +1080,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                         <button
                           type="button"
                           onClick={() => handleClonePurchase(purchase)}
-                          className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-lg hover:bg-maldives-50 dark:hover:bg-maldives-950/40 transition cursor-pointer"
+                          className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-lg hover:bg-maldives-50 transition cursor-pointer"
                           title="Clonar esta compra (duplicar no dia)"
                         >
                           <span className="material-symbols-outlined text-[17px]">
@@ -1091,7 +1091,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                         <button
                           type="button"
                           onClick={() => handleDeletePurchase(purchase)}
-                          className="text-espresso-400 hover:text-terracotta-600 p-1.5 rounded-lg hover:bg-terracotta-50 dark:hover:bg-terracotta-950/40 transition cursor-pointer"
+                          className="text-espresso-400 hover:text-terracotta-600 p-1.5 rounded-lg hover:bg-terracotta-50 transition cursor-pointer"
                           title="Remover esta compra"
                         >
                           <span className="material-symbols-outlined text-[17px]">
@@ -1110,14 +1110,14 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
 
       {/* Seção Suave: Compras Sem Data Definida (caso haja) */}
       {undatedPurchases.length > 0 && (
-        <div className="bg-oat-100/70 dark:bg-espresso-800/50 border border-oat-300 dark:border-espresso-700 rounded-3xl p-4 sm:p-5">
+        <div className="bg-oat-100/70 dark:bg-oat-200/45 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-terracotta-500 text-lg">
                 schedule
               </span>
               <div>
-                <span className="text-xs sm:text-sm font-bold text-espresso-800 dark:text-oat-100">
+                <span className="text-xs sm:text-sm font-bold text-espresso-800">
                   {undatedPurchases.length}{' '}
                   {undatedPurchases.length === 1 ? 'gasto' : 'gastos'} de estilo de vida sem dia definido no calendário
                 </span>
@@ -1132,10 +1132,10 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
             {undatedPurchases.map((u) => (
               <div
                 key={u.id}
-                className="p-2.5 rounded-xl bg-white dark:bg-espresso-900 border border-oat-200 dark:border-espresso-700 flex items-center justify-between gap-2 text-xs"
+                className="p-2.5 rounded-xl bg-oat-50 dark:bg-oat-200/60 border border-oat-200 dark:border-white/[0.07] flex items-center justify-between gap-2 text-xs"
               >
                 <div className="min-w-0">
-                  <div className="font-semibold text-espresso-900 dark:text-oat-100 truncate">
+                  <div className="font-semibold text-espresso-900 truncate">
                     {u.description}
                   </div>
                   <div className="text-[10px] text-espresso-500 font-mono">
@@ -1152,7 +1152,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                         handleAssignDayToUndated(u, val);
                       }
                     }}
-                    className="bg-oat-50 dark:bg-espresso-800 border border-oat-300 dark:border-espresso-700 rounded-lg px-2 py-1 text-[11px] font-mono text-espresso-800 dark:text-oat-100 cursor-pointer"
+                    className="bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-2 py-1 text-[11px] font-mono text-espresso-800 cursor-pointer"
                   >
                     <option value="" disabled>
                       Definir Dia...

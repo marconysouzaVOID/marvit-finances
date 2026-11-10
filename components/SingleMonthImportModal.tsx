@@ -118,17 +118,17 @@ export const SingleMonthImportModal: React.FC<SingleMonthImportModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-espresso-950/60 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="bg-oat-50 border border-oat-300 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-cozy-lg flex flex-col max-h-[90vh]"
+          className="bg-surface-elevated border border-oat-300 dark:border-white/[0.09] rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-cozy-lg flex flex-col max-h-[90vh]"
         >
           {/* Header */}
-          <div className="flex items-start justify-between gap-3 pb-3 border-b border-oat-200">
+          <div className="flex items-start justify-between gap-3 pb-3 border-b border-oat-200 dark:border-white/[0.06]">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-maldives-600 text-xl">
                   file_upload
                 </span>
@@ -152,12 +152,12 @@ export const SingleMonthImportModal: React.FC<SingleMonthImportModalProps> = ({
           </div>
 
           {/* Destaque de Segurança */}
-          <div className="mt-3 p-3 bg-maldives-50/70 border border-maldives-200 rounded-2xl text-xs text-espresso-700 flex items-start gap-2">
+          <div className="mt-3 p-3 bg-maldives-50/70 border border-maldives-200 dark:border-maldives-300/25 rounded-2xl text-xs text-espresso-700 flex items-start gap-2">
             <span className="material-symbols-outlined text-maldives-700 text-lg shrink-0 mt-0.5">
               shield
             </span>
             <p>
-              <span className="font-bold text-maldives-900">Importação Isolada:</span> Ao importar apenas um mês, os dados dos seus outros meses (como Novembro) permanecerão <strong>100% intactos e inalterados</strong>.
+              <span className="font-bold text-maldives-800">Importação Isolada:</span> Ao importar apenas um mês, os dados dos seus outros meses (como Novembro) permanecerão <strong>100% intactos e inalterados</strong>.
             </p>
           </div>
 

@@ -322,16 +322,16 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-espresso-900/45 backdrop-blur-sm overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 12 }}
-          className="bg-oat-50 border-2 border-oat-300 rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-cozy-lg relative overflow-hidden my-auto"
+          className="bg-surface-elevated border border-oat-300 dark:border-white/[0.09] rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-cozy-lg relative overflow-hidden my-auto"
         >
-          <div className="flex items-center justify-between pb-3.5 border-b border-oat-200 gap-2">
+          <div className="flex items-center justify-between pb-3.5 border-b border-oat-200 dark:border-white/[0.06] gap-2">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-maldives-600 text-xl sm:text-2xl">
                   cloud_sync
                 </span>
@@ -355,7 +355,7 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
           </div>
 
           <div className="space-y-3.5 mt-4">
-            <div className="p-3 rounded-2xl bg-sage-50 border border-sage-200 flex items-center justify-between gap-2">
+            <div className="p-3 rounded-2xl bg-sage-50 border border-sage-200 dark:border-sage-300/25 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="material-symbols-outlined text-sage-600 text-[18px] shrink-0">
                   devices
@@ -364,7 +364,7 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
                   Conta Geral Unificada (PC + Celular)
                 </span>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 shrink-0">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 dark:border-maldives-300/35 shrink-0">
                 Ativa
               </span>
             </div>
@@ -386,7 +386,7 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
             {/* Seção para Alterar o PIN Geral */}
             <form
               onSubmit={handleChangePin}
-              className="p-3.5 sm:p-4 rounded-2xl bg-maldives-50/70 border border-maldives-200 space-y-3"
+              className="p-3.5 sm:p-4 rounded-2xl bg-maldives-50/70 border border-maldives-200 dark:border-maldives-300/25 space-y-3"
             >
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="text-xs font-bold text-maldives-800 flex items-center gap-1.5">
@@ -407,7 +407,7 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
                     value={pinInput}
                     onChange={(e) => setPinInput(e.target.value)}
                     placeholder="Digite o PIN Atual (padrão: 2026)"
-                    className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                    className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                   />
                 </div>
               )}
@@ -418,28 +418,28 @@ export const VaultAuthModal: React.FC<VaultAuthModalProps> = ({
                   value={newPinInput}
                   onChange={(e) => setNewPinInput(e.target.value)}
                   placeholder="Novo PIN (mín. 4 dígitos)"
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                 />
                 <input
                   type="password"
                   value={confirmNewPinInput}
                   onChange={(e) => setConfirmNewPinInput(e.target.value)}
                   placeholder="Confirmar Novo PIN"
-                  className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-maldives-500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading || !newPinInput.trim()}
-                className="w-full py-2 px-3 rounded-xl bg-maldives-600 hover:bg-maldives-700 disabled:opacity-40 text-white font-bold text-xs transition cursor-pointer shadow-xs"
+                className="w-full py-2 px-3 rounded-xl bg-maldives-500 hover:bg-maldives-600 disabled:opacity-40 text-white font-bold text-xs transition cursor-pointer shadow-xs"
               >
                 Salvar Novo PIN para Todos os Aparelhos
               </button>
             </form>
 
             {/* Opções de Nuvem e Biometria */}
-            <div className="p-3.5 rounded-2xl bg-oat-100 border border-oat-300 space-y-2.5">
+            <div className="p-3.5 rounded-2xl bg-oat-100 dark:bg-oat-200/50 border border-oat-300 dark:border-white/[0.07] space-y-2.5">
               <label className="flex items-center justify-between cursor-pointer gap-2">
                 <span className="text-xs font-semibold text-espresso-800 flex items-center gap-2">
                   <span className="material-symbols-outlined text-maldives-600 text-[18px]">

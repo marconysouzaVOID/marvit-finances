@@ -48,7 +48,7 @@ export const BANK_PRESETS: BankPreset[] = [
     dueDay: 10,
     closingDay: 25,
     limit: 2500,
-    badgeClass: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100',
+    badgeClass: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 dark:bg-purple-500/15 dark:text-purple-300 dark:border-purple-400/25 dark:hover:bg-purple-500/25',
   },
   {
     name: 'Cartão Inter / Black',
@@ -57,7 +57,7 @@ export const BANK_PRESETS: BankPreset[] = [
     dueDay: 15,
     closingDay: 5,
     limit: 2000,
-    badgeClass: 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100',
+    badgeClass: 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100 dark:bg-orange-500/15 dark:text-orange-300 dark:border-orange-400/25 dark:hover:bg-orange-500/25',
   },
   {
     name: 'Cartão Itaú Personnalité',
@@ -66,7 +66,7 @@ export const BANK_PRESETS: BankPreset[] = [
     dueDay: 20,
     closingDay: 10,
     limit: 5000,
-    badgeClass: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100',
+    badgeClass: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-400/25 dark:hover:bg-blue-500/25',
   },
   {
     name: 'Cartão C6 Carbon Black',
@@ -75,7 +75,7 @@ export const BANK_PRESETS: BankPreset[] = [
     dueDay: 25,
     closingDay: 18,
     limit: 6000,
-    badgeClass: 'bg-zinc-100 text-zinc-800 border-zinc-300 hover:bg-zinc-200',
+    badgeClass: 'bg-zinc-100 text-zinc-800 border-zinc-300 hover:bg-zinc-200 dark:bg-white/[0.08] dark:text-espresso-800 dark:border-white/[0.12] dark:hover:bg-white/[0.14]',
   },
   {
     name: 'Cartão XP Visa Infinite',
@@ -84,7 +84,7 @@ export const BANK_PRESETS: BankPreset[] = [
     dueDay: 22,
     closingDay: 15,
     limit: 10000,
-    badgeClass: 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100',
+    badgeClass: 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-400/25 dark:hover:bg-amber-500/25',
   },
   {
     name: 'Cartão Santander Unlimited',
@@ -93,7 +93,7 @@ export const BANK_PRESETS: BankPreset[] = [
     dueDay: 12,
     closingDay: 2,
     limit: 4000,
-    badgeClass: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
+    badgeClass: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100 dark:bg-red-500/15 dark:text-red-300 dark:border-red-400/25 dark:hover:bg-red-500/25',
   },
 ];
 
@@ -827,7 +827,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
       />
 
       {/* Sub-navegador da aba Cartões & Estilo: Faturas vs Calendário Diário */}
-      <div className="flex items-center justify-between gap-3 bg-oat-100/80 dark:bg-espresso-800/80 border border-oat-300 dark:border-espresso-700 p-1.5 rounded-2xl shadow-xs">
+      <div className="flex items-center justify-between gap-3 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1.5 rounded-2xl shadow-xs">
         <div className="flex items-center gap-1.5">
           <button
             type="button"
@@ -835,7 +835,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
               cardsSubView === 'invoices'
                 ? 'bg-terracotta-500 text-white shadow-xs'
-                : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
             }`}
           >
             <span className="material-symbols-outlined text-[17px]">credit_card</span>
@@ -848,7 +848,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
               cardsSubView === 'calendar'
                 ? 'bg-terracotta-500 text-white shadow-xs'
-                : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
             }`}
           >
             <span className="material-symbols-outlined text-[17px]">calendar_month</span>
@@ -877,8 +877,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
       ) : (
         <div className="space-y-5">
           {/* Cabeçalho Principal da Aba de Cartões de Estilo de Vida */}
-          <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200">
+          <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200 dark:border-white/[0.06]">
               <div className="flex items-center gap-3 sm:gap-4">
                 <InteractiveAsset
                   src="/assets/marvit-estilo.png"
@@ -892,7 +892,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     <h2 className="text-lg sm:text-2xl font-display font-bold text-espresso-900">
                       Cartões de Crédito • Estilo de Vida
                     </h2>
-                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-terracotta-100 text-terracotta-700 border border-terracotta-200">
+                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-terracotta-100 text-terracotta-700 border border-terracotta-200 dark:border-terracotta-300/35">
                       Subcategoria & Fatura CSV
                     </span>
                   </div>
@@ -906,7 +906,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 <button
                   type="button"
                   onClick={() => setCardsSubView('calendar')}
-                  className="px-3.5 py-2.5 rounded-2xl bg-oat-100 hover:bg-oat-200 text-espresso-800 font-bold text-xs sm:text-sm border border-oat-300 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-3.5 py-2.5 rounded-2xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 font-bold text-xs sm:text-sm border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                   title="Visualizar gastos de cada dia no calendário"
                 >
                   <span className="material-symbols-outlined text-[18px] text-terracotta-500">
@@ -932,7 +932,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
         {/* Resumo Consolidado dos Cartões no Pilar Estilo de Vida */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
-          <div className="p-4 rounded-2xl bg-terracotta-50/90 border border-terracotta-200 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-terracotta-50/90 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-between">
             <div className="min-w-0">
               <span className="text-[11px] font-bold uppercase text-terracotta-700 tracking-wider block">
                 Total em Cartões (Estilo)
@@ -950,7 +950,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-maldives-50/80 border border-maldives-200 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-maldives-50/80 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-between">
             <div className="min-w-0">
               <span className="text-[11px] font-bold uppercase text-maldives-800 tracking-wider block">
                 Ocupação do Teto Estilo de Vida
@@ -967,7 +967,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-sage-50 border border-sage-200 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-sage-50 border border-sage-200 dark:border-sage-300/25 flex items-center justify-between">
             <div className="min-w-0">
               <span className="text-[11px] font-bold uppercase text-sage-600 tracking-wider block">
                 Gastos Individualizados
@@ -998,16 +998,16 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             >
               <form
                 onSubmit={handleCreateCard}
-                className="mt-5 p-4 sm:p-5 rounded-2xl bg-oat-100 border-2 border-terracotta-300 space-y-4 shadow-sm"
+                className="mt-5 p-4 sm:p-5 rounded-2xl bg-oat-100 dark:bg-oat-200/50 border border-terracotta-300 dark:border-terracotta-300/35 space-y-4 shadow-sm"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-oat-200 pb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-oat-200 dark:border-white/[0.06] pb-3">
                   <div className="text-sm font-display font-bold text-espresso-900 flex items-center gap-2">
                     <span className="material-symbols-outlined text-terracotta-600 text-lg">
                       language
                     </span>
                     <span>Cadastrar Cartão de Crédito Global</span>
                   </div>
-                  <span className="text-[11px] font-semibold text-espresso-600 bg-terracotta-100/70 text-terracotta-800 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                  <span className="text-[11px] font-semibold bg-terracotta-100/70 text-terracotta-800 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
                     <span className="material-symbols-outlined text-[13px]">all_inclusive</span>
                     Disponível em todos os meses
                   </span>
@@ -1052,7 +1052,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       value={newCardName}
                       onChange={(e) => setNewCardName(e.target.value)}
                       placeholder="Ex: Cartão Nubank, Itaú, Inter, XP..."
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
@@ -1071,7 +1071,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         )
                       }
                       placeholder="Ex: 1500"
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
@@ -1090,7 +1090,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         )
                       }
                       placeholder="Ex: 10"
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
@@ -1109,7 +1109,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         )
                       }
                       placeholder="Ex: 25"
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
                 </div>
@@ -1219,10 +1219,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     key={card.id}
                     whileHover={{ y: -2 }}
                     onClick={() => handleSelectCard(card.id)}
-                    className={`p-4 rounded-3xl border-2 transition cursor-pointer relative overflow-hidden ${
+                    className={`p-4 rounded-3xl border transition cursor-pointer relative overflow-hidden ${
                       isSelected
-                        ? 'bg-gradient-to-br from-terracotta-50/95 via-oat-50 to-maldives-50/50 border-terracotta-500 shadow-cozy'
-                        : 'bg-oat-50/90 border-oat-300 hover:border-terracotta-300'
+                        ? 'bg-gradient-to-br from-terracotta-50/95 via-oat-50 to-maldives-50/50 dark:from-terracotta-50/70 dark:via-oat-50 dark:to-maldives-50/35 border-terracotta-500/80 shadow-cozy'
+                        : 'bg-oat-50/90 border-oat-300 dark:border-white/[0.07] hover:border-terracotta-300/60'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -1300,7 +1300,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     </div>
 
                     {card.cardLimit && card.cardLimit > 0 && (
-                      <div className="w-full bg-oat-200 rounded-full h-2 mt-2 overflow-hidden p-0.5 border border-oat-300">
+                      <div className="w-full bg-oat-200 dark:bg-white/[0.08] rounded-full h-2 mt-2 overflow-hidden p-0.5 border border-oat-300 dark:border-white/[0.04]">
                         <div
                           className={`h-full rounded-full transition-all ${
                             isOverCardLimit
@@ -1319,7 +1319,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             <button
               type="button"
               onClick={() => setIsCreatingCard(true)}
-              className="w-full p-3 rounded-2xl border-2 border-dashed border-oat-300 hover:border-terracotta-400 bg-oat-100/60 hover:bg-terracotta-50/50 text-espresso-700 hover:text-terracotta-700 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+              className="w-full p-3 rounded-2xl border border-dashed border-oat-300 dark:border-white/[0.12] hover:border-terracotta-400 bg-oat-100/60 dark:bg-oat-200/35 hover:bg-terracotta-50/50 text-espresso-700 hover:text-terracotta-700 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
             >
               <span className="material-symbols-outlined text-[18px]">add_card</span>
               <span>+ Cadastrar Outro Cartão Global</span>
@@ -1328,11 +1328,11 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
           {/* Coluna Direita (8 cols no desktop): Detalhamento e Lançamento de Gastos Individualizados do Cartão Ativo */}
           {activeCard && (
-            <div className="lg:col-span-8 bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden space-y-5">
+            <div className="lg:col-span-8 bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden space-y-5">
               {/* Cabeçalho do Cartão Selecionado */}
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-4 border-b border-oat-200">
+              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-11 h-11 rounded-2xl bg-terracotta-50 border border-terracotta-200 flex items-center justify-center shrink-0 shadow-2xs">
+                  <div className="w-11 h-11 rounded-2xl bg-terracotta-50 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-center shrink-0 shadow-2xs">
                     <span className="material-symbols-outlined text-terracotta-600 text-2xl">
                       receipt_long
                     </span>
@@ -1342,14 +1342,14 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       <h3 className="text-base sm:text-lg font-display font-bold text-espresso-900 truncate">
                         {activeCard.name}
                       </h3>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 flex items-center gap-1 shrink-0">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 dark:border-white/[0.07] flex items-center gap-1 shrink-0">
                         <span className="material-symbols-outlined text-[12px] text-terracotta-500">
                           language
                         </span>
                         <span>Cartão Global</span>
                       </span>
                       {activeCard.cardDueDay && (
-                        <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 shrink-0">
+                        <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 dark:border-white/[0.07] shrink-0">
                           Venc. dia {activeCard.cardDueDay}
                           {activeCard.cardClosingDay ? ` • Fecha dia ${activeCard.cardClosingDay}` : ''}
                         </span>
@@ -1389,10 +1389,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <button
                     type="button"
                     onClick={() => csvFileInputRef.current?.click()}
-                    className="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-500/15 dark:hover:bg-orange-500/25 dark:text-orange-300 dark:border-orange-400/30 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
                     title="Importar fatura em PDF do Banco Inter (suporte a senha com CPF)"
                   >
-                    <span className="material-symbols-outlined text-[16px] text-orange-600">
+                    <span className="material-symbols-outlined text-[16px] text-orange-600 dark:text-orange-400">
                       picture_as_pdf
                     </span>
                     <span>Fatura Inter (PDF)</span>
@@ -1401,7 +1401,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <button
                     type="button"
                     onClick={() => setPastedInvoiceModalOpen(true)}
-                    className="px-2.5 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border border-oat-300 dark:border-white/[0.08] text-xs font-bold flex items-center gap-1 transition cursor-pointer"
                     title="Colar texto de extrato ou fatura copiado do app ou PDF"
                   >
                     <span className="material-symbols-outlined text-[16px] text-espresso-600">
@@ -1413,7 +1413,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <button
                     type="button"
                     onClick={handleLoadSampleNubankCsv}
-                    className="px-2.5 py-1.5 rounded-xl bg-maldives-50 hover:bg-maldives-100 text-maldives-800 border border-maldives-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-xl bg-maldives-50 hover:bg-maldives-100 text-maldives-800 border border-maldives-300 dark:border-maldives-300/35 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
                     title="Carregar fatura de exemplo Nubank_2026-11-01.csv neste cartão"
                   >
                     <span className="material-symbols-outlined text-[16px] text-maldives-600">
@@ -1429,7 +1429,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         ? () => setIsEditingCardMeta(false)
                         : startEditingActiveCard
                     }
-                    className="px-2.5 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border border-oat-300 dark:border-white/[0.08] text-xs font-bold flex items-center gap-1 transition cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[16px]">
                       {isEditingCardMeta ? 'close' : 'settings'}
@@ -1440,7 +1440,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <button
                     type="button"
                     onClick={() => handleConvertCardToDirect(activeCard)}
-                    className="p-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-500 hover:text-espresso-800 border border-oat-300 transition flex items-center justify-center cursor-pointer"
+                    className="p-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-500 hover:text-espresso-800 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
                     title="Voltar este item para Gasto Direto/Pix"
                   >
                     <span className="material-symbols-outlined text-[18px]">
@@ -1451,7 +1451,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsDeleteCardModalOpen(true)}
-                    className="p-1.5 rounded-xl bg-oat-100 hover:bg-terracotta-50 text-espresso-500 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
+                    className="p-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-terracotta-50 text-espresso-500 hover:text-terracotta-600 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
                     title="Gerenciar exclusão deste cartão (global ou deste mês)"
                   >
                     <span className="material-symbols-outlined text-[18px]">
@@ -1470,7 +1470,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="p-4 rounded-2xl bg-maldives-50/90 border-2 border-maldives-400 space-y-3.5">
+                    <div className="p-4 rounded-2xl bg-maldives-50/90 border border-maldives-400/70 space-y-3.5">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="material-symbols-outlined text-maldives-700 text-xl shrink-0">
@@ -1500,7 +1500,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       </div>
 
                       {csvPreview.ignoredPaymentsCount > 0 && (
-                        <div className="px-3 py-1.5 rounded-xl bg-oat-50/90 border border-maldives-200 text-[11px] text-espresso-700 flex items-center gap-1.5">
+                        <div className="px-3 py-1.5 rounded-xl bg-oat-50/90 border border-maldives-200 dark:border-maldives-300/25 text-[11px] text-espresso-700 flex items-center gap-1.5">
                           <span className="material-symbols-outlined text-sage-600 text-[16px] shrink-0">
                             info
                           </span>
@@ -1515,8 +1515,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       )}
 
                       {csvPreview.cycleInfo?.hasPreviousMonthPurchases && (
-                        <div className="px-3 py-2 rounded-xl bg-amber-50/90 border border-amber-300 text-[11px] text-amber-950 flex items-center gap-2 shadow-2xs">
-                          <span className="material-symbols-outlined text-amber-600 text-[18px] shrink-0">
+                        <div className="px-3 py-2 rounded-xl bg-amber-50/90 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-400/25 text-[11px] text-amber-950 dark:text-amber-200 flex items-center gap-2 shadow-2xs">
+                          <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[18px] shrink-0">
                             sync_alt
                           </span>
                           <div>
@@ -1658,14 +1658,14 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   >
                     <form
                       onSubmit={handleSaveCardMeta}
-                      className="p-4 rounded-2xl bg-oat-100 border-2 border-terracotta-300 space-y-3"
+                      className="p-4 rounded-2xl bg-oat-100 dark:bg-oat-200/50 border border-terracotta-300 dark:border-terracotta-300/35 space-y-3"
                     >
-                      <div className="flex items-center justify-between gap-2 border-b border-oat-200 pb-2">
+                      <div className="flex items-center justify-between gap-2 border-b border-oat-200 dark:border-white/[0.06] pb-2">
                         <div className="text-xs font-bold uppercase text-terracotta-700 tracking-wider flex items-center gap-1.5">
                           <span className="material-symbols-outlined text-[16px]">language</span>
                           <span>Configurações Globais do Cartão</span>
                         </div>
-                        <span className="text-[10px] font-semibold text-espresso-600 bg-terracotta-100/70 text-terracotta-800 px-2 py-0.5 rounded-full">
+                        <span className="text-[10px] font-semibold bg-terracotta-100/70 text-terracotta-800 px-2 py-0.5 rounded-full">
                           Aplica em todos os meses
                         </span>
                       </div>
@@ -1681,7 +1681,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                             type="text"
                             value={editCardName}
                             onChange={(e) => setEditCardName(e.target.value)}
-                            className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-xs font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                            className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                           />
                         </div>
                         <div>
@@ -1701,7 +1701,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                               )
                             }
                             placeholder="Sem teto fixo"
-                            className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                            className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                           />
                         </div>
                         <div>
@@ -1721,7 +1721,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                               )
                             }
                             placeholder="Ex: 10"
-                            className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                            className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                           />
                         </div>
                         <div>
@@ -1741,7 +1741,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                               )
                             }
                             placeholder="Ex: 25"
-                            className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                            className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                           />
                         </div>
                       </div>
@@ -1769,7 +1769,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
               {/* Formulário para Lançar Novo Gasto Individualizado no Cartão */}
               <form
                 onSubmit={handleAddTransaction}
-                className="bg-oat-100/90 border border-oat-300 rounded-2xl p-4 space-y-3"
+                className="bg-oat-100/90 dark:bg-oat-200/45 border border-oat-300 dark:border-white/[0.06] rounded-2xl p-4 space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-espresso-800 flex items-center gap-1.5">
@@ -1798,7 +1798,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         }
                       }}
                       placeholder="Ex: Restaurante, iFood, Uber, Spotify, Shein..."
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-sm text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
@@ -1817,7 +1817,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         )
                       }
                       placeholder="0,00"
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
@@ -1830,7 +1830,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       onChange={(e) =>
                         setTxTag(e.target.value as CardPurchaseTag)
                       }
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-xs font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     >
                       {(
                         Object.keys(CARD_PURCHASE_TAGS) as CardPurchaseTag[]
@@ -1853,7 +1853,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       value={txInstallment}
                       onChange={(e) => setTxInstallment(e.target.value)}
                       placeholder="Ex: À vista, Parcela 1/3"
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
@@ -1866,7 +1866,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       value={txDate}
                       onChange={(e) => setTxDate(e.target.value)}
                       placeholder="Ex: 24/10"
-                      className="w-full bg-oat-50 border border-oat-300 rounded-xl px-3 py-2 text-xs text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
@@ -1893,8 +1893,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     onClick={() => setSelectedTagFilter('all')}
                     className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer ${
                       selectedTagFilter === 'all'
-                        ? 'bg-espresso-900 text-oat-50 border-espresso-900'
-                        : 'bg-oat-100 text-espresso-700 border-oat-300 hover:border-terracotta-300'
+                        ? 'bg-surface-ink dark:bg-terracotta-500 text-white border-transparent'
+                        : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-700 border-oat-300 dark:border-white/[0.07] hover:border-terracotta-300'
                     }`}
                   >
                     Todas ({activeCardTransactions.length})
@@ -1914,8 +1914,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           onClick={() => setSelectedTagFilter(tagKey)}
                           className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border flex items-center gap-1 transition cursor-pointer max-w-full ${
                             selectedTagFilter === tagKey
-                              ? 'bg-terracotta-500 text-white border-terracotta-600'
-                              : 'bg-oat-100 text-espresso-700 border-oat-300 hover:border-terracotta-300'
+                              ? 'bg-terracotta-500 text-white border-terracotta-600/40'
+                              : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-700 border-oat-300 dark:border-white/[0.07] hover:border-terracotta-300'
                           }`}
                         >
                           <span className="material-symbols-outlined text-[14px] shrink-0">
@@ -1941,15 +1941,15 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Buscar na fatura..."
-                      className="w-full bg-oat-100 border border-oat-300 rounded-xl pl-8 pr-2.5 py-1.5 text-xs text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl pl-8 pr-2.5 py-1.5 text-xs text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
                 )}
               </div>
 
               {/* Lista de Gastos Individualizados da Fatura */}
-              <div className="overflow-hidden border border-oat-300 rounded-2xl bg-oat-50">
-                <div className="max-h-[440px] overflow-y-auto divide-y divide-oat-200">
+              <div className="overflow-hidden border border-oat-300 dark:border-white/[0.07] rounded-2xl bg-oat-50 dark:bg-oat-100/50">
+                <div className="max-h-[440px] overflow-y-auto divide-y divide-oat-200 dark:divide-white/[0.05]">
                   {filteredTransactions.length === 0 ? (
                     <div className="p-8 text-center text-espresso-500 text-xs sm:text-sm space-y-1">
                       <p className="font-bold text-espresso-700">
@@ -2014,7 +2014,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                                 {/* Parcela Editável */}
                                 <div
-                                  className="flex items-center gap-1 bg-oat-200/90 dark:bg-espresso-800/90 rounded-lg px-2 py-0.5 border border-oat-300 dark:border-espresso-700"
+                                  className="flex items-center gap-1 bg-oat-200/90 rounded-lg px-2 py-0.5 border border-oat-300 dark:border-white/[0.08]"
                                   title="Editar parcela (ex: À vista, 1/3, 2/6, Recorrente)"
                                 >
                                   <span className="material-symbols-outlined text-[13px] text-espresso-500">
@@ -2029,13 +2029,13 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                         installment: e.target.value,
                                       })
                                     }
-                                    className="w-16 sm:w-20 bg-transparent text-[10px] font-mono font-bold text-espresso-800 dark:text-oat-100 focus:outline-none focus:border-b focus:border-terracotta-500 placeholder:text-espresso-400"
+                                    className="w-16 sm:w-20 bg-transparent text-[10px] font-mono font-bold text-espresso-800 focus:outline-none focus:border-b focus:border-terracotta-500 placeholder:text-espresso-400"
                                   />
                                 </div>
 
                                 {/* Dia / Data Editável */}
                                 <div
-                                  className="flex items-center gap-1 bg-oat-200/90 dark:bg-espresso-800/90 rounded-lg px-2 py-0.5 border border-oat-300 dark:border-espresso-700"
+                                  className="flex items-center gap-1 bg-oat-200/90 rounded-lg px-2 py-0.5 border border-oat-300 dark:border-white/[0.08]"
                                   title="Editar dia ou data da compra (ex: 12/11, 2026-11-12 ou dia 12)"
                                 >
                                   <span className="material-symbols-outlined text-[13px] text-espresso-500">
@@ -2050,7 +2050,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                         purchaseDate: e.target.value,
                                       })
                                     }
-                                    className="w-14 sm:w-16 bg-transparent text-[10px] font-mono text-espresso-700 dark:text-oat-200 focus:outline-none focus:border-b focus:border-terracotta-500 text-center placeholder:text-espresso-400"
+                                    className="w-14 sm:w-16 bg-transparent text-[10px] font-mono text-espresso-700 focus:outline-none focus:border-b focus:border-terracotta-500 text-center placeholder:text-espresso-400"
                                   />
                                 </div>
 
@@ -2071,7 +2071,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                       isPrev && (
                                         <span
                                           title="Compra realizada após o fechamento da fatura anterior (Ciclo da Fatura)"
-                                          className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shrink-0 flex items-center gap-0.5"
+                                          className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-400/30 shrink-0 flex items-center gap-0.5"
                                         >
                                           <span>↺</span>
                                           <span>Ciclo</span>
@@ -2101,14 +2101,14 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                     ),
                                   })
                                 }
-                                className="w-24 sm:w-28 bg-oat-100 border border-oat-300 focus:border-terracotta-500 rounded-xl px-2.5 py-1.5 text-sm font-bold text-right text-espresso-900 font-mono focus:outline-none"
+                                className="w-24 sm:w-28 bg-surface-input border border-oat-300 dark:border-white/[0.08] focus:border-terracotta-500 rounded-xl px-2.5 py-1.5 text-sm font-bold text-right text-espresso-900 font-mono focus:outline-none"
                               />
                             </div>
 
                             <button
                               type="button"
                               onClick={() => handleCloneTransaction(tx)}
-                              className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-xl hover:bg-maldives-50 dark:hover:bg-maldives-950/40 transition cursor-pointer"
+                              className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-xl hover:bg-maldives-50 transition cursor-pointer"
                               title="Clonar esta compra na fatura (duplicar)"
                             >
                               <span className="material-symbols-outlined text-[18px]">
@@ -2145,15 +2145,15 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-espresso-950/50 backdrop-blur-xs flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-oat-50 border border-oat-300 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4"
+              className="bg-surface-elevated border border-oat-300 dark:border-white/[0.09] rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-cozy-lg space-y-4"
             >
-              <div className="flex items-center gap-3 pb-3 border-b border-oat-200">
+              <div className="flex items-center gap-3 pb-3 border-b border-oat-200 dark:border-white/[0.06]">
                 <div className="w-10 h-10 rounded-2xl bg-terracotta-100 text-terracotta-600 flex items-center justify-center shrink-0">
                   <span className="material-symbols-outlined text-2xl">delete</span>
                 </div>
@@ -2175,7 +2175,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 <button
                   type="button"
                   onClick={() => handleDeleteCardChoice('current_month')}
-                  className="w-full text-left p-3.5 rounded-2xl bg-oat-100 hover:bg-oat-200 border border-oat-300 transition flex items-start gap-3 cursor-pointer group"
+                  className="w-full text-left p-3.5 rounded-2xl bg-oat-100 dark:bg-oat-200/60 hover:bg-oat-200 border border-oat-300 dark:border-white/[0.07] transition flex items-start gap-3 cursor-pointer group"
                 >
                   <span className="material-symbols-outlined text-maldives-600 text-xl mt-0.5 shrink-0">
                     restart_alt
@@ -2193,7 +2193,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 <button
                   type="button"
                   onClick={() => handleDeleteCardChoice('global')}
-                  className="w-full text-left p-3.5 rounded-2xl bg-terracotta-50 hover:bg-terracotta-100 border border-terracotta-300 transition flex items-start gap-3 cursor-pointer group"
+                  className="w-full text-left p-3.5 rounded-2xl bg-terracotta-50 hover:bg-terracotta-100 border border-terracotta-300 dark:border-terracotta-300/35 transition flex items-start gap-3 cursor-pointer group"
                 >
                   <span className="material-symbols-outlined text-terracotta-600 text-xl mt-0.5 shrink-0">
                     delete_forever
@@ -2230,7 +2230,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-espresso-950/60 backdrop-blur-xs flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={handleCancelPdfPassword}
           >
             <motion.div
@@ -2238,20 +2238,20 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-oat-50 dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 rounded-3xl p-6 shadow-2xl space-y-4"
+              className="w-full max-w-md bg-surface-elevated border border-oat-300 dark:border-white/[0.09] rounded-3xl p-6 shadow-cozy-lg space-y-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center shadow-2xs">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-400/25 flex items-center justify-center shadow-2xs">
                     <span className="material-symbols-outlined text-2xl">
                       lock
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-base font-display font-bold text-espresso-900 dark:text-oat-100">
+                    <h3 className="text-base font-display font-bold text-espresso-900">
                       Fatura Protegida por Senha
                     </h3>
-                    <p className="text-xs text-espresso-600 dark:text-espresso-400 truncate max-w-[220px]">
+                    <p className="text-xs text-espresso-600 truncate max-w-[220px]">
                       {pendingPdfFile?.name || 'Fatura em PDF'}
                     </p>
                   </div>
@@ -2268,9 +2268,9 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 </button>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/90 dark:border-amber-800/50 text-xs text-amber-950 dark:text-amber-200 space-y-1.5">
+              <div className="p-3.5 rounded-2xl bg-amber-50/90 dark:bg-amber-500/10 border border-amber-200/90 dark:border-amber-400/20 text-xs text-amber-950 dark:text-amber-200 space-y-1.5">
                 <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
-                  <span className="material-symbols-outlined text-[17px] text-amber-600">
+                  <span className="material-symbols-outlined text-[17px] text-amber-600 dark:text-amber-400">
                     lightbulb
                   </span>
                   <span>Dica de Desbloqueio (Banco Inter):</span>
@@ -2278,7 +2278,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 <p className="leading-relaxed">
                   As faturas do <strong>Banco Inter</strong> geralmente vêm protegidas com os <strong>primeiros 5 ou 6 dígitos do seu CPF</strong> (apenas números).
                 </p>
-                <div className="flex items-center gap-1 text-[11px] text-amber-800/80 dark:text-amber-400/80 pt-0.5">
+                <div className="flex items-center gap-1 text-[11px] text-amber-800/80 dark:text-amber-300/80 pt-0.5">
                   <span className="material-symbols-outlined text-[14px] text-sage-600">
                     verified_user
                   </span>
@@ -2290,7 +2290,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
               <form onSubmit={handleUnlockPdfWithPassword} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-espresso-800 dark:text-espresso-200 mb-1">
+                  <label className="block text-xs font-bold text-espresso-800 mb-1">
                     Digite a Senha da Fatura
                   </label>
                   <div className="relative">
@@ -2303,7 +2303,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       }}
                       placeholder="Ex: 123456 (dígitos do CPF)"
                       autoFocus
-                      className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-white dark:bg-espresso-800 border border-oat-300 dark:border-espresso-700 text-sm font-mono text-espresso-900 dark:text-oat-100 placeholder:text-espresso-400 focus:outline-hidden focus:ring-2 focus:ring-terracotta-500"
+                      className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-surface-input border border-oat-300 dark:border-white/[0.08] text-sm font-mono text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:ring-2 focus:ring-terracotta-500"
                     />
                     <button
                       type="button"
@@ -2327,9 +2327,9 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       </p>
 
                       {pdfDebugLines.length > 0 && (
-                        <div className="rounded-xl border border-oat-300 dark:border-espresso-700 bg-oat-100 dark:bg-espresso-800 p-2.5 text-xs space-y-2">
+                        <div className="rounded-xl border border-oat-300 dark:border-white/[0.08] bg-oat-100 dark:bg-oat-200/60 p-2.5 text-xs space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-espresso-800 dark:text-oat-100 flex items-center gap-1">
+                            <span className="font-bold text-espresso-800 flex items-center gap-1">
                               <span className="material-symbols-outlined text-[16px] text-maldives-600">
                                 terminal
                               </span>
@@ -2345,14 +2345,14 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                   setIsCopiedDebug(true);
                                   setTimeout(() => setIsCopiedDebug(false), 2000);
                                 }}
-                                className="px-2 py-0.5 rounded-lg bg-white dark:bg-espresso-700 border border-oat-300 text-[10px] font-bold text-espresso-700 dark:text-oat-200 hover:bg-oat-200 cursor-pointer"
+                                className="px-2 py-0.5 rounded-lg bg-surface-input border border-oat-300 dark:border-white/[0.08] text-[10px] font-bold text-espresso-700 hover:bg-oat-200 cursor-pointer"
                               >
                                 {isCopiedDebug ? 'Copiado!' : 'Copiar Texto'}
                               </button>
                               <button
                                 type="button"
                                 onClick={() => setShowDebugLines(!showDebugLines)}
-                                className="px-2 py-0.5 rounded-lg bg-white dark:bg-espresso-700 border border-oat-300 text-[10px] font-bold text-espresso-700 dark:text-oat-200 hover:bg-oat-200 cursor-pointer"
+                                className="px-2 py-0.5 rounded-lg bg-surface-input border border-oat-300 dark:border-white/[0.08] text-[10px] font-bold text-espresso-700 hover:bg-oat-200 cursor-pointer"
                               >
                                 {showDebugLines ? 'Recolher' : 'Expandir'}
                               </button>
@@ -2360,7 +2360,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           </div>
 
                           {showDebugLines && (
-                            <pre className="max-h-40 overflow-y-auto text-[10px] font-mono p-2 bg-white dark:bg-espresso-950 rounded-lg border border-oat-200 dark:border-espresso-800 text-espresso-800 dark:text-oat-200 whitespace-pre-wrap select-all">
+                            <pre className="max-h-40 overflow-y-auto text-[10px] font-mono p-2 bg-surface-input rounded-lg border border-oat-200 dark:border-white/[0.07] text-espresso-800 whitespace-pre-wrap select-all">
                               {pdfDebugLines.slice(0, 35).join('\n')}
                             </pre>
                           )}
@@ -2430,7 +2430,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-espresso-950/60 backdrop-blur-xs flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setPastedInvoiceModalOpen(false)}
           >
             <motion.div
@@ -2438,20 +2438,20 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg bg-oat-50 dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 rounded-3xl p-6 shadow-2xl space-y-4"
+              className="w-full max-w-lg bg-surface-elevated border border-oat-300 dark:border-white/[0.09] rounded-3xl p-6 shadow-cozy-lg space-y-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-maldives-100 dark:bg-maldives-900/40 text-maldives-700 dark:text-maldives-300 flex items-center justify-center shadow-2xs">
+                  <div className="w-11 h-11 rounded-2xl bg-maldives-100 text-maldives-700 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shadow-2xs">
                     <span className="material-symbols-outlined text-2xl">
                       content_paste
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-base font-display font-bold text-espresso-900 dark:text-oat-100">
+                    <h3 className="text-base font-display font-bold text-espresso-900">
                       Colar Texto da Fatura
                     </h3>
-                    <p className="text-xs text-espresso-600 dark:text-espresso-400">
+                    <p className="text-xs text-espresso-600">
                       Copie o extrato de compras do seu app ou PDF e cole abaixo
                     </p>
                   </div>
@@ -2474,7 +2474,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 14/10 SHEIN BRASIL 129,90 01/03
 18/10 UBER TRIP 24,90"
                   rows={8}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-espresso-800 border border-oat-300 dark:border-espresso-700 text-xs font-mono text-espresso-900 dark:text-oat-100 placeholder:text-espresso-400 focus:outline-hidden focus:ring-2 focus:ring-terracotta-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-input border border-oat-300 dark:border-white/[0.08] text-xs font-mono text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:ring-2 focus:ring-terracotta-500"
                 />
 
                 <div className="flex items-center justify-end gap-2 pt-1">
