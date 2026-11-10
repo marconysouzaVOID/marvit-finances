@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:35:14.022Z",
+  "updatedAt": "2026-11-10T05:35:20.123Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:35:12.764Z",
+    "exportedAt": "2026-11-10T05:35:18.857Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -117,7 +117,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T05:35:12.764Z",
+        "updatedAt": "2026-11-10T05:35:18.857Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -1040,7 +1040,7 @@
                 "id": "pdf-tx-1794288737984-17",
                 "description": "ESQUINA EMBALAGENS AJU",
                 "amount": 106.81,
-                "tag": "outros",
+                "tag": "compras",
                 "installment": "À vista",
                 "purchaseDate": "23/10",
                 "notes": "Fatura Banco Inter (Fatura.pdf)"
@@ -2578,7 +2578,7 @@
             "id": "pdf-tx-1794288737984-17",
             "description": "ESQUINA EMBALAGENS AJU",
             "amount": 106.81,
-            "tag": "outros",
+            "tag": "compras",
             "installment": "À vista",
             "purchaseDate": "23/10",
             "notes": "Fatura Banco Inter (Fatura.pdf)"
@@ -3234,7 +3234,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T05:35:12.764Z",
+        "dateCreated": "2026-11-10T05:35:18.857Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -4157,7 +4157,7 @@
                 "id": "pdf-tx-1794288737984-17",
                 "description": "ESQUINA EMBALAGENS AJU",
                 "amount": 106.81,
-                "tag": "outros",
+                "tag": "compras",
                 "installment": "À vista",
                 "purchaseDate": "23/10",
                 "notes": "Fatura Banco Inter (Fatura.pdf)"
