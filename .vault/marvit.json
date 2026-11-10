@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T01:03:12.014Z",
+  "updatedAt": "2026-11-10T01:03:46.132Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T01:01:31.455Z",
+    "exportedAt": "2026-11-10T01:03:45.054Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -111,7 +111,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T01:01:31.455Z",
+        "updatedAt": "2026-11-10T01:03:45.054Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -126,10 +126,18 @@
         "expenses": [
           {
             "name": "Itau",
-            "amount": 1213.25,
+            "amount": 1261.27,
             "category": "estilo",
             "subcategory": "cartao",
             "cardTransactions": [
+              {
+                "id": "tx-1794272625054",
+                "description": "Localiza",
+                "amount": 48.02,
+                "tag": "lazer",
+                "installment": "À vista",
+                "purchaseDate": "20/10"
+              },
               {
                 "id": "tx-1794272491455",
                 "description": "Moto eletrica",
@@ -219,10 +227,18 @@
     "expenses": [
       {
         "name": "Itau",
-        "amount": 1213.25,
+        "amount": 1261.27,
         "category": "estilo",
         "subcategory": "cartao",
         "cardTransactions": [
+          {
+            "id": "tx-1794272625054",
+            "description": "Localiza",
+            "amount": 48.02,
+            "tag": "lazer",
+            "installment": "À vista",
+            "purchaseDate": "20/10"
+          },
           {
             "id": "tx-1794272491455",
             "description": "Moto eletrica",
@@ -314,7 +330,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T01:01:31.455Z",
+        "dateCreated": "2026-11-10T01:03:45.054Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -329,10 +345,18 @@
         "expenses": [
           {
             "name": "Itau",
-            "amount": 1213.25,
+            "amount": 1261.27,
             "category": "estilo",
             "subcategory": "cartao",
             "cardTransactions": [
+              {
+                "id": "tx-1794272625054",
+                "description": "Localiza",
+                "amount": 48.02,
+                "tag": "lazer",
+                "installment": "À vista",
+                "purchaseDate": "20/10"
+              },
               {
                 "id": "tx-1794272491455",
                 "description": "Moto eletrica",
