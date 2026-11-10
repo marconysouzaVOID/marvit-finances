@@ -164,7 +164,7 @@ export const CompoundInterestCalculator: React.FC<CompoundInterestCalculatorProp
               <h2 className="text-xl sm:text-2xl font-display font-bold text-espresso-900">
                 Calculadora de Juros Compostos
               </h2>
-              <p className="text-xs sm:text-sm text-espresso-600">
+              <p className="text-xs sm:text-sm text-espresso-600 hidden sm:block">
                 Simule o poder multiplicador do tempo e da rentabilidade sobre seus aportes mensais.
               </p>
             </div>

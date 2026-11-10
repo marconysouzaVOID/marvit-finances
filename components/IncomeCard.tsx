@@ -31,50 +31,50 @@ export const IncomeCard: React.FC<IncomeCardProps> = ({
       <div className="absolute top-0 right-0 w-36 h-36 rounded-full bg-maldives-500/10 dark:bg-maldives-500/[0.06] blur-2xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full bg-terracotta-400/10 dark:bg-terracotta-400/[0.05] blur-2xl pointer-events-none" />
 
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200 dark:border-white/[0.06] relative z-10">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 pb-3.5 sm:pb-5 border-b border-oat-200 dark:border-white/[0.06] relative z-10">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-maldives-50 border border-maldives-200/80 dark:border-maldives-300/25 flex items-center justify-center shadow-sm shrink-0">
-            <span className="material-symbols-outlined text-maldives-600 text-xl sm:text-2xl">
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-2xl bg-maldives-50 border border-maldives-200/80 dark:border-maldives-300/25 flex items-center justify-center shadow-sm shrink-0">
+            <span className="material-symbols-outlined text-maldives-600 text-lg sm:text-2xl">
               account_balance_wallet
             </span>
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-base sm:text-xl font-display font-bold text-espresso-900">
-                Renda Líquida da Casa
+                Renda da Casa
               </h2>
-              <span className="text-[10px] sm:text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-sage-100 text-sage-600 border border-sage-200 dark:border-sage-300/30 shrink-0">
+              <span className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sage-100 text-sage-600 border border-sage-200 dark:border-sage-300/30 shrink-0">
                 {committedPercent}% alocado
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-espresso-600 mt-0.5">
+            <p className="text-xs sm:text-sm text-espresso-600 mt-0.5 hidden sm:block">
               Base mensal para abastecer os pilares e seus Potes dos Sonhos.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:flex items-center gap-2.5 sm:gap-3">
-          <div className="px-3 sm:px-4 py-2.5 bg-maldives-50/90 border border-maldives-200 dark:border-maldives-300/25 rounded-2xl shadow-cozy-inner min-w-0">
+        <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3">
+          <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-maldives-50/90 border border-maldives-200 dark:border-maldives-300/25 rounded-2xl shadow-cozy-inner min-w-0">
             <span className="text-[10px] uppercase font-bold text-maldives-800 tracking-wider block truncate">
-              Renda Disponível
+              Disponível
             </span>
-            <span className="text-base sm:text-xl font-mono font-bold text-maldives-700 block truncate">
+            <span className="text-sm sm:text-xl font-mono font-bold text-maldives-700 block truncate">
               {formatCurrency(totalIncome)}
             </span>
           </div>
 
           <div
-            className={`px-3 sm:px-4 py-2.5 rounded-2xl border transition-colors min-w-0 ${
+            className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl border transition-colors min-w-0 ${
               balance >= 0
                 ? 'bg-sage-50 border-sage-300 dark:border-sage-300/30'
                 : 'bg-terracotta-50 border-terracotta-300 dark:border-terracotta-300/35'
             }`}
           >
             <span className="text-[10px] uppercase font-bold text-espresso-600 tracking-wider block truncate">
-              {balance >= 0 ? 'Sobra Livre' : 'Déficit no Mês'}
+              {balance >= 0 ? 'Sobra Livre' : 'Déficit'}
             </span>
             <span
-              className={`text-base sm:text-xl font-mono font-bold block truncate ${
+              className={`text-sm sm:text-xl font-mono font-bold block truncate ${
                 balance >= 0 ? 'text-sage-600' : 'text-terracotta-600'
               }`}
             >
@@ -84,16 +84,16 @@ export const IncomeCard: React.FC<IncomeCardProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 relative z-10">
-        <div className="bg-oat-100/70 dark:bg-oat-200/55 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
-          <label className="text-xs font-semibold text-espresso-700 mb-1.5 flex items-center justify-between">
-            <span>Salário / Pró-labore Líquido</span>
-            <span className="text-[10px] text-maldives-700 bg-maldives-100/80 px-2 py-0.5 rounded-full font-mono">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 mt-3.5 sm:mt-5 relative z-10">
+        <div className="bg-oat-100/70 dark:bg-oat-200/55 p-3 sm:p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
+          <label className="text-[11px] sm:text-xs font-semibold text-espresso-700 mb-1 sm:mb-1.5 flex items-center justify-between">
+            <span className="truncate">Salário Líquido</span>
+            <span className="hidden sm:inline text-[10px] text-maldives-700 bg-maldives-100/80 px-2 py-0.5 rounded-full font-mono">
               Principal
             </span>
           </label>
           <div className="relative">
-            <span className="absolute left-3.5 top-2.5 text-xs font-bold text-espresso-500 font-mono">
+            <span className="absolute left-3 top-2.5 text-[11px] font-bold text-espresso-500 font-mono">
               R$
             </span>
             <input
@@ -107,21 +107,21 @@ export const IncomeCard: React.FC<IncomeCardProps> = ({
                   monthlyIncome: Math.max(0, Number(e.target.value)),
                 })
               }
-              className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl py-2 pl-10 pr-3 text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500 focus:ring-2 focus:ring-maldives-500/15 transition"
+              className="compact-select w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl py-1.5 sm:py-2 pl-8 sm:pl-10 pr-2.5 text-xs sm:text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500 focus:ring-2 focus:ring-maldives-500/15 transition"
               placeholder="0,00"
             />
           </div>
         </div>
 
-        <div className="bg-oat-100/70 dark:bg-oat-200/55 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
-          <label className="text-xs font-semibold text-espresso-700 mb-1.5 flex items-center justify-between">
-            <span>Renda Extra & Dividendos</span>
-            <span className="text-[10px] text-terracotta-600 bg-terracotta-100 px-2 py-0.5 rounded-full font-mono">
+        <div className="bg-oat-100/70 dark:bg-oat-200/55 p-3 sm:p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06]">
+          <label className="text-[11px] sm:text-xs font-semibold text-espresso-700 mb-1 sm:mb-1.5 flex items-center justify-between">
+            <span className="truncate">Renda Extra</span>
+            <span className="hidden sm:inline text-[10px] text-terracotta-600 bg-terracotta-100 px-2 py-0.5 rounded-full font-mono">
               Variável
             </span>
           </label>
           <div className="relative">
-            <span className="absolute left-3.5 top-2.5 text-xs font-bold text-espresso-500 font-mono">
+            <span className="absolute left-3 top-2.5 text-[11px] font-bold text-espresso-500 font-mono">
               R$
             </span>
             <input
@@ -135,20 +135,20 @@ export const IncomeCard: React.FC<IncomeCardProps> = ({
                   additionalIncome: Math.max(0, Number(e.target.value)),
                 })
               }
-              className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl py-2 pl-10 pr-3 text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500 focus:ring-2 focus:ring-maldives-500/15 transition"
+              className="compact-select w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl py-1.5 sm:py-2 pl-8 sm:pl-10 pr-2.5 text-xs sm:text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500 focus:ring-2 focus:ring-maldives-500/15 transition"
               placeholder="0,00"
             />
           </div>
         </div>
 
-        <div className="bg-oat-100/70 dark:bg-oat-200/55 p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06] sm:col-span-2 lg:col-span-1">
-          <label className="text-xs font-semibold text-espresso-700 mb-2 flex items-center justify-between gap-2">
-            <span className="truncate">Meta de Reserva de Emergência</span>
+        <div className="bg-oat-100/70 dark:bg-oat-200/55 p-3 sm:p-3.5 rounded-2xl border border-oat-200 dark:border-white/[0.06] col-span-2 lg:col-span-1">
+          <label className="text-[11px] sm:text-xs font-semibold text-espresso-700 mb-1.5 sm:mb-2 flex items-center justify-between gap-2">
+            <span className="truncate">Meta de Reserva</span>
             <span className="text-[11px] text-maldives-700 font-mono font-bold shrink-0">
               {profile.desiredEmergencyMonths} meses de custo
             </span>
           </label>
-          <div className="flex items-center gap-3 pt-1">
+          <div className="flex items-center gap-3">
             <input
               type="range"
               min="3"
@@ -162,7 +162,7 @@ export const IncomeCard: React.FC<IncomeCardProps> = ({
               }
               className="w-full accent-maldives-500 bg-oat-200 dark:bg-white/[0.1] h-2 rounded-lg cursor-pointer"
             />
-            <span className="text-xs font-bold text-maldives-800 px-2.5 py-1 bg-maldives-100 rounded-xl min-w-12 text-center font-mono border border-maldives-300 dark:border-maldives-300/35">
+            <span className="text-xs font-bold text-maldives-800 px-2.5 py-0.5 sm:py-1 bg-maldives-100 rounded-xl min-w-11 text-center font-mono border border-maldives-300 dark:border-maldives-300/35">
               {profile.desiredEmergencyMonths}m
             </span>
           </div>

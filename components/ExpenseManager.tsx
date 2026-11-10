@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AUVP_GOALS } from '../constants';
 import { ExpenseCategory, ExpenseItem, LifestyleSubcategory } from '../types';
 import { formatCurrency } from '../utils/formatters';
+import { PwaSheetModal } from './PwaSheetModal';
 
 export interface CloneableMonthOption {
   monthKey: string;
@@ -46,6 +47,7 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | ExpenseCategory>('all');
   const [isCloneMenuOpen, setIsCloneMenuOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [newAmount, setNewAmount] = useState<number | ''>('');
   const [newCategory, setNewCategory] = useState<ExpenseCategory>('essencial');
@@ -91,52 +93,77 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
     });
     setNewName('');
     setNewAmount('');
+    setIsAddModalOpen(false);
   };
 
   return (
     <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-maldives-600 text-xl">
-              receipt_long
-            </span>
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-base sm:text-xl font-display font-bold text-espresso-900">
-                Caderno de Gastos & Aportes
-              </h2>
-              <span className="text-[11px] bg-oat-200 text-espresso-700 font-mono font-bold px-2.5 py-0.5 rounded-full border border-oat-300 dark:border-white/[0.07] shrink-0 whitespace-nowrap">
-                {expenses.length} itens
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 sm:pb-4 border-b border-oat-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-maldives-600 text-lg sm:text-xl">
+                receipt_long
               </span>
             </div>
-            <p className="text-xs text-espresso-600">
-              Edite valores diretamente na lista ou adicione novos itens na planilha financeira.
-            </p>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-xl font-display font-bold text-espresso-900 truncate">
+                  Gastos & Aportes
+                </h2>
+                <span className="text-[11px] bg-oat-200 text-espresso-700 font-mono font-bold px-2 py-0.5 rounded-full border border-oat-300 dark:border-white/[0.07] shrink-0">
+                  {expenses.length}
+                </span>
+              </div>
+              <p className="text-xs text-espresso-600 hidden sm:block">
+                Edite valores diretamente na lista ou adicione novos itens na planilha financeira.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 sm:hidden shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsCloneMenuOpen(true)}
+              className="w-8 h-8 rounded-xl bg-oat-100 dark:bg-oat-200/75 text-maldives-600 border border-oat-300 dark:border-white/[0.08] flex items-center justify-center cursor-pointer"
+              title="Clonar orçamento"
+            >
+              <span className="material-symbols-outlined text-[18px]">copy_all</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-maldives-500 text-white text-xs font-bold flex items-center gap-1 shadow-xs cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[16px]">add</span>
+              <span>Novo</span>
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            type="button"
-            onClick={() => setIsCloneMenuOpen(!isCloneMenuOpen)}
-            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs ${
-              isCloneMenuOpen
-                ? 'bg-maldives-500 text-white border-maldives-600/40'
-                : 'bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border-oat-300 dark:border-white/[0.08]'
-            }`}
-            title="Clonar orçamento de outro mês ou aplicar um modelo pronto para não ter que digitar tudo do zero"
-          >
-            <span
-              className={`material-symbols-outlined text-[17px] ${
-                isCloneMenuOpen ? 'text-white' : 'text-maldives-600'
-              }`}
+        <div className="flex items-center gap-2 flex-wrap justify-between sm:justify-end">
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsCloneMenuOpen(true)}
+              className="px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border-oat-300 dark:border-white/[0.08]"
+              title="Clonar orçamento de outro mês ou aplicar modelo pronto"
             >
-              copy_all
-            </span>
-            <span>Clonar Orçamento</span>
-          </button>
+              <span className="material-symbols-outlined text-[17px] text-maldives-600">
+                copy_all
+              </span>
+              <span>Clonar</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-maldives-500 hover:bg-maldives-600 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <span className="material-symbols-outlined text-[17px]">add</span>
+              <span>Novo Item</span>
+            </button>
+          </div>
 
           <div className="grid grid-cols-4 sm:flex items-center gap-1 bg-oat-200/70 dark:bg-oat-200/60 p-1 rounded-2xl border border-oat-300 dark:border-white/[0.06] text-[11px] sm:text-xs w-full sm:w-auto">
             {(
@@ -164,183 +191,102 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
         </div>
       </div>
 
-      {/* Painel de Clonar Orçamento (Outro Mês ou Modelos Prontos) */}
-      <AnimatePresence>
-        {isCloneMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden mt-4"
-          >
-            <div className="p-4 rounded-2xl bg-oat-100/95 dark:bg-oat-200/50 border border-maldives-300 dark:border-maldives-300/35 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-maldives-600 text-lg">
-                    content_copy
-                  </span>
-                  <h3 className="text-sm font-display font-bold text-espresso-900">
-                    Clonar Orçamento para este Mês
-                  </h3>
-                </div>
+      {/* Modal Bottom Sheet: Novo Lançamento / Aporte */}
+      <PwaSheetModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Novo Lançamento"
+        subtitle="Adicione uma despesa, cartão ou aporte ao mês"
+        icon="add_circle"
+        tone="maldives"
+      >
+        <div className="space-y-3.5">
+          <div>
+            <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+              Pilar de Destino
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {(
+                [
+                  { id: 'essencial', label: 'Essencial', emoji: '🌿' },
+                  { id: 'estilo', label: 'Estilo', emoji: '☕' },
+                  { id: 'investimento', label: 'Aporte', emoji: '💎' },
+                ] as const
+              ).map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setNewCategory(cat.id)}
+                  className={`py-2 px-2 rounded-xl text-xs font-bold border transition cursor-pointer flex items-center justify-center gap-1 ${
+                    newCategory === cat.id
+                      ? 'bg-maldives-500 text-white border-maldives-600 shadow-xs'
+                      : 'bg-surface-input text-espresso-700 border-oat-300 dark:border-white/[0.08]'
+                  }`}
+                >
+                  <span>{cat.emoji}</span>
+                  <span>{cat.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {newCategory === 'estilo' && (
+            <div>
+              <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                Formato em Estilo de Vida
+              </label>
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsCloneMenuOpen(false)}
-                  className="p-1 rounded-lg hover:bg-oat-200 text-espresso-500 hover:text-espresso-900 cursor-pointer"
+                  onClick={() => setNewSubcategory('cartao')}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                    newSubcategory === 'cartao'
+                      ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-xs'
+                      : 'bg-surface-input text-espresso-700 border-oat-300 dark:border-white/[0.08]'
+                  }`}
                 >
-                  <span className="material-symbols-outlined text-[18px]">close</span>
+                  <span className="material-symbols-outlined text-[16px]">credit_card</span>
+                  <span>Cartão de Crédito</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setNewSubcategory('direto')}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                    newSubcategory === 'direto'
+                      ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-xs'
+                      : 'bg-surface-input text-espresso-700 border-oat-300 dark:border-white/[0.08]'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">payments</span>
+                  <span>Gasto Direto / Pix</span>
                 </button>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* 1. Clonar de Mês Existente */}
-                <div className="p-3.5 rounded-xl bg-oat-50 border border-oat-200 dark:border-white/[0.07] space-y-2.5">
-                  <span className="text-xs font-bold text-espresso-800 block">
-                    📅 Clonar de Outro Mês Salvo
-                  </span>
-                  <p className="text-[11px] text-espresso-500">
-                    Copia todas as despesas e perfil de um mês anterior diretamente para o mês atual.
-                  </p>
-
-                  {availableMonthsToClone && availableMonthsToClone.length > 0 ? (
-                    <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                      {availableMonthsToClone.map((opt) => (
-                        <div
-                          key={opt.monthKey}
-                          className="flex items-center justify-between p-2 rounded-lg bg-oat-100/80 dark:bg-oat-200/60 border border-oat-200 dark:border-white/[0.06] text-xs"
-                        >
-                          <div>
-                            <span className="font-bold text-espresso-900 block">
-                              {opt.monthLabel}
-                            </span>
-                            <span className="text-[10px] text-espresso-500">
-                              {opt.itemCount} {opt.itemCount === 1 ? 'item' : 'itens'}
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (onCloneFromMonth) onCloneFromMonth(opt.monthKey);
-                              setIsCloneMenuOpen(false);
-                            }}
-                            className="px-2.5 py-1 rounded-lg bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-[11px] transition cursor-pointer shadow-xs"
-                          >
-                            Clonar
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-espresso-500 italic">
-                      Nenhum outro mês com dados salvos no momento.
-                    </p>
-                  )}
-                </div>
-
-                {/* 2. Modelos Prontos de Orçamento (Presets) */}
-                <div className="p-3.5 rounded-xl bg-oat-50 border border-oat-200 dark:border-white/[0.07] space-y-2.5">
-                  <span className="text-xs font-bold text-espresso-800 block">
-                    ✨ Modelos Prontos (Presets)
-                  </span>
-                  <p className="text-[11px] text-espresso-500">
-                    Preencha seu mês em 1 clique sem precisar escrever tudo do zero.
-                  </p>
-
-                  <div className="space-y-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onApplyPreset) onApplyPreset('auvp-50-30-20');
-                        setIsCloneMenuOpen(false);
-                      }}
-                      className="w-full text-left p-2.5 rounded-lg bg-oat-100/80 dark:bg-oat-200/60 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60 transition flex items-center justify-between cursor-pointer"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-espresso-900 block">
-                          🏡 Padrão AUVP (50/30/20)
-                        </span>
-                        <span className="text-[10px] text-espresso-500">
-                          Essencial, Cartões, Reserva de Emergência e Ações
-                        </span>
-                      </div>
-                      <span className="material-symbols-outlined text-maldives-600 text-[18px]">
-                        arrow_forward
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onApplyPreset) onApplyPreset('investidor-40-30-30');
-                        setIsCloneMenuOpen(false);
-                      }}
-                      className="w-full text-left p-2.5 rounded-lg bg-oat-100/80 dark:bg-oat-200/60 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60 transition flex items-center justify-between cursor-pointer"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-espresso-900 block">
-                          🚀 Foco em Investimentos (40/30/30)
-                        </span>
-                        <span className="text-[10px] text-espresso-500">
-                          Gastos contidos e 30% em aportes acelerados
-                        </span>
-                      </div>
-                      <span className="material-symbols-outlined text-maldives-600 text-[18px]">
-                        arrow_forward
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onApplyPreset) onApplyPreset('enxuto-minimalista');
-                        setIsCloneMenuOpen(false);
-                      }}
-                      className="w-full text-left p-2.5 rounded-lg bg-oat-100/80 dark:bg-oat-200/60 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60 transition flex items-center justify-between cursor-pointer"
-                    >
-                      <div>
-                        <span className="text-xs font-bold text-espresso-900 block">
-                          🍃 Enxuto & Minimalista
-                        </span>
-                        <span className="text-[10px] text-espresso-500">
-                          Custos baixos e foco em reserva e liberdade
-                        </span>
-                      </div>
-                      <span className="material-symbols-outlined text-maldives-600 text-[18px]">
-                        arrow_forward
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
 
-      {/* Formulário de Novo Gasto/Aporte */}
-      <div className="bg-oat-100/90 dark:bg-oat-200/45 border border-oat-300 dark:border-white/[0.06] rounded-2xl p-4 mt-5 space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-          <div className="sm:col-span-5">
+          <div>
             <label className="text-xs font-semibold text-espresso-700 mb-1 block">
               {newCategory === 'estilo' && newSubcategory === 'cartao'
                 ? 'Nome do Cartão de Crédito'
-                : 'Descrição do gasto ou aporte'}
+                : 'Descrição'}
             </label>
             <input
               type="text"
+              autoFocus
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
               placeholder={
                 newCategory === 'estilo' && newSubcategory === 'cartao'
-                  ? 'Ex: Cartão Nubank, Cartão Inter, Itaú...'
-                  : 'Ex: Feira Orgânica, Jantar, Tesouro IPCA...'
+                  ? 'Ex: Cartão Nubank, Inter...'
+                  : 'Ex: Mercado, Jantar, Tesouro IPCA...'
               }
               className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 placeholder-espresso-400 focus:outline-none focus:border-maldives-500"
             />
           </div>
 
-          <div className="sm:col-span-3">
+          <div>
             <label className="text-xs font-semibold text-espresso-700 mb-1 block">
               {newCategory === 'estilo' && newSubcategory === 'cartao'
                 ? 'Fatura Inicial (Opcional R$)'
@@ -360,96 +306,153 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
             />
           </div>
 
-          <div className="sm:col-span-3">
-            <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-              Pilar de Destino
-            </label>
-            <select
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value as ExpenseCategory)}
-              className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2.5 text-sm font-semibold text-espresso-900 focus:outline-none focus:border-maldives-500"
-            >
-              <option value="essencial">🌿 Custos Essenciais</option>
-              <option value="estilo">☕ Estilo de Vida</option>
-              <option value="investimento">💎 Investimentos</option>
-            </select>
-          </div>
-
-          <div className="sm:col-span-1">
+          <div className="flex items-center justify-end gap-2 pt-2">
             <button
+              type="button"
+              onClick={() => setIsAddModalOpen(false)}
+              className="px-4 py-2.5 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
               onClick={handleCreate}
               disabled={
                 !newName.trim() ||
                 (!(newCategory === 'estilo' && newSubcategory === 'cartao') &&
                   !newAmount)
               }
-              className="w-full h-[42px] flex items-center justify-center gap-1.5 bg-maldives-500 hover:bg-maldives-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition shadow-sm cursor-pointer"
-              title="Adicionar à planilha"
+              className="flex-1 sm:flex-initial px-5 py-2.5 bg-maldives-500 hover:bg-maldives-600 disabled:opacity-40 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
             >
-              <span className="material-symbols-outlined text-[20px]">add</span>
-              <span className="sm:hidden">Adicionar Item</span>
+              <span className="material-symbols-outlined text-[18px]">check</span>
+              <span>Adicionar ao Mês</span>
             </button>
           </div>
         </div>
+      </PwaSheetModal>
 
-        {/* Subcategoria do Pilar Estilo de Vida (Cartão de Crédito vs Gasto Direto) */}
-        <AnimatePresence>
-          {newCategory === 'estilo' && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="pt-2 border-t border-oat-300/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-terracotta-600 text-[18px]">
-                    credit_card
-                  </span>
-                  <span className="text-xs font-bold text-espresso-800">
-                    Subcategoria de Estilo de Vida:
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setNewSubcategory('cartao')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition cursor-pointer ${
-                      newSubcategory === 'cartao'
-                        ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-xs'
-                        : 'bg-oat-50 text-espresso-700 border-oat-300 hover:border-terracotta-400'
-                    }`}
+      {/* Modal Bottom Sheet: Clonar Orçamento */}
+      <PwaSheetModal
+        isOpen={isCloneMenuOpen}
+        onClose={() => setIsCloneMenuOpen(false)}
+        title="Clonar Orçamento"
+        subtitle="Copie um mês anterior ou aplique um modelo pronto"
+        icon="content_copy"
+        tone="maldives"
+        maxWidthClass="max-w-2xl"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-3.5 rounded-2xl bg-oat-100/70 dark:bg-oat-200/45 border border-oat-200 dark:border-white/[0.07] space-y-2.5">
+            <span className="text-xs font-bold text-espresso-800 block">
+              📅 De Outro Mês Salvo
+            </span>
+            {availableMonthsToClone && availableMonthsToClone.length > 0 ? (
+              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                {availableMonthsToClone.map((opt) => (
+                  <div
+                    key={opt.monthKey}
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-oat-50 border border-oat-200 dark:border-white/[0.06] text-xs"
                   >
-                    <span className="material-symbols-outlined text-[16px]">
-                      credit_card
-                    </span>
-                    <span>Cartão de Crédito</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setNewSubcategory('direto')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition cursor-pointer ${
-                      newSubcategory === 'direto'
-                        ? 'bg-terracotta-500 text-white border-terracotta-600 shadow-xs'
-                        : 'bg-oat-50 text-espresso-700 border-oat-300 hover:border-terracotta-400'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[16px]">
-                      payments
-                    </span>
-                    <span>Gasto Direto / Pix</span>
-                  </button>
-                </div>
+                    <div>
+                      <span className="font-bold text-espresso-900 block">
+                        {opt.monthLabel}
+                      </span>
+                      <span className="text-[10px] text-espresso-500">
+                        {opt.itemCount} {opt.itemCount === 1 ? 'item' : 'itens'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onCloneFromMonth) onCloneFromMonth(opt.monthKey);
+                        setIsCloneMenuOpen(false);
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-[11px] transition cursor-pointer shadow-xs"
+                    >
+                      Clonar
+                    </button>
+                  </div>
+                ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            ) : (
+              <p className="text-xs text-espresso-500 italic">
+                Nenhum outro mês com dados salvos.
+              </p>
+            )}
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-oat-100/70 dark:bg-oat-200/45 border border-oat-200 dark:border-white/[0.07] space-y-2">
+            <span className="text-xs font-bold text-espresso-800 block">
+              ✨ Modelos Prontos
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                if (onApplyPreset) onApplyPreset('auvp-50-30-20');
+                setIsCloneMenuOpen(false);
+              }}
+              className="w-full text-left p-2.5 rounded-xl bg-oat-50 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] transition flex items-center justify-between cursor-pointer"
+            >
+              <div>
+                <span className="text-xs font-bold text-espresso-900 block">
+                  🏡 Padrão AUVP (50/30/20)
+                </span>
+                <span className="text-[10px] text-espresso-500">
+                  Essencial, Cartões, Reserva e Ações
+                </span>
+              </div>
+              <span className="material-symbols-outlined text-maldives-600 text-[18px]">
+                arrow_forward
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (onApplyPreset) onApplyPreset('investidor-40-30-30');
+                setIsCloneMenuOpen(false);
+              }}
+              className="w-full text-left p-2.5 rounded-xl bg-oat-50 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] transition flex items-center justify-between cursor-pointer"
+            >
+              <div>
+                <span className="text-xs font-bold text-espresso-900 block">
+                  🚀 Foco em Investimentos (40/30/30)
+                </span>
+                <span className="text-[10px] text-espresso-500">
+                  30% dedicados a patrimônio
+                </span>
+              </div>
+              <span className="material-symbols-outlined text-maldives-600 text-[18px]">
+                arrow_forward
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (onApplyPreset) onApplyPreset('enxuto-minimalista');
+                setIsCloneMenuOpen(false);
+              }}
+              className="w-full text-left p-2.5 rounded-xl bg-oat-50 hover:bg-maldives-50 border border-oat-200 dark:border-white/[0.06] transition flex items-center justify-between cursor-pointer"
+            >
+              <div>
+                <span className="text-xs font-bold text-espresso-900 block">
+                  🍃 Enxuto & Minimalista
+                </span>
+                <span className="text-[10px] text-espresso-500">
+                  Custos baixos e reserva prioritária
+                </span>
+              </div>
+              <span className="material-symbols-outlined text-maldives-600 text-[18px]">
+                arrow_forward
+              </span>
+            </button>
+          </div>
+        </div>
+      </PwaSheetModal>
 
       {/* Lista de Itens */}
-      <div className="mt-5 overflow-hidden border border-oat-300 dark:border-white/[0.07] rounded-2xl bg-oat-50 dark:bg-oat-100/50">
+      <div className="mt-4 overflow-hidden border border-oat-300 dark:border-white/[0.07] rounded-2xl bg-oat-50 dark:bg-oat-100/50">
         <div className="max-h-[420px] overflow-y-auto divide-y divide-oat-200 dark:divide-white/[0.05]">
           <AnimatePresence initial={false}>
             {filteredExpenses.length === 0 ? (
@@ -537,18 +540,6 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                             </button>
                           )}
 
-                          {item.category === 'estilo' && item.subcategory === 'cartao' && (
-                            <span
-                              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-600 border border-oat-300 flex items-center gap-0.5 shadow-2xs"
-                              title="Cartão global reutilizável em todos os meses"
-                            >
-                              <span className="material-symbols-outlined text-[11px] text-terracotta-500">
-                                language
-                              </span>
-                              <span>Global</span>
-                            </span>
-                          )}
-
                           {item.category === 'estilo' &&
                             item.subcategory === 'cartao' &&
                             onOpenCardsTab && (
@@ -562,15 +553,10 @@ export const ExpenseManager: React.FC<ExpenseManagerProps> = ({
                                   receipt_long
                                 </span>
                                 <span>
-                                  Detalhar Fatura (
-                                  {item.cardTransactions?.length || 0})
+                                  Fatura ({item.cardTransactions?.length || 0})
                                 </span>
                               </button>
                             )}
-
-                          <span className="text-[11px] text-espresso-500 font-mono sm:hidden">
-                            {formatCurrency(item.amount)}
-                          </span>
                         </div>
                       </div>
                     </div>

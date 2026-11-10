@@ -566,7 +566,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                   {formatMonthKeyLabel(selectedMonthKey)}
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-espresso-600 mt-1">
+              <p className="text-xs sm:text-sm text-espresso-600 mt-1 hidden sm:block">
                 Visualize exatamente quanto saiu em cada dia com faturas de cartão, restaurantes e mimos.
               </p>
             </div>

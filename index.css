@@ -159,11 +159,11 @@ html.dark {
     color: #EBEEF3;
   }
 
-  /* Evitar auto-zoom em inputs no iOS Safari quando focado, preservando selects compactos */
+  /* Evitar auto-zoom em inputs no iOS Safari quando focado, preservando campos compactos */
   @media screen and (max-width: 768px) {
-    input,
+    input:not(.compact-select),
     select:not(.compact-select),
-    textarea {
+    textarea:not(.compact-select) {
       font-size: 16px !important;
     }
   }

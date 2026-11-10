@@ -148,6 +148,7 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
   linkedGoalsMonthlyTotal,
 }) => {
   const [isGridExpanded, setIsGridExpanded] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const currentSystemMonthKey = getCurrentMonthKey();
 
   const [selectedYearStr, selectedMonthStr] = selectedMonthKey.split('-');
@@ -174,42 +175,50 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
   };
 
   return (
-    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-3.5 sm:p-5 shadow-cozy transition-colors overflow-hidden">
-      {/* Linha Superior: Navegação Rápida do Mês Ativo + Nota + Botões */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div className="flex items-center justify-between sm:justify-start gap-2 w-full lg:w-auto">
+    <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-2xl sm:rounded-3xl p-2.5 sm:p-4 md:p-5 shadow-cozy transition-colors overflow-hidden">
+      {/* Linha Compacta Principal: Mês Ativo + Ações */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-1 md:flex-initial min-w-0">
           <button
             type="button"
             onClick={() => handleStepMonth(-1)}
-            className="w-9 h-9 shrink-0 rounded-xl bg-oat-100 dark:bg-oat-200/80 hover:bg-maldives-50 border border-oat-300 dark:border-white/[0.07] hover:border-maldives-400/50 flex items-center justify-center text-espresso-800 hover:text-maldives-700 transition cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-xl bg-oat-100 dark:bg-oat-200/80 hover:bg-maldives-50 border border-oat-300 dark:border-white/[0.07] flex items-center justify-center text-espresso-800 hover:text-maldives-700 transition cursor-pointer"
             title="Mês anterior"
           >
-            <span className="material-symbols-outlined text-[20px]">
+            <span className="material-symbols-outlined text-[19px]">
               chevron_left
             </span>
           </button>
 
-          <div className="flex items-center justify-center sm:justify-start gap-2 px-3 py-1.5 rounded-2xl bg-maldives-50/80 border border-maldives-200/90 dark:border-maldives-300/25 flex-1 sm:flex-initial min-w-0">
-            <span className="material-symbols-outlined text-maldives-600 text-lg sm:text-xl shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsMobileDrawerOpen((v) => !v)}
+            className="flex items-center justify-center md:justify-start gap-2 px-3 py-1.5 rounded-xl sm:rounded-2xl bg-maldives-50/80 border border-maldives-200/90 dark:border-maldives-300/25 flex-1 md:flex-initial min-w-0 cursor-pointer md:cursor-default"
+            title="Selecionar mês ou abrir notas"
+          >
+            <span className="material-symbols-outlined text-maldives-600 text-[17px] sm:text-xl shrink-0">
               calendar_month
             </span>
             <div className="min-w-0 text-left">
-              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-maldives-700 block leading-none truncate">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-maldives-700 hidden md:block leading-none truncate">
                 Competência em Edição
               </span>
               <span className="text-xs sm:text-base font-display font-extrabold text-espresso-900 block truncate">
                 {MONTH_NAMES_FULL[selectedMonthIdx]} de {selectedYear}
               </span>
             </div>
-          </div>
+            <span className="material-symbols-outlined text-[17px] text-maldives-700 md:hidden shrink-0">
+              {isMobileDrawerOpen ? 'expand_less' : 'expand_more'}
+            </span>
+          </button>
 
           <button
             type="button"
             onClick={() => handleStepMonth(1)}
-            className="w-9 h-9 shrink-0 rounded-xl bg-oat-100 dark:bg-oat-200/80 hover:bg-maldives-50 border border-oat-300 dark:border-white/[0.07] hover:border-maldives-400/50 flex items-center justify-center text-espresso-800 hover:text-maldives-700 transition cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-xl bg-oat-100 dark:bg-oat-200/80 hover:bg-maldives-50 border border-oat-300 dark:border-white/[0.07] flex items-center justify-center text-espresso-800 hover:text-maldives-700 transition cursor-pointer"
             title="Próximo mês"
           >
-            <span className="material-symbols-outlined text-[20px]">
+            <span className="material-symbols-outlined text-[19px]">
               chevron_right
             </span>
           </button>
@@ -230,9 +239,41 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
           )}
         </div>
 
-        {/* Nota Rápida do Mês + Ações do Calendário */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 lg:justify-end">
-          <div className="relative flex-1 sm:max-w-xs min-w-0">
+        {/* Botões Rápidos Compactos no Mobile */}
+        <div className="flex items-center gap-1 md:hidden shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsMobileDrawerOpen((v) => !v)}
+            className={`relative w-8 h-8 rounded-xl border flex items-center justify-center transition cursor-pointer ${
+              isMobileDrawerOpen
+                ? 'bg-maldives-500 text-white border-maldives-600/40'
+                : 'bg-oat-100 dark:bg-oat-200/75 text-espresso-700 border-oat-300 dark:border-white/[0.07]'
+            }`}
+            title="Abrir meses e nota do mês"
+          >
+            <span className="material-symbols-outlined text-[17px]">tune</span>
+            {currentMonthNotes && (
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-terracotta-500" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsGridExpanded((v) => !v)}
+            className={`w-8 h-8 rounded-xl border flex items-center justify-center transition cursor-pointer ${
+              isGridExpanded
+                ? 'bg-maldives-500 text-white border-maldives-600/40'
+                : 'bg-oat-100 dark:bg-oat-200/75 text-espresso-700 border-oat-300 dark:border-white/[0.07]'
+            }`}
+            title="Visão Anual"
+          >
+            <span className="material-symbols-outlined text-[17px]">date_range</span>
+          </button>
+        </div>
+
+        {/* Nota Rápida + Ações no Desktop */}
+        <div className="hidden md:flex items-center gap-2 flex-1 justify-end">
+          <div className="relative flex-1 max-w-xs min-w-0">
             <span className="material-symbols-outlined text-espresso-400 text-[16px] absolute left-3 top-2">
               sticky_note_2
             </span>
@@ -240,121 +281,153 @@ export const MonthCalendarBar: React.FC<MonthCalendarBarProps> = ({
               type="text"
               value={currentMonthNotes}
               onChange={(e) => onChangeMonthNotes(e.target.value)}
-              placeholder={`Nota de ${MONTH_NAMES_SHORT[selectedMonthIdx]}/${selectedYear} (ex: 13º, IPVA, Férias)...`}
+              placeholder={`Nota de ${MONTH_NAMES_SHORT[selectedMonthIdx]}/${selectedYear}...`}
               className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
             />
           </div>
 
-          <div className="grid grid-cols-2 sm:flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onCopyFromPreviousMonth}
-              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border border-oat-300 dark:border-white/[0.07] text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
-              title="Copiar renda e despesas do mês anterior para este mês"
-            >
-              <span className="material-symbols-outlined text-[16px] text-sage-600 shrink-0">
-                content_copy
-              </span>
-              <span className="truncate">Copiar Anterior</span>
-            </button>
+          <button
+            type="button"
+            onClick={onCopyFromPreviousMonth}
+            className="px-3 py-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border border-oat-300 dark:border-white/[0.07] text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+            title="Copiar renda e despesas do mês anterior"
+          >
+            <span className="material-symbols-outlined text-[16px] text-sage-600 shrink-0">
+              content_copy
+            </span>
+            <span>Copiar Anterior</span>
+          </button>
 
-            <button
-              type="button"
-              onClick={() => setIsGridExpanded(!isGridExpanded)}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold border flex items-center justify-center gap-1.5 transition cursor-pointer ${
-                isGridExpanded
-                  ? 'bg-maldives-500 text-white border-maldives-600/40 shadow-xs'
-                  : 'bg-oat-100 dark:bg-oat-200/75 text-espresso-800 border-oat-300 dark:border-white/[0.07] hover:border-maldives-400/50'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px] shrink-0">
-                {isGridExpanded ? 'expand_less' : 'date_range'}
-              </span>
-              <span className="truncate">
-                {isGridExpanded ? 'Fechar Visão' : 'Calendário Anual'}
-              </span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setIsGridExpanded(!isGridExpanded)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center gap-1.5 transition cursor-pointer ${
+              isGridExpanded
+                ? 'bg-maldives-500 text-white border-maldives-600/40 shadow-xs'
+                : 'bg-oat-100 dark:bg-oat-200/75 text-espresso-800 border-oat-300 dark:border-white/[0.07] hover:border-maldives-400/50'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[16px] shrink-0">
+              {isGridExpanded ? 'expand_less' : 'date_range'}
+            </span>
+            <span>{isGridExpanded ? 'Fechar Visão' : 'Calendário Anual'}</span>
+          </button>
         </div>
       </div>
 
-      {/* Régua Rápida dos 12 Meses do Ano (Responsiva: 6x2 no celular, 12x1 no desktop) */}
-      <div className="mt-3 pt-3 border-t border-oat-200 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center gap-2">
-        <div className="flex items-center justify-between sm:justify-start gap-1 sm:pr-2 sm:border-r border-oat-200 dark:border-white/[0.06] shrink-0">
-          <div className="flex items-center gap-1">
+      {/* Painel Retrátil no Mobile + Sempre Visível no Desktop: Meses, Nota e Copiar */}
+      <div className={`${isMobileDrawerOpen ? 'block' : 'hidden'} md:block mt-2.5 pt-2.5 border-t border-oat-200 dark:border-white/[0.06] space-y-2.5`}>
+        {/* Controles extras só necessários na gaveta mobile */}
+        <div className="flex flex-col gap-2 md:hidden">
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 min-w-0">
+              <span className="material-symbols-outlined text-espresso-400 text-[15px] absolute left-2.5 top-2">
+                sticky_note_2
+              </span>
+              <input
+                type="text"
+                value={currentMonthNotes}
+                onChange={(e) => onChangeMonthNotes(e.target.value)}
+                placeholder={`Nota de ${MONTH_NAMES_SHORT[selectedMonthIdx]}/${selectedYear}...`}
+                className="compact-select w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
+              />
+            </div>
+
             <button
               type="button"
-              onClick={() => setViewYear((y) => y - 1)}
-              className="p-1 rounded-lg bg-oat-100 dark:bg-oat-200/70 sm:bg-transparent sm:dark:bg-transparent hover:bg-oat-200 text-espresso-600 hover:text-espresso-900 cursor-pointer flex items-center justify-center"
-              title="Ano anterior"
+              onClick={onCopyFromPreviousMonth}
+              className="px-2.5 py-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 text-espresso-800 border border-oat-300 dark:border-white/[0.07] text-[11px] font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+              title="Copiar mês anterior"
             >
-              <span className="material-symbols-outlined text-[16px]">
-                keyboard_double_arrow_left
+              <span className="material-symbols-outlined text-[15px] text-sage-600">
+                content_copy
               </span>
-            </button>
-            <span className="text-xs font-mono font-extrabold text-espresso-900 px-1.5">
-              {viewYear}
-            </span>
-            <button
-              type="button"
-              onClick={() => setViewYear((y) => y + 1)}
-              className="p-1 rounded-lg bg-oat-100 dark:bg-oat-200/70 sm:bg-transparent sm:dark:bg-transparent hover:bg-oat-200 text-espresso-600 hover:text-espresso-900 cursor-pointer flex items-center justify-center"
-              title="Próximo ano"
-            >
-              <span className="material-symbols-outlined text-[16px]">
-                keyboard_double_arrow_right
-              </span>
+              <span>Copiar ant.</span>
             </button>
           </div>
-
-          {selectedMonthKey !== currentSystemMonthKey && (
-            <button
-              type="button"
-              onClick={() => {
-                const [cy] = currentSystemMonthKey.split('-');
-                setViewYear(Number(cy));
-                onSelectMonth(currentSystemMonthKey);
-              }}
-              className="sm:hidden px-2 py-0.5 rounded-lg bg-maldives-50 text-maldives-700 border border-maldives-200 text-[10px] font-bold cursor-pointer"
-            >
-              Ir p/ Mês Atual
-            </button>
-          )}
         </div>
 
-        <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 w-full flex-1">
-          {MONTH_NAMES_SHORT.map((shortName, idx) => {
-            const mKey = `${viewYear}-${String(idx + 1).padStart(2, '0')}`;
-            const isSelected = mKey === selectedMonthKey;
-            const isCurrentNow = mKey === currentSystemMonthKey;
-            const hasSavedData = Boolean(monthsData[mKey]);
-
-            return (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-start gap-1 sm:pr-2 sm:border-r border-oat-200 dark:border-white/[0.06] shrink-0">
+            <div className="flex items-center gap-1">
               <button
-                key={mKey}
                 type="button"
-                onClick={() => handleSelectYearAndMonth(viewYear, idx)}
-                className={`relative py-1.5 px-1 rounded-xl text-[11px] sm:text-xs font-bold transition flex flex-col items-center justify-center cursor-pointer border min-w-0 ${
-                  isSelected
-                    ? 'bg-maldives-500 text-white border-maldives-600/40 shadow-xs'
-                    : isCurrentNow
-                    ? 'bg-maldives-50 text-maldives-800 border-maldives-300/70 hover:bg-maldives-100'
-                    : 'bg-oat-100/70 dark:bg-oat-200/50 text-espresso-700 border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60 hover:text-espresso-900'
-                }`}
+                onClick={() => setViewYear((y) => y - 1)}
+                className="p-1 rounded-lg bg-oat-100 dark:bg-oat-200/70 sm:bg-transparent sm:dark:bg-transparent hover:bg-oat-200 text-espresso-600 hover:text-espresso-900 cursor-pointer flex items-center justify-center"
+                title="Ano anterior"
               >
-                <span className="truncate">{shortName}</span>
-                <span
-                  className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
-                    isSelected
-                      ? 'bg-white'
-                      : hasSavedData
-                      ? 'bg-maldives-500'
-                      : 'bg-oat-300 dark:bg-white/[0.14]'
-                  }`}
-                />
+                <span className="material-symbols-outlined text-[16px]">
+                  keyboard_double_arrow_left
+                </span>
               </button>
-            );
-          })}
+              <span className="text-xs font-mono font-extrabold text-espresso-900 px-1.5">
+                {viewYear}
+              </span>
+              <button
+                type="button"
+                onClick={() => setViewYear((y) => y + 1)}
+                className="p-1 rounded-lg bg-oat-100 dark:bg-oat-200/70 sm:bg-transparent sm:dark:bg-transparent hover:bg-oat-200 text-espresso-600 hover:text-espresso-900 cursor-pointer flex items-center justify-center"
+                title="Próximo ano"
+              >
+                <span className="material-symbols-outlined text-[16px]">
+                  keyboard_double_arrow_right
+                </span>
+              </button>
+            </div>
+
+            {selectedMonthKey !== currentSystemMonthKey && (
+              <button
+                type="button"
+                onClick={() => {
+                  const [cy] = currentSystemMonthKey.split('-');
+                  setViewYear(Number(cy));
+                  onSelectMonth(currentSystemMonthKey);
+                  setIsMobileDrawerOpen(false);
+                }}
+                className="sm:hidden px-2 py-0.5 rounded-lg bg-maldives-50 text-maldives-700 border border-maldives-200 text-[10px] font-bold cursor-pointer"
+              >
+                Mês atual
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 w-full flex-1">
+            {MONTH_NAMES_SHORT.map((shortName, idx) => {
+              const mKey = `${viewYear}-${String(idx + 1).padStart(2, '0')}`;
+              const isSelected = mKey === selectedMonthKey;
+              const isCurrentNow = mKey === currentSystemMonthKey;
+              const hasSavedData = Boolean(monthsData[mKey]);
+
+              return (
+                <button
+                  key={mKey}
+                  type="button"
+                  onClick={() => {
+                    handleSelectYearAndMonth(viewYear, idx);
+                    setIsMobileDrawerOpen(false);
+                  }}
+                  className={`relative py-1.5 px-1 rounded-xl text-[11px] sm:text-xs font-bold transition flex flex-col items-center justify-center cursor-pointer border min-w-0 ${
+                    isSelected
+                      ? 'bg-maldives-500 text-white border-maldives-600/40 shadow-xs'
+                      : isCurrentNow
+                      ? 'bg-maldives-50 text-maldives-800 border-maldives-300/70 hover:bg-maldives-100'
+                      : 'bg-oat-100/70 dark:bg-oat-200/50 text-espresso-700 border-oat-200 dark:border-white/[0.06] hover:border-maldives-300/60 hover:text-espresso-900'
+                  }`}
+                >
+                  <span className="truncate">{shortName}</span>
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
+                      isSelected
+                        ? 'bg-white'
+                        : hasSavedData
+                        ? 'bg-maldives-500'
+                        : 'bg-oat-300 dark:bg-white/[0.14]'
+                    }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 

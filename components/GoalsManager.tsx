@@ -9,6 +9,7 @@ import {
   formatPercent,
 } from '../utils/formatters';
 import { InteractiveAsset } from './InteractiveAsset';
+import { PwaSheetModal } from './PwaSheetModal';
 
 interface GoalsManagerProps {
   goals: CustomGoalItem[];
@@ -114,134 +115,132 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho dos Potes dos Sonhos */}
+      {/* Cabeçalho Enxuto dos Potes dos Sonhos */}
       <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200 dark:border-white/[0.06]">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <InteractiveAsset
-              src="/assets/marvit-metas.png"
-              alt="Potes dos Sonhos & Metas"
-              size="md"
-              tone="maldives"
-              badgeIcon="emoji_events"
-            />
+        <div className="flex items-center justify-between gap-3 pb-3.5 sm:pb-5 border-b border-oat-200 dark:border-white/[0.06]">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="hidden sm:block">
+              <InteractiveAsset
+                src="/assets/marvit-metas.png"
+                alt="Potes dos Sonhos & Metas"
+                size="md"
+                tone="maldives"
+                badgeIcon="emoji_events"
+              />
+            </div>
+            <div className="w-9 h-9 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0 sm:hidden">
+              <span className="material-symbols-outlined text-maldives-600 text-lg">
+                savings
+              </span>
+            </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg sm:text-2xl font-display font-bold text-espresso-900">
-                  Potes dos Sonhos & Metas de Longo Prazo
+                <h2 className="text-base sm:text-2xl font-display font-bold text-espresso-900 truncate">
+                  Potes dos Sonhos
                 </h2>
-                <span className="text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 dark:border-maldives-300/35">
+                <span className="hidden sm:inline-block text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-maldives-100 text-maldives-800 border border-maldives-300 dark:border-maldives-300/35">
                   Juros Compostos Ativos
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-espresso-600 mt-1">
-                Destine aportes mensais para seus projetos de vida, edite nome, rentabilidade e observações a qualquer momento e acompanhe a projeção exata de conclusão.
+              <p className="text-xs sm:text-sm text-espresso-600 mt-0.5 hidden sm:block">
+                Destine aportes mensais para seus projetos de vida e acompanhe a projeção de conclusão.
               </p>
             </div>
           </div>
 
           <button
-            onClick={() => setIsCreating(!isCreating)}
-            className="px-4 py-2.5 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer shrink-0"
+            onClick={() => setIsCreating(true)}
+            className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer shrink-0"
           >
-            <span className="material-symbols-outlined text-[20px]">
-              {isCreating ? 'close' : 'add_circle'}
-            </span>
-            <span>{isCreating ? 'Fechar Formulário' : 'Novo Pote de Meta'}</span>
+            <span className="material-symbols-outlined text-[18px]">add_circle</span>
+            <span className="sm:hidden">Novo Pote</span>
+            <span className="hidden sm:inline">Novo Pote de Meta</span>
           </button>
         </div>
 
-        {/* Resumo Consolidado das Metas */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
-          <div className="p-4 rounded-2xl bg-maldives-50/80 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-between">
-            <div>
-              <span className="text-[11px] font-bold uppercase text-maldives-800 tracking-wider block">
-                Total Guardado nos Potes
+        {/* Resumo Consolidado Compacto em 3 Colunas */}
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-3.5 mt-3.5 sm:mt-5">
+          <div className="p-2 sm:p-4 rounded-2xl bg-maldives-50/80 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-between gap-2 min-w-0">
+            <div className="min-w-0 w-full">
+              <span className="text-[9.5px] sm:text-[11px] font-bold uppercase text-maldives-800 tracking-wider block truncate">
+                Guardado
               </span>
-              <span className="text-xl font-mono font-extrabold text-maldives-700 mt-0.5 block">
+              <span className="text-[11px] sm:text-xl font-mono font-extrabold tracking-tight text-maldives-700 mt-0.5 block truncate">
                 {formatCurrency(totalAccumulated)}
               </span>
-              <span className="text-[11px] text-espresso-600">
+              <span className="text-[11px] text-espresso-600 hidden sm:block">
                 de {formatCurrency(totalTarget)} em metas
               </span>
             </div>
-            <span className="material-symbols-outlined text-maldives-500 text-3xl">
+            <span className="material-symbols-outlined text-maldives-500 text-3xl hidden sm:block">
               savings
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-sage-50 border border-sage-200 dark:border-sage-300/25 flex items-center justify-between">
-            <div>
-              <span className="text-[11px] font-bold uppercase text-sage-600 tracking-wider block">
-                Aporte Mensal Destinado
+          <div className="p-2 sm:p-4 rounded-2xl bg-sage-50 border border-sage-200 dark:border-sage-300/25 flex items-center justify-between gap-2 min-w-0">
+            <div className="min-w-0 w-full">
+              <span className="text-[9.5px] sm:text-[11px] font-bold uppercase text-sage-600 tracking-wider block truncate">
+                Aporte/mês
               </span>
-              <span className="text-xl font-mono font-extrabold text-espresso-900 mt-0.5 block">
-                {formatCurrency(totalMonthlyPlanned)}/mês
+              <span className="text-[11px] sm:text-xl font-mono font-extrabold tracking-tight text-espresso-900 mt-0.5 block truncate">
+                {formatCurrency(totalMonthlyPlanned)}
               </span>
-              <span className="text-[11px] text-espresso-600">
-                Somando {goals.length} {goals.length === 1 ? 'meta ativa' : 'metas ativas'}
+              <span className="text-[11px] text-espresso-600 hidden sm:block">
+                {goals.length} {goals.length === 1 ? 'meta ativa' : 'metas ativas'}
               </span>
             </div>
-            <span className="material-symbols-outlined text-sage-500 text-3xl">
+            <span className="material-symbols-outlined text-sage-500 text-3xl hidden sm:block">
               calendar_Check
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-terracotta-50 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-between">
-            <div>
-              <span className="text-[11px] font-bold uppercase text-terracotta-700 tracking-wider block">
-                Progresso Global
+          <div className="p-2 sm:p-4 rounded-2xl bg-terracotta-50 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-between gap-2 min-w-0">
+            <div className="min-w-0 w-full">
+              <span className="text-[9.5px] sm:text-[11px] font-bold uppercase text-terracotta-700 tracking-wider block truncate">
+                Progresso
               </span>
-              <span className="text-xl font-mono font-extrabold text-terracotta-600 mt-0.5 block">
+              <span className="text-[11px] sm:text-xl font-mono font-extrabold tracking-tight text-terracotta-600 mt-0.5 block truncate">
                 {formatPercent(totalTarget > 0 ? (totalAccumulated / totalTarget) * 100 : 0)}
               </span>
-              <span className="text-[11px] text-espresso-600">
+              <span className="text-[11px] text-espresso-600 hidden sm:block">
                 Faltam {formatCurrency(Math.max(0, totalTarget - totalAccumulated))}
               </span>
             </div>
-            <span className="material-symbols-outlined text-terracotta-500 text-3xl">
+            <span className="material-symbols-outlined text-terracotta-500 text-3xl hidden sm:block">
               auto_graph
             </span>
           </div>
         </div>
 
-        {/* Formulário de Criação de Nova Meta */}
-        <AnimatePresence>
-          {isCreating && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-5 p-5 rounded-2xl bg-oat-100 dark:bg-oat-200/50 border border-maldives-300 dark:border-maldives-300/35 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-display font-bold text-espresso-900 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-maldives-600 text-lg">
-                      temp_preferences_custom
-                    </span>
-                    <span>Criar Novo Pote dos Sonhos</span>
-                  </h3>
-                </div>
-
+        {/* Modal Bottom Sheet: Criar Novo Pote dos Sonhos */}
+        <PwaSheetModal
+          isOpen={isCreating}
+          onClose={() => setIsCreating(false)}
+          title="Novo Pote dos Sonhos"
+          subtitle="Defina meta, valor inicial e aporte mensal"
+          icon="temp_preferences_custom"
+          tone="maldives"
+          maxWidthClass="max-w-xl"
+        >
+          <div className="space-y-4">
                 {/* Escolha de Ícone */}
                 <div>
                   <label className="text-xs font-semibold text-espresso-700 mb-1.5 block">
                     Ícone do Pote
                   </label>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {GOAL_ICONS.map((item) => (
                       <button
                         key={item.id}
                         type="button"
                         onClick={() => setIcon(item.id)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition cursor-pointer ${
+                        className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 border transition cursor-pointer ${
                           icon === item.id
                             ? 'bg-maldives-500 text-white border-maldives-600/40 shadow-sm'
                             : 'bg-oat-50 text-espresso-700 border-oat-300 dark:border-white/[0.08] hover:border-maldives-400'
                         }`}
                       >
-                        <span className="material-symbols-outlined text-[16px]">
+                        <span className="material-symbols-outlined text-[15px]">
                           {item.id}
                         </span>
                         <span>{item.label}</span>
@@ -250,23 +249,24 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="sm:col-span-2">
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
                       Nome da Meta / Projeto
                     </label>
                     <input
                       type="text"
+                      autoFocus
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Ex: Viagem p/ Itália, Reforma da Cozinha..."
+                      placeholder="Ex: Viagem p/ Itália, Reserva..."
                       className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
 
                   <div>
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Valor Alvo Total (R$)
+                      Valor Alvo (R$)
                     </label>
                     <input
                       type="number"
@@ -282,7 +282,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
 
                   <div>
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Valor Já Guardado (R$)
+                      Já Guardado (R$)
                     </label>
                     <input
                       type="number"
@@ -316,7 +316,7 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
 
                   <div>
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Rentabilidade Esperada (% a.a.)
+                      Rentabilidade (% a.a.)
                     </label>
                     <input
                       type="number"
@@ -337,15 +337,15 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                       type="text"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Ex: Aplicado em CDB 110% CDI / Tesouro IPCA+"
+                      placeholder="Ex: CDB 110% CDI..."
                       className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                     />
                   </div>
                 </div>
 
                 {/* Vínculo com a planilha mensal */}
-                <div className="p-3.5 rounded-xl bg-oat-50 border border-oat-300 dark:border-white/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <label className="flex items-center gap-2.5 cursor-pointer">
+                <div className="p-3 rounded-xl bg-oat-100/70 dark:bg-oat-200/40 border border-oat-200 dark:border-white/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={syncWithBudget}
@@ -353,22 +353,19 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                       className="w-4 h-4 accent-maldives-500 rounded cursor-pointer"
                     />
                     <span className="text-xs font-semibold text-espresso-800">
-                      Contabilizar aporte automaticamente na Planilha Mensal de Gastos & Aportes
+                      Lançar aporte automaticamente na planilha mensal
                     </span>
                   </label>
 
                   {syncWithBudget && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-espresso-600">Pilar:</span>
-                      <select
-                        value={budgetCategory}
-                        onChange={(e) => setBudgetCategory(e.target.value as ExpenseCategory)}
-                        className="bg-oat-100 border border-oat-300 rounded-lg px-2.5 py-1 text-xs font-bold text-espresso-900"
-                      >
-                        <option value="investimento">💎 Investimentos (20%)</option>
-                        <option value="estilo">☕ Estilo de Vida (30%)</option>
-                      </select>
-                    </div>
+                    <select
+                      value={budgetCategory}
+                      onChange={(e) => setBudgetCategory(e.target.value as ExpenseCategory)}
+                      className="compact-select bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-2.5 py-1 text-xs font-bold text-espresso-900"
+                    >
+                      <option value="investimento">💎 Investimentos</option>
+                      <option value="estilo">☕ Estilo de Vida</option>
+                    </select>
                   )}
                 </div>
 
@@ -384,15 +381,13 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                     type="button"
                     onClick={handleCreateGoal}
                     disabled={!title.trim() || !targetAmount}
-                    className="px-5 py-2 rounded-xl bg-maldives-500 hover:bg-maldives-600 disabled:opacity-40 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-maldives-500 hover:bg-maldives-600 disabled:opacity-40 text-white text-xs sm:text-sm font-bold transition shadow-sm cursor-pointer"
                   >
-                    Salvar Pote dos Sonhos
+                    Salvar Pote
                   </button>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          </div>
+        </PwaSheetModal>
       </div>
 
       {/* Grid de Cards das Metas */}

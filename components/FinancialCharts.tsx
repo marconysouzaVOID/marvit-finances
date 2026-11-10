@@ -267,7 +267,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
               <h2 className="text-xl sm:text-2xl font-display font-bold text-espresso-900 leading-snug">
                 Gráficos & Análise de Gastos
               </h2>
-              <p className="text-xs sm:text-sm text-espresso-600">
+              <p className="text-xs sm:text-sm text-espresso-600 hidden sm:block">
                 Visualização comparativa dos seus gastos mensais, médias por categoria e ranking de despesas.
               </p>
             </div>

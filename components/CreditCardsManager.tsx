@@ -11,6 +11,7 @@ import { formatCurrency, formatMonthKeyLabel, formatPercent, inferCardPurchaseTa
 import { parsePdfInvoice, isPdfFile, parsePastedInvoiceText } from '../utils/pdfInvoiceParser';
 import { InteractiveAsset } from './InteractiveAsset';
 import { LifestyleDailyCalendar } from './LifestyleDailyCalendar';
+import { PwaSheetModal } from './PwaSheetModal';
 
 interface CreditCardsManagerProps {
   expenses: ExpenseItem[];
@@ -280,6 +281,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   );
   const csvFileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDeleteCardModalOpen, setIsDeleteCardModalOpen] = useState(false);
+  const [isAddTxModalOpen, setIsAddTxModalOpen] = useState(false);
+  const [isImportMenuOpen, setIsImportMenuOpen] = useState(false);
 
   // Todos os itens do pilar Estilo de Vida que pertencem à subcategoria 'cartao'
   const creditCards = useMemo(
@@ -392,11 +395,15 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
       ? (totalCardsInvoice / lifestyleIdealAmount) * 100
       : 0;
 
-  const handleSelectCard = (id: string) => {
+  const handleSelectCard = (id: string, openAddExpenseModal = false) => {
     setActiveCardId(id);
     setIsEditingCardMeta(false);
+    setIsImportMenuOpen(false);
     setCsvPreview(null);
     if (onSelectCardId) onSelectCardId(id);
+    if (openAddExpenseModal) {
+      setIsAddTxModalOpen(true);
+    }
   };
 
   const handleCreateCard = (e: React.FormEvent) => {
@@ -528,6 +535,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     setTxDesc('');
     setTxAmount('');
     setTxDate('');
+    setIsAddTxModalOpen(false);
+    showToast?.(`Despesa lançada em ${activeCard.name}!`);
   };
 
   const handleUpdateTransaction = (
@@ -827,32 +836,34 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
       />
 
       {/* Sub-navegador da aba Cartões & Estilo: Faturas vs Calendário Diário */}
-      <div className="flex items-center justify-between gap-3 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1.5 rounded-2xl shadow-xs">
-        <div className="flex items-center gap-1.5">
+      <div className="flex items-center justify-between gap-2 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1 rounded-2xl shadow-xs">
+        <div className="grid grid-cols-2 sm:flex items-center gap-1 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setCardsSubView('invoices')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
               cardsSubView === 'invoices'
                 ? 'bg-terracotta-500 text-white shadow-xs'
                 : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
             }`}
           >
-            <span className="material-symbols-outlined text-[17px]">credit_card</span>
-            <span>Faturas & Lançamentos</span>
+            <span className="material-symbols-outlined text-[16px] sm:text-[17px]">credit_card</span>
+            <span className="sm:hidden">Faturas</span>
+            <span className="hidden sm:inline">Faturas & Lançamentos</span>
           </button>
 
           <button
             type="button"
             onClick={() => setCardsSubView('calendar')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
               cardsSubView === 'calendar'
                 ? 'bg-terracotta-500 text-white shadow-xs'
                 : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
             }`}
           >
-            <span className="material-symbols-outlined text-[17px]">calendar_month</span>
-            <span>Calendário Diário de Gastos</span>
+            <span className="material-symbols-outlined text-[16px] sm:text-[17px]">calendar_month</span>
+            <span className="sm:hidden">Calendário</span>
+            <span className="hidden sm:inline">Calendário Diário de Gastos</span>
           </button>
         </div>
 
@@ -875,266 +886,228 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           }}
         />
       ) : (
-        <div className="space-y-5">
-          {/* Cabeçalho Principal da Aba de Cartões de Estilo de Vida */}
+        <div className="space-y-4 sm:space-y-5">
+          {/* Cabeçalho Principal Enxuto da Aba Cartões */}
           <div className="bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200 dark:border-white/[0.06]">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <InteractiveAsset
-                  src="/assets/marvit-estilo.png"
-                  alt="Cartões de Crédito • Estilo de Vida"
-                  size="md"
-                  tone="terracotta"
-                  badgeIcon="credit_card"
-                />
+            <div className="flex items-center justify-between gap-3 pb-3.5 sm:pb-5 border-b border-oat-200 dark:border-white/[0.06]">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="hidden sm:block">
+                  <InteractiveAsset
+                    src="/assets/marvit-estilo.png"
+                    alt="Cartões de Crédito • Estilo de Vida"
+                    size="md"
+                    tone="terracotta"
+                    badgeIcon="credit_card"
+                  />
+                </div>
+                <div className="w-9 h-9 rounded-2xl bg-terracotta-50 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-center shrink-0 sm:hidden">
+                  <span className="material-symbols-outlined text-terracotta-600 text-lg">
+                    credit_card
+                  </span>
+                </div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="text-lg sm:text-2xl font-display font-bold text-espresso-900">
-                      Cartões de Crédito • Estilo de Vida
-                    </h2>
-                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-terracotta-100 text-terracotta-700 border border-terracotta-200 dark:border-terracotta-300/35">
-                      Subcategoria & Fatura CSV
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-espresso-600 mt-1">
-                    Gerencie os gastos individualizados ou importe o arquivo <strong>.CSV</strong> da fatura do cartão selecionado. O total atualiza automaticamente o pilar <strong>Estilo de Vida</strong>!
+                  <h2 className="text-base sm:text-2xl font-display font-bold text-espresso-900 truncate">
+                    Cartões de Crédito
+                  </h2>
+                  <p className="text-xs sm:text-sm text-espresso-600 mt-0.5 hidden sm:block">
+                    Gerencie faturas ou importe arquivos PDF/CSV. O total atualiza o pilar <strong>Estilo de Vida</strong>.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 flex-wrap shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setCardsSubView('calendar')}
-                  className="px-3.5 py-2.5 rounded-2xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 font-bold text-xs sm:text-sm border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                  title="Visualizar gastos de cada dia no calendário"
-                >
-                  <span className="material-symbols-outlined text-[18px] text-terracotta-500">
-                    calendar_month
-                  </span>
-                  <span>Ver Calendário Diário</span>
-                </button>
+              <button
+                type="button"
+                onClick={() => setIsCreatingCard(true)}
+                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm cursor-pointer shrink-0"
+              >
+                <span className="material-symbols-outlined text-[18px]">add_card</span>
+                <span className="sm:hidden">Novo Cartão</span>
+                <span className="hidden sm:inline">+ Novo Cartão Global</span>
+              </button>
+            </div>
 
-                <button
-                  type="button"
-                  onClick={() => setIsCreatingCard(!isCreatingCard)}
-                  className="px-4 py-2.5 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[20px]">
-                    {isCreatingCard ? 'close' : 'add_card'}
+            {/* Resumo Compacto em 3 Colunas (economiza espaço vertical no mobile) */}
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-3.5 mt-3.5 sm:mt-5">
+              <div className="p-2 sm:p-4 rounded-2xl bg-terracotta-50/90 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-between gap-2 min-w-0">
+                <div className="min-w-0 w-full">
+                  <span className="text-[9.5px] sm:text-[11px] font-bold uppercase text-terracotta-700 tracking-wider block truncate">
+                    Faturas
                   </span>
-                  <span>
-                    {isCreatingCard ? 'Fechar Formulário' : '+ Novo Cartão Global'}
+                  <span className="text-[11px] sm:text-xl font-mono font-extrabold tracking-tight text-terracotta-600 mt-0.5 block truncate">
+                    {formatCurrency(totalCardsInvoice)}
                   </span>
-                </button>
+                  <span className="text-[11px] text-espresso-600 hidden sm:block">
+                    {creditCards.length} {creditCards.length === 1 ? 'cartão ativo' : 'cartões ativos'}
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-terracotta-500 text-2xl sm:text-3xl shrink-0 hidden sm:block">
+                  credit_card
+                </span>
+              </div>
+
+              <div className="p-2 sm:p-4 rounded-2xl bg-maldives-50/80 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-between gap-2 min-w-0">
+                <div className="min-w-0 w-full">
+                  <span className="text-[9.5px] sm:text-[11px] font-bold uppercase text-maldives-800 tracking-wider block truncate">
+                    Do Teto
+                  </span>
+                  <span className="text-[11px] sm:text-xl font-mono font-extrabold tracking-tight text-maldives-700 mt-0.5 block truncate">
+                    {formatPercent(cardsShareOfLifestyleCap)}
+                  </span>
+                  <span className="text-[11px] text-espresso-600 hidden sm:block">
+                    Teto: {formatCurrency(lifestyleIdealAmount)}
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-maldives-500 text-2xl sm:text-3xl shrink-0 hidden sm:block">
+                  pie_chart
+                </span>
+              </div>
+
+              <div className="p-2 sm:p-4 rounded-2xl bg-sage-50 border border-sage-200 dark:border-sage-300/25 flex items-center justify-between gap-2 min-w-0">
+                <div className="min-w-0 w-full">
+                  <span className="text-[9.5px] sm:text-[11px] font-bold uppercase text-sage-600 tracking-wider block truncate">
+                    Compras
+                  </span>
+                  <span className="text-[11px] sm:text-xl font-mono font-extrabold tracking-tight text-espresso-900 mt-0.5 block truncate">
+                    {totalIndividualTransactions}
+                  </span>
+                  <span className="text-[11px] text-espresso-600 hidden sm:block">
+                    Pix/direto: {formatCurrency(Math.max(0, lifestyleTotalSpent - totalCardsInvoice))}
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-sage-500 text-2xl sm:text-3xl shrink-0 hidden sm:block">
+                  receipt_long
+                </span>
               </div>
             </div>
 
-        {/* Resumo Consolidado dos Cartões no Pilar Estilo de Vida */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
-          <div className="p-4 rounded-2xl bg-terracotta-50/90 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-between">
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold uppercase text-terracotta-700 tracking-wider block">
-                Total em Cartões (Estilo)
+        {/* Modal Bottom Sheet: Cadastrar Novo Cartão Global */}
+        <PwaSheetModal
+          isOpen={isCreatingCard}
+          onClose={() => setIsCreatingCard(false)}
+          title="Novo Cartão Global"
+          subtitle="Disponível em todos os meses com faturas isoladas"
+          icon="add_card"
+          tone="terracotta"
+          maxWidthClass="max-w-xl"
+        >
+          <form
+            onSubmit={(e) => {
+              handleCreateCard(e);
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-espresso-500 block mb-1.5">
+                Atalhos de Bancos:
               </span>
-              <span className="text-xl font-mono font-extrabold text-terracotta-600 mt-0.5 block truncate">
-                {formatCurrency(totalCardsInvoice)}
-              </span>
-              <span className="text-[11px] text-espresso-600">
-                Em {creditCards.length}{' '}
-                {creditCards.length === 1 ? 'cartão ativo' : 'cartões ativos'}
-              </span>
-            </div>
-            <span className="material-symbols-outlined text-terracotta-500 text-3xl shrink-0">
-              credit_card
-            </span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-maldives-50/80 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-between">
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold uppercase text-maldives-800 tracking-wider block">
-                Ocupação do Teto Estilo de Vida
-              </span>
-              <span className="text-xl font-mono font-extrabold text-maldives-700 mt-0.5 block truncate">
-                {formatPercent(cardsShareOfLifestyleCap)}
-              </span>
-              <span className="text-[11px] text-espresso-600">
-                Teto do pilar: {formatCurrency(lifestyleIdealAmount)}
-              </span>
-            </div>
-            <span className="material-symbols-outlined text-maldives-500 text-3xl shrink-0">
-              pie_chart
-            </span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-sage-50 border border-sage-200 dark:border-sage-300/25 flex items-center justify-between">
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold uppercase text-sage-600 tracking-wider block">
-                Gastos Individualizados
-              </span>
-              <span className="text-xl font-mono font-extrabold text-espresso-900 mt-0.5 block truncate">
-                {totalIndividualTransactions}{' '}
-                {totalIndividualTransactions === 1 ? 'item' : 'itens'}
-              </span>
-              <span className="text-[11px] text-espresso-600">
-                Outros gastos diretos/Pix:{' '}
-                {formatCurrency(Math.max(0, lifestyleTotalSpent - totalCardsInvoice))}
-              </span>
-            </div>
-            <span className="material-symbols-outlined text-sage-500 text-3xl shrink-0">
-              receipt_long
-            </span>
-          </div>
-        </div>
-
-        {/* Formulário de Criação de Novo Cartão de Crédito Global */}
-        <AnimatePresence>
-          {isCreatingCard && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <form
-                onSubmit={handleCreateCard}
-                className="mt-5 p-4 sm:p-5 rounded-2xl bg-oat-100 dark:bg-oat-200/50 border border-terracotta-300 dark:border-terracotta-300/35 space-y-4 shadow-sm"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-oat-200 dark:border-white/[0.06] pb-3">
-                  <div className="text-sm font-display font-bold text-espresso-900 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-terracotta-600 text-lg">
-                      language
-                    </span>
-                    <span>Cadastrar Cartão de Crédito Global</span>
-                  </div>
-                  <span className="text-[11px] font-semibold bg-terracotta-100/70 text-terracotta-800 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[13px]">all_inclusive</span>
-                    Disponível em todos os meses
-                  </span>
-                </div>
-
-                <p className="text-xs text-espresso-600 leading-relaxed">
-                  Ao cadastrar este cartão, ele estará pronto para uso em <strong>todos os meses</strong> (passados e futuros). As faturas, compras e pagamentos de cada mês são estritamente isolados e independentes.
-                </p>
-
-                {/* Atalhos Rápidos de Bancos Brasileiros */}
-                <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-espresso-500 block mb-1.5">
-                    Modelos Rápidos de Bancos:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {BANK_PRESETS.map((p) => (
-                      <button
-                        key={p.brand}
-                        type="button"
-                        onClick={() => {
-                          setNewCardName(p.name);
-                          setNewCardLimit(p.limit);
-                          setNewCardDueDay(p.dueDay);
-                          setNewCardClosingDay(p.closingDay);
-                        }}
-                        className={`text-xs px-2.5 py-1 rounded-xl font-bold border transition cursor-pointer ${p.badgeClass} shadow-2xs`}
-                        title={`Preencher dados com ${p.name}`}
-                      >
-                        {p.label} (Venc. {p.dueDay} • Fecha {p.closingDay})
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div>
-                    <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Nome do Cartão / Banco
-                    </label>
-                    <input
-                      type="text"
-                      value={newCardName}
-                      onChange={(e) => setNewCardName(e.target.value)}
-                      placeholder="Ex: Cartão Nubank, Itaú, Inter, XP..."
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Meta / Limite Global (R$)
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="100"
-                      value={newCardLimit}
-                      onChange={(e) =>
-                        setNewCardLimit(
-                          e.target.value === '' ? '' : Number(e.target.value)
-                        )
-                      }
-                      placeholder="Ex: 1500"
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Dia Vencimento (1 a 31)
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="31"
-                      value={newCardDueDay}
-                      onChange={(e) =>
-                        setNewCardDueDay(
-                          e.target.value === '' ? '' : Number(e.target.value)
-                        )
-                      }
-                      placeholder="Ex: 10"
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-espresso-700 mb-1 block" title="Dia que fecha a fatura (ex: dia 25)">
-                      Dia Fechamento (1 a 31)
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="31"
-                      value={newCardClosingDay}
-                      onChange={(e) =>
-                        setNewCardClosingDay(
-                          e.target.value === '' ? '' : Number(e.target.value)
-                        )
-                      }
-                      placeholder="Ex: 25"
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-2 pt-2">
+              <div className="flex flex-wrap gap-1.5">
+                {BANK_PRESETS.map((p) => (
                   <button
+                    key={p.brand}
                     type="button"
-                    onClick={() => setIsCreatingCard(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 transition cursor-pointer"
+                    onClick={() => {
+                      setNewCardName(p.name);
+                      setNewCardLimit(p.limit);
+                      setNewCardDueDay(p.dueDay);
+                      setNewCardClosingDay(p.closingDay);
+                    }}
+                    className={`text-xs px-2.5 py-1 rounded-xl font-bold border transition cursor-pointer ${p.badgeClass} shadow-2xs`}
                   >
-                    Cancelar
+                    {p.label}
                   </button>
-                  <button
-                    type="submit"
-                    disabled={!newCardName.trim()}
-                    className="px-5 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-40 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">save</span>
-                    <span>Salvar Cartão Global</span>
-                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="sm:col-span-2">
+                <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                  Nome do Cartão / Banco
+                </label>
+                <input
+                  type="text"
+                  autoFocus
+                  value={newCardName}
+                  onChange={(e) => setNewCardName(e.target.value)}
+                  placeholder="Ex: Cartão Nubank, Inter, Itaú..."
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                  Teto Mensal (R$)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="100"
+                  value={newCardLimit}
+                  onChange={(e) =>
+                    setNewCardLimit(e.target.value === '' ? '' : Number(e.target.value))
+                  }
+                  placeholder="1500"
+                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                    Vencimento
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={newCardDueDay}
+                    onChange={(e) =>
+                      setNewCardDueDay(e.target.value === '' ? '' : Number(e.target.value))
+                    }
+                    placeholder="10"
+                    className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                  />
                 </div>
-              </form>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <div>
+                  <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                    Fechamento
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={newCardClosingDay}
+                    onChange={(e) =>
+                      setNewCardClosingDay(
+                        e.target.value === '' ? '' : Number(e.target.value)
+                      )
+                    }
+                    placeholder="25"
+                    className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsCreatingCard(false)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 transition cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={!newCardName.trim()}
+                className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-40 text-white text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[17px]">save</span>
+                <span>Salvar Cartão</span>
+              </button>
+            </div>
+          </form>
+        </PwaSheetModal>
 
         {/* Seletor rápido de subcategoria para converter itens existentes de Estilo de Vida em Cartão de Crédito */}
         {directLifestyleItems.length > 0 && (
@@ -1178,32 +1151,36 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             credit_card
           </span>
           <h3 className="text-base sm:text-lg font-display font-bold text-espresso-900">
-            Nenhum item marcado na subcategoria Cartão de Crédito ainda
+            Nenhum cartão cadastrado ainda
           </h3>
           <p className="text-xs text-espresso-600 max-w-md mx-auto">
-            Toque em um dos seus itens de <strong>Estilo de Vida</strong> acima para marcá-lo como Cartão de Crédito, ou clique em <strong>“Novo Cartão em Estilo de Vida”</strong>.
+            Toque em <strong>Novo Cartão</strong> para começar.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-          {/* Coluna Esquerda (4 cols no desktop): Cartões de Crédito Disponíveis */}
-          <div className="lg:col-span-4 space-y-3">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+          {/* Carrossel Horizontal no Mobile / Coluna Esquerda no Desktop */}
+          <div className="lg:col-span-4 space-y-2.5 sm:space-y-3 min-w-0">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-sm text-terracotta-500">
-                  language
+                  credit_card
                 </span>
                 <span className="text-xs font-bold uppercase tracking-wider text-espresso-700">
-                  Cartões Globais ({creditCards.length})
+                  Seus Cartões ({creditCards.length})
                 </span>
               </div>
-              <span className="text-[10px] font-semibold text-espresso-600 bg-oat-200/80 px-2 py-0.5 rounded-full inline-flex items-center gap-0.5">
+              <span className="text-[10.5px] font-semibold text-terracotta-600 lg:hidden flex items-center gap-1">
+                <span className="material-symbols-outlined text-[13px]">touch_app</span>
+                Toque para lançar
+              </span>
+              <span className="text-[10px] font-semibold text-espresso-600 bg-oat-200/80 px-2 py-0.5 rounded-full hidden lg:inline-flex items-center gap-0.5">
                 <span className="material-symbols-outlined text-[11px]">all_inclusive</span>
                 Em todos os meses
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+            <div className="flex overflow-x-auto lg:grid lg:grid-cols-1 gap-3 pb-1.5 lg:pb-0 -mx-1 px-1 lg:mx-0 lg:px-0 snap-x snap-mandatory overscroll-x-contain">
               {creditCards.map((card) => {
                 const isSelected = activeCard?.id === card.id;
                 const txCount = card.cardTransactions?.length || 0;
@@ -1217,65 +1194,55 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 return (
                   <motion.div
                     key={card.id}
-                    whileHover={{ y: -2 }}
-                    onClick={() => handleSelectCard(card.id)}
-                    className={`p-4 rounded-3xl border transition cursor-pointer relative overflow-hidden ${
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleSelectCard(card.id, true)}
+                    className={`w-[78vw] max-w-[290px] sm:w-[270px] lg:w-auto lg:max-w-none shrink-0 snap-start p-4 rounded-3xl border transition cursor-pointer relative overflow-hidden ${
                       isSelected
                         ? 'bg-gradient-to-br from-terracotta-50/95 via-oat-50 to-maldives-50/50 dark:from-terracotta-50/70 dark:via-oat-50 dark:to-maldives-50/35 border-terracotta-500/80 shadow-cozy'
                         : 'bg-oat-50/90 border-oat-300 dark:border-white/[0.07] hover:border-terracotta-300/60'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
                         <div
-                          className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border ${
+                          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center shrink-0 border ${
                             isSelected
                               ? 'bg-terracotta-500 text-white border-terracotta-600'
                               : 'bg-terracotta-50 text-terracotta-600 border-terracotta-200'
                           }`}
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-symbols-outlined text-lg sm:text-xl">
                             credit_card
                           </span>
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <h3 className="text-sm font-display font-bold text-espresso-900 truncate">
                             {card.name}
                           </h3>
-                          <div className="flex items-center gap-2 text-[11px] text-espresso-500 font-mono">
+                          <div className="flex items-center gap-1.5 text-[11px] text-espresso-500 font-mono">
                             <span>
-                              {txCount} {txCount === 1 ? 'compra' : 'compras'}
+                              {txCount} {txCount === 1 ? 'item' : 'itens'}
                             </span>
                             {card.cardDueDay && (
-                              <span>• Venc. dia {card.cardDueDay}</span>
+                              <span>• Dia {card.cardDueDay}</span>
                             )}
                           </div>
                         </div>
                       </div>
 
-                      {isSelected ? (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-terracotta-500 text-white shrink-0">
-                          Selecionado
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-600 border border-oat-300 shrink-0 flex items-center gap-0.5">
-                          <span className="material-symbols-outlined text-[11px]">language</span>
-                          Global
-                        </span>
-                      )}
+                      <span className="w-7 h-7 rounded-full bg-terracotta-500/12 text-terracotta-600 border border-terracotta-400/30 shrink-0 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[16px]">add</span>
+                      </span>
                     </div>
 
-                    <div className="mt-3.5 flex items-baseline justify-between">
+                    <div className="mt-3 flex items-baseline justify-between">
                       <div>
-                        <span className="text-[10px] font-bold uppercase text-espresso-500 block">
-                          Total na Planilha
-                        </span>
                         <span className="text-lg font-mono font-extrabold text-espresso-900">
                           {card.amount > 0 ? (
                             formatCurrency(card.amount)
                           ) : (
                             <span className="text-xs font-sans font-bold text-sage-600 flex items-center gap-1">
-                              <span>🍃 Fatura Zerada</span>
+                              <span>🍃 Zerada</span>
                             </span>
                           )}
                         </span>
@@ -1283,24 +1250,21 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                       {card.cardLimit && card.cardLimit > 0 && (
                         <div className="text-right">
-                          <span className="text-[10px] text-espresso-500 block">
-                            Teto Planejado
-                          </span>
                           <span
-                            className={`text-xs font-mono font-bold ${
+                            className={`text-[11px] font-mono font-bold ${
                               isOverCardLimit
                                 ? 'text-terracotta-600'
-                                : 'text-espresso-700'
+                                : 'text-espresso-500'
                             }`}
                           >
-                            {formatCurrency(card.cardLimit)}
+                            /{formatCurrency(card.cardLimit)}
                           </span>
                         </div>
                       )}
                     </div>
 
                     {card.cardLimit && card.cardLimit > 0 && (
-                      <div className="w-full bg-oat-200 dark:bg-white/[0.08] rounded-full h-2 mt-2 overflow-hidden p-0.5 border border-oat-300 dark:border-white/[0.04]">
+                      <div className="w-full bg-oat-200 dark:bg-white/[0.08] rounded-full h-1.5 mt-2 overflow-hidden border border-oat-300 dark:border-white/[0.04]">
                         <div
                           className={`h-full rounded-full transition-all ${
                             isOverCardLimit
@@ -1315,25 +1279,16 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 );
               })}
             </div>
-
-            <button
-              type="button"
-              onClick={() => setIsCreatingCard(true)}
-              className="w-full p-3 rounded-2xl border border-dashed border-oat-300 dark:border-white/[0.12] hover:border-terracotta-400 bg-oat-100/60 dark:bg-oat-200/35 hover:bg-terracotta-50/50 text-espresso-700 hover:text-terracotta-700 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
-            >
-              <span className="material-symbols-outlined text-[18px]">add_card</span>
-              <span>+ Cadastrar Outro Cartão Global</span>
-            </button>
           </div>
 
-          {/* Coluna Direita (8 cols no desktop): Detalhamento e Lançamento de Gastos Individualizados do Cartão Ativo */}
+          {/* Coluna Direita (8 cols no desktop): Detalhamento & Ações do Cartão Ativo */}
           {activeCard && (
-            <div className="lg:col-span-8 bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden space-y-5">
-              {/* Cabeçalho do Cartão Selecionado */}
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-11 h-11 rounded-2xl bg-terracotta-50 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-center shrink-0 shadow-2xs">
-                    <span className="material-symbols-outlined text-terracotta-600 text-2xl">
+            <div className="lg:col-span-8 bg-oat-50/95 border border-oat-300/90 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-visible space-y-4">
+              {/* Cabeçalho Enxuto do Cartão Selecionado */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-oat-200 dark:border-white/[0.06]">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-2xl bg-terracotta-50 border border-terracotta-200 dark:border-terracotta-300/25 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-terracotta-600 text-xl">
                       receipt_long
                     </span>
                   </div>
@@ -1342,126 +1297,160 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       <h3 className="text-base sm:text-lg font-display font-bold text-espresso-900 truncate">
                         {activeCard.name}
                       </h3>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 dark:border-white/[0.07] flex items-center gap-1 shrink-0">
-                        <span className="material-symbols-outlined text-[12px] text-terracotta-500">
-                          language
-                        </span>
-                        <span>Cartão Global</span>
-                      </span>
                       {activeCard.cardDueDay && (
-                        <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 dark:border-white/[0.07] shrink-0">
-                          Venc. dia {activeCard.cardDueDay}
-                          {activeCard.cardClosingDay ? ` • Fecha dia ${activeCard.cardClosingDay}` : ''}
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 dark:border-white/[0.07] shrink-0">
+                          Venc. {activeCard.cardDueDay}
+                          {activeCard.cardClosingDay ? ` • Fecha ${activeCard.cardClosingDay}` : ''}
                         </span>
                       )}
                     </div>
                     <p className="text-xs text-espresso-600 mt-0.5">
-                      Fatura de {selectedMonthKey ? formatMonthKeyLabel(selectedMonthKey) : 'deste mês'}:{' '}
+                      {selectedMonthKey ? formatMonthKeyLabel(selectedMonthKey) : 'Mês'}:{' '}
                       <strong className="font-mono text-terracotta-600">
                         {formatCurrency(activeCard.amount)}
-                      </strong>{' '}
-                      • Soma dos lançamentos:{' '}
-                      <strong className="font-mono text-maldives-700">
-                        {formatCurrency(sumOfActiveCardItems)}
                       </strong>
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => csvFileInputRef.current?.click()}
-                    disabled={isParsingPdf}
-                    className="px-3 py-1.5 rounded-xl bg-maldives-500 hover:bg-maldives-600 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-xs cursor-pointer"
-                    title="Selecionar arquivo da fatura (PDF do Banco Inter/outros ou CSV do Nubank)"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">
-                      {isParsingPdf ? 'progress_activity' : 'upload_file'}
-                    </span>
-                    <span>
-                      {isParsingPdf
-                        ? 'Lendo Fatura...'
-                        : 'Importar Fatura (PDF / CSV)'}
-                    </span>
-                  </button>
+                {/* Barra Limpa de Ações: + Nova Despesa, Menu Importar, Ajustar, Excluir */}
+                <div className="flex items-center justify-between sm:justify-end gap-1.5 w-full sm:w-auto relative">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddTxModalOpen(true)}
+                      className="px-3 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold flex items-center gap-1 transition shadow-xs cursor-pointer whitespace-nowrap"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">add</span>
+                      <span>Despesa</span>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={() => csvFileInputRef.current?.click()}
-                    className="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-500/15 dark:hover:bg-orange-500/25 dark:text-orange-300 dark:border-orange-400/30 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                    title="Importar fatura em PDF do Banco Inter (suporte a senha com CPF)"
-                  >
-                    <span className="material-symbols-outlined text-[16px] text-orange-600 dark:text-orange-400">
-                      picture_as_pdf
-                    </span>
-                    <span>Fatura Inter (PDF)</span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsImportMenuOpen(true)}
+                      disabled={isParsingPdf}
+                      className="px-2.5 sm:px-3 py-2 rounded-xl bg-maldives-500 hover:bg-maldives-600 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1 transition shadow-xs cursor-pointer whitespace-nowrap"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        {isParsingPdf ? 'progress_activity' : 'upload_file'}
+                      </span>
+                      <span>{isParsingPdf ? 'Lendo...' : 'Importar'}</span>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setPastedInvoiceModalOpen(true)}
-                    className="px-2.5 py-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border border-oat-300 dark:border-white/[0.08] text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                    title="Colar texto de extrato ou fatura copiado do app ou PDF"
-                  >
-                    <span className="material-symbols-outlined text-[16px] text-espresso-600">
-                      content_paste
-                    </span>
-                    <span>Colar Texto</span>
-                  </button>
+                    <PwaSheetModal
+                      isOpen={isImportMenuOpen}
+                      onClose={() => setIsImportMenuOpen(false)}
+                      title={`Importar em ${activeCard.name}`}
+                      subtitle="Escolha a origem da fatura"
+                      icon="upload_file"
+                      tone="maldives"
+                      maxWidthClass="max-w-md"
+                    >
+                      <div className="space-y-2.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsImportMenuOpen(false);
+                            csvFileInputRef.current?.click();
+                          }}
+                          className="w-full p-3.5 rounded-2xl bg-oat-100/80 dark:bg-oat-200/50 hover:bg-oat-200 border border-oat-200 dark:border-white/[0.08] text-left flex items-center gap-3 transition cursor-pointer"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-orange-500/15 text-orange-500 flex items-center justify-center shrink-0">
+                            <span className="material-symbols-outlined text-xl">
+                              picture_as_pdf
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-sm font-bold text-espresso-900 block">
+                              Arquivo PDF ou CSV
+                            </span>
+                            <span className="text-[11px] text-espresso-500">
+                              Banco Inter (PDF com senha) ou Nubank (.csv)
+                            </span>
+                          </div>
+                        </button>
 
-                  <button
-                    type="button"
-                    onClick={handleLoadSampleNubankCsv}
-                    className="px-2.5 py-1.5 rounded-xl bg-maldives-50 hover:bg-maldives-100 text-maldives-800 border border-maldives-300 dark:border-maldives-300/35 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                    title="Carregar fatura de exemplo Nubank_2026-11-01.csv neste cartão"
-                  >
-                    <span className="material-symbols-outlined text-[16px] text-maldives-600">
-                      description
-                    </span>
-                    <span>Exemplo Nubank (.csv)</span>
-                  </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsImportMenuOpen(false);
+                            setPastedInvoiceModalOpen(true);
+                          }}
+                          className="w-full p-3.5 rounded-2xl bg-oat-100/80 dark:bg-oat-200/50 hover:bg-oat-200 border border-oat-200 dark:border-white/[0.08] text-left flex items-center gap-3 transition cursor-pointer"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-maldives-500/15 text-maldives-600 flex items-center justify-center shrink-0">
+                            <span className="material-symbols-outlined text-xl">
+                              content_paste
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-sm font-bold text-espresso-900 block">
+                              Colar Texto da Fatura
+                            </span>
+                            <span className="text-[11px] text-espresso-500">
+                              Cole linhas copiadas do PDF ou app do banco
+                            </span>
+                          </div>
+                        </button>
 
-                  <button
-                    type="button"
-                    onClick={
-                      isEditingCardMeta
-                        ? () => setIsEditingCardMeta(false)
-                        : startEditingActiveCard
-                    }
-                    className="px-2.5 py-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-800 border border-oat-300 dark:border-white/[0.08] text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">
-                      {isEditingCardMeta ? 'close' : 'settings'}
-                    </span>
-                    <span>{isEditingCardMeta ? 'Fechar' : 'Ajustar'}</span>
-                  </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsImportMenuOpen(false);
+                            handleLoadSampleNubankCsv();
+                          }}
+                          className="w-full p-3.5 rounded-2xl bg-oat-100/80 dark:bg-oat-200/50 hover:bg-oat-200 border border-oat-200 dark:border-white/[0.08] text-left flex items-center gap-3 transition cursor-pointer"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-sage-500/15 text-sage-600 flex items-center justify-center shrink-0">
+                            <span className="material-symbols-outlined text-xl">
+                              description
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-sm font-bold text-espresso-900 block">
+                              Carregar Exemplo (.csv)
+                            </span>
+                            <span className="text-[11px] text-espresso-500">
+                              Testar com modelo pronto Nubank_2026-11-01.csv
+                            </span>
+                          </div>
+                        </button>
+                      </div>
+                    </PwaSheetModal>
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleConvertCardToDirect(activeCard)}
-                    className="p-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-500 hover:text-espresso-800 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
-                    title="Voltar este item para Gasto Direto/Pix"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">
-                      swap_horiz
-                    </span>
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={startEditingActiveCard}
+                      className="w-8 h-8 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-700 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
+                      title="Configurar cartão"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">settings</span>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setIsDeleteCardModalOpen(true)}
-                    className="p-1.5 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-terracotta-50 text-espresso-500 hover:text-terracotta-600 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
-                    title="Gerenciar exclusão deste cartão (global ou deste mês)"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">
-                      delete
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => handleConvertCardToDirect(activeCard)}
+                      className="w-8 h-8 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-oat-200 text-espresso-500 hover:text-espresso-800 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
+                      title="Converter para Gasto Direto/Pix"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">swap_horiz</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsDeleteCardModalOpen(true)}
+                      className="w-8 h-8 rounded-xl bg-oat-100 dark:bg-oat-200/75 hover:bg-terracotta-50 text-espresso-500 hover:text-terracotta-600 border border-oat-300 dark:border-white/[0.08] transition flex items-center justify-center cursor-pointer"
+                      title="Zerar ou excluir cartão"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">delete</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Painel de Pré-visualização e Confirmação da Importação de Fatura CSV */}
+              {/* Painel de Pré-visualização e Confirmação da Importação de Fatura CSV / PDF */}
               <AnimatePresence>
                 {csvPreview && (
                   <motion.div
@@ -1478,23 +1467,17 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           </span>
                           <div className="min-w-0">
                             <h4 className="text-xs sm:text-sm font-display font-bold text-espresso-900 truncate">
-                              Fatura {csvPreview.fileName.toLowerCase().endsWith('.pdf') ? 'PDF' : 'CSV'} Lida: {csvPreview.fileName}{' '}
-                              {csvPreview.detectedBank ? `(${csvPreview.detectedBank})` : ''}
+                              {csvPreview.fileName} {csvPreview.detectedBank ? `(${csvPreview.detectedBank})` : ''}
                             </h4>
                             <p className="text-[11px] text-espresso-600">
-                              Pronta para aplicar como fatura do cartão{' '}
-                              <strong>{activeCard.name}</strong>
+                              Aplicar em <strong>{activeCard.name}</strong>
                             </p>
                           </div>
                         </div>
 
                         <div className="text-left sm:text-right shrink-0">
-                          <span className="text-[10px] font-bold uppercase text-maldives-800 block">
-                            Valor Total da Fatura ({csvPreview.fileName.toLowerCase().endsWith('.pdf') ? 'PDF' : 'CSV'})
-                          </span>
                           <span className="text-base sm:text-lg font-mono font-extrabold text-maldives-700">
-                            {formatCurrency(csvPreview.totalAmount)} (
-                            {csvPreview.transactions.length} compras)
+                            {formatCurrency(csvPreview.totalAmount)} ({csvPreview.transactions.length} itens)
                           </span>
                         </div>
                       </div>
@@ -1505,89 +1488,55 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                             info
                           </span>
                           <span>
-                            Ignoramos automaticamente{' '}
-                            <strong>
-                              {csvPreview.ignoredPaymentsCount} pagamento(s) recebido(s)
-                            </strong>{' '}
-                            ({formatCurrency(csvPreview.ignoredPaymentsTotal)}) para contabilizar apenas os gastos reais da fatura.
+                            {csvPreview.ignoredPaymentsCount} pagamento(s) ignorado(s) ({formatCurrency(csvPreview.ignoredPaymentsTotal)}).
                           </span>
                         </div>
                       )}
 
                       {csvPreview.cycleInfo?.hasPreviousMonthPurchases && (
-                        <div className="px-3 py-2 rounded-xl bg-amber-50/90 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-400/25 text-[11px] text-amber-950 dark:text-amber-200 flex items-center gap-2 shadow-2xs">
+                        <div className="px-3 py-2 rounded-xl bg-amber-50/90 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-400/25 text-[11px] text-amber-950 dark:text-amber-200 flex items-center gap-2">
                           <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[18px] shrink-0">
                             sync_alt
                           </span>
                           <div>
-                            <strong>Ciclo de Fechamento Detectado:</strong> Foram identificadas{' '}
-                            <strong>{csvPreview.cycleInfo.previousMonthCount} compras</strong> realizadas no mês anterior (após o fechamento, ex: a partir do dia 26/09). Elas serão mapeadas automaticamente no calendário diário deste mês!
+                            <strong>{csvPreview.cycleInfo.previousMonthCount} compras</strong> do ciclo anterior mapeadas no calendário.
                           </div>
                         </div>
                       )}
 
-                      {/* Escolha do Modo de Importação (Substituir Fatura vs Somar) */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <button
                           type="button"
                           onClick={() => setCsvImportMode('replace')}
-                          className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer flex items-start gap-2 ${
+                          className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer flex items-center gap-2 ${
                             csvImportMode === 'replace'
                               ? 'bg-maldives-500 text-white border-maldives-600 shadow-xs font-bold'
                               : 'bg-oat-50 text-espresso-700 border-oat-300'
                           }`}
                         >
-                          <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">
+                          <span className="material-symbols-outlined text-[18px] shrink-0">
                             {csvImportMode === 'replace'
                               ? 'radio_button_checked'
                               : 'radio_button_unchecked'}
                           </span>
-                          <div>
-                            <span className="block font-bold">
-                              Substituir Fatura Atual (Recomendado)
-                            </span>
-                            <span
-                              className={`text-[10px] block ${
-                                csvImportMode === 'replace'
-                                  ? 'text-white/90'
-                                  : 'text-espresso-500'
-                              }`}
-                            >
-                              O arquivo importado será o equivalente exato à fatura de{' '}
-                              {activeCard.name} ({formatCurrency(csvPreview.totalAmount)})
-                            </span>
-                          </div>
+                          <span>Substituir Fatura Atual</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => setCsvImportMode('append')}
-                          className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer flex items-start gap-2 ${
+                          className={`p-2.5 rounded-xl border text-left text-xs transition cursor-pointer flex items-center gap-2 ${
                             csvImportMode === 'append'
                               ? 'bg-maldives-500 text-white border-maldives-600 shadow-xs font-bold'
                               : 'bg-oat-50 text-espresso-700 border-oat-300'
                           }`}
                         >
-                          <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">
+                          <span className="material-symbols-outlined text-[18px] shrink-0">
                             {csvImportMode === 'append'
                               ? 'radio_button_checked'
                               : 'radio_button_unchecked'}
                           </span>
-                          <div>
-                            <span className="block font-bold">
-                              Somar aos Itens Existentes
-                            </span>
-                            <span
-                              className={`text-[10px] block ${
-                                csvImportMode === 'append'
-                                  ? 'text-white/90'
-                                  : 'text-espresso-500'
-                              }`}
-                            >
-                              Adiciona os {csvPreview.transactions.length} itens do arquivo aos{' '}
-                              {activeCardTransactions.length} itens já lançados
-                            </span>
-                          </div>
+                          <span>Somar aos {activeCardTransactions.length} Itens</span>
                         </button>
                       </div>
 
@@ -1607,10 +1556,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           <span className="material-symbols-outlined text-[16px]">
                             check_circle
                           </span>
-                          <span>
-                            Aplicar Fatura em {activeCard.name} (
-                            {formatCurrency(csvPreview.totalAmount)})
-                          </span>
+                          <span>Aplicar Fatura ({formatCurrency(csvPreview.totalAmount)})</span>
                         </button>
                       </div>
                     </div>
@@ -1621,17 +1567,12 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
               {/* Aviso caso o valor manual do cartão esteja diferente da soma dos itens */}
               {activeCardTransactions.length > 0 &&
                 Math.abs(activeCard.amount - sumOfActiveCardItems) > 0.05 && (
-                  <div className="p-3 rounded-2xl bg-maldives-50 border border-maldives-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                  <div className="p-3 rounded-2xl bg-maldives-50 border border-maldives-200 flex items-center justify-between gap-2 text-xs">
                     <span className="text-espresso-700">
-                      A soma das compras individualizadas é{' '}
+                      Soma dos itens:{' '}
                       <strong className="font-mono text-maldives-800">
                         {formatCurrency(sumOfActiveCardItems)}
                       </strong>
-                      , enquanto o valor na planilha está em{' '}
-                      <strong className="font-mono">
-                        {formatCurrency(activeCard.amount)}
-                      </strong>
-                      .
                     </span>
                     <button
                       type="button"
@@ -1642,153 +1583,28 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       }
                       className="px-3 py-1 rounded-xl bg-maldives-500 text-white font-bold shrink-0 cursor-pointer"
                     >
-                      Igualar Fatura à Soma
+                      Igualar Fatura
                     </button>
                   </div>
                 )}
 
-              {/* Painel de Edição de Nome, Limite e Dia de Vencimento do Cartão */}
-              <AnimatePresence>
-                {isEditingCardMeta && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <form
-                      onSubmit={handleSaveCardMeta}
-                      className="p-4 rounded-2xl bg-oat-100 dark:bg-oat-200/50 border border-terracotta-300 dark:border-terracotta-300/35 space-y-3"
-                    >
-                      <div className="flex items-center justify-between gap-2 border-b border-oat-200 dark:border-white/[0.06] pb-2">
-                        <div className="text-xs font-bold uppercase text-terracotta-700 tracking-wider flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-[16px]">language</span>
-                          <span>Configurações Globais do Cartão</span>
-                        </div>
-                        <span className="text-[10px] font-semibold bg-terracotta-100/70 text-terracotta-800 px-2 py-0.5 rounded-full">
-                          Aplica em todos os meses
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-espresso-600">
-                        Alterações no nome, teto de gastos ou dia de vencimento serão sincronizadas em <strong>todos os meses</strong> do sistema.
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <div>
-                          <label className="text-[11px] font-semibold text-espresso-700 block mb-1">
-                            Nome do Cartão
-                          </label>
-                          <input
-                            type="text"
-                            value={editCardName}
-                            onChange={(e) => setEditCardName(e.target.value)}
-                            className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[11px] font-semibold text-espresso-700 block mb-1">
-                            Teto Global Planejado (R$)
-                          </label>
-                          <input
-                            type="number"
-                            min="0"
-                            step="100"
-                            value={editCardLimit}
-                            onChange={(e) =>
-                              setEditCardLimit(
-                                e.target.value === ''
-                                  ? ''
-                                  : Number(e.target.value)
-                              )
-                            }
-                            placeholder="Sem teto fixo"
-                            className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[11px] font-semibold text-espresso-700 block mb-1">
-                            Dia de Vencimento
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            max="31"
-                            value={editCardDueDay}
-                            onChange={(e) =>
-                              setEditCardDueDay(
-                                e.target.value === ''
-                                  ? ''
-                                  : Number(e.target.value)
-                              )
-                            }
-                            placeholder="Ex: 10"
-                            className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[11px] font-semibold text-espresso-700 block mb-1" title="Dia que fecha a fatura (ex: dia 25)">
-                            Dia de Fechamento
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            max="31"
-                            value={editCardClosingDay}
-                            onChange={(e) =>
-                              setEditCardClosingDay(
-                                e.target.value === ''
-                                  ? ''
-                                  : Number(e.target.value)
-                              )
-                            }
-                            placeholder="Ex: 25"
-                            className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-end gap-2 pt-1">
-                        <button
-                          type="button"
-                          onClick={() => setIsEditingCardMeta(false)}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 cursor-pointer"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          type="submit"
-                          className="px-4 py-1.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">save</span>
-                          <span>Salvar Alterações Globais</span>
-                        </button>
-                      </div>
-                    </form>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Formulário para Lançar Novo Gasto Individualizado no Cartão */}
-              <form
-                onSubmit={handleAddTransaction}
-                className="bg-oat-100/90 dark:bg-oat-200/45 border border-oat-300 dark:border-white/[0.06] rounded-2xl p-4 space-y-3"
+              {/* Modal Bottom Sheet: Nova Despesa no Cartão (abre ao tocar no cartão ou + Nova Despesa) */}
+              <PwaSheetModal
+                isOpen={isAddTxModalOpen}
+                onClose={() => setIsAddTxModalOpen(false)}
+                title={`Lançar em ${activeCard.name}`}
+                subtitle={`Fatura atual: ${formatCurrency(activeCard.amount)}`}
+                icon="add_shopping_cart"
+                tone="terracotta"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-espresso-800 flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-terracotta-600 text-[18px]">
-                      add_shopping_cart
-                    </span>
-                    <span>
-                      Adicionar Gasto Individualizado em {activeCard.name}
-                    </span>
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                  <div className="sm:col-span-5">
-                    <label className="text-[11px] font-semibold text-espresso-700 mb-1 block">
-                      Estabelecimento / Compra
+                <form onSubmit={handleAddTransaction} className="space-y-3.5">
+                  <div>
+                    <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                      Estabelecimento / Descrição
                     </label>
                     <input
                       type="text"
+                      autoFocus
                       value={txDesc}
                       onChange={(e) => {
                         const val = e.target.value;
@@ -1797,101 +1613,227 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           setTxTag(inferCardPurchaseTag(val));
                         }
                       }}
-                      placeholder="Ex: Restaurante, iFood, Uber, Spotify, Shein..."
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
+                      placeholder="Ex: Restaurante, iFood, Uber, Spotify..."
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-sm text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
-                  <div className="sm:col-span-3">
-                    <label className="text-[11px] font-semibold text-espresso-700 mb-1 block">
-                      Valor na Fatura (R$)
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                        Valor (R$)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={txAmount}
+                        onChange={(e) =>
+                          setTxAmount(
+                            e.target.value === '' ? '' : Number(e.target.value)
+                          )
+                        }
+                        placeholder="0,00"
+                        className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                        Categoria
+                      </label>
+                      <select
+                        value={txTag}
+                        onChange={(e) =>
+                          setTxTag(e.target.value as CardPurchaseTag)
+                        }
+                        className="compact-select w-full h-[42px] bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-2.5 text-xs font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      >
+                        {(
+                          Object.keys(CARD_PURCHASE_TAGS) as CardPurchaseTag[]
+                        ).map((tagKey) => (
+                          <option key={tagKey} value={tagKey}>
+                            {CARD_PURCHASE_TAGS[tagKey].label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                        Parcela / Tipo
+                      </label>
+                      <input
+                        type="text"
+                        value={txInstallment}
+                        onChange={(e) => setTxInstallment(e.target.value)}
+                        placeholder="Ex: À vista, 1/3"
+                        className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-espresso-700 mb-1 block">
+                        Data / Dia (Opcional)
+                      </label>
+                      <input
+                        type="text"
+                        value={txDate}
+                        onChange={(e) => setTxDate(e.target.value)}
+                        placeholder="Ex: 24/10"
+                        className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!txDesc.trim() || !txAmount}
+                    className="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-40 text-white text-sm font-bold rounded-2xl flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[19px]">add_circle</span>
+                    <span>Lançar na Fatura</span>
+                  </button>
+
+                  <div className="pt-2 border-t border-oat-200 dark:border-white/[0.07] flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAddTxModalOpen(false);
+                        csvFileInputRef.current?.click();
+                      }}
+                      className="flex-1 py-2 px-3 rounded-xl bg-oat-100 dark:bg-oat-200/60 hover:bg-oat-200 text-espresso-700 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-orange-500">
+                        upload_file
+                      </span>
+                      <span>Importar PDF/CSV</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAddTxModalOpen(false);
+                        setPastedInvoiceModalOpen(true);
+                      }}
+                      className="flex-1 py-2 px-3 rounded-xl bg-oat-100 dark:bg-oat-200/60 hover:bg-oat-200 text-espresso-700 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-maldives-600">
+                        content_paste
+                      </span>
+                      <span>Colar Texto</span>
+                    </button>
+                  </div>
+                </form>
+              </PwaSheetModal>
+
+              {/* Modal Bottom Sheet: Ajustar Configurações Globais do Cartão */}
+              <PwaSheetModal
+                isOpen={isEditingCardMeta}
+                onClose={() => setIsEditingCardMeta(false)}
+                title={`Ajustar ${activeCard.name}`}
+                subtitle="Aplica em todos os meses do sistema"
+                icon="settings"
+                tone="terracotta"
+              >
+                <form onSubmit={handleSaveCardMeta} className="space-y-3.5">
+                  <div>
+                    <label className="text-xs font-semibold text-espresso-700 block mb-1">
+                      Nome do Cartão
+                    </label>
+                    <input
+                      type="text"
+                      value={editCardName}
+                      onChange={(e) => setEditCardName(e.target.value)}
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-sm font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-espresso-700 block mb-1">
+                      Teto Mensal Planejado (R$)
                     </label>
                     <input
                       type="number"
                       min="0"
-                      step="0.01"
-                      value={txAmount}
+                      step="100"
+                      value={editCardLimit}
                       onChange={(e) =>
-                        setTxAmount(
+                        setEditCardLimit(
                           e.target.value === '' ? '' : Number(e.target.value)
                         )
                       }
-                      placeholder="0,00"
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
+                      placeholder="Sem teto fixo"
+                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
 
-                  <div className="sm:col-span-4">
-                    <label className="text-[11px] font-semibold text-espresso-700 mb-1 block">
-                      Subcategoria no Cartão
-                    </label>
-                    <select
-                      value={txTag}
-                      onChange={(e) =>
-                        setTxTag(e.target.value as CardPurchaseTag)
-                      }
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-espresso-700 block mb-1">
+                        Dia Vencimento
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={editCardDueDay}
+                        onChange={(e) =>
+                          setEditCardDueDay(
+                            e.target.value === '' ? '' : Number(e.target.value)
+                          )
+                        }
+                        placeholder="10"
+                        className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-espresso-700 block mb-1">
+                        Dia Fechamento
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={editCardClosingDay}
+                        onChange={(e) =>
+                          setEditCardClosingDay(
+                            e.target.value === '' ? '' : Number(e.target.value)
+                          )
+                        }
+                        placeholder="25"
+                        className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-sm font-mono font-bold text-espresso-900 focus:outline-none focus:border-terracotta-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingCardMeta(false)}
+                      className="px-4 py-2 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 cursor-pointer"
                     >
-                      {(
-                        Object.keys(CARD_PURCHASE_TAGS) as CardPurchaseTag[]
-                      ).map((tagKey) => (
-                        <option key={tagKey} value={tagKey}>
-                          {CARD_PURCHASE_TAGS[tagKey].label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-12 gap-3 items-end">
-                  <div className="col-span-1 sm:col-span-4">
-                    <label className="text-[11px] font-semibold text-espresso-700 mb-1 block">
-                      Parcela / Tipo
-                    </label>
-                    <input
-                      type="text"
-                      value={txInstallment}
-                      onChange={(e) => setTxInstallment(e.target.value)}
-                      placeholder="Ex: À vista, Parcela 1/3"
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-terracotta-500"
-                    />
-                  </div>
-
-                  <div className="col-span-1 sm:col-span-4">
-                    <label className="text-[11px] font-semibold text-espresso-700 mb-1 block">
-                      Data / Dia (Opcional)
-                    </label>
-                    <input
-                      type="text"
-                      value={txDate}
-                      onChange={(e) => setTxDate(e.target.value)}
-                      placeholder="Ex: 24/10"
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-2 text-xs text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
-                    />
-                  </div>
-
-                  <div className="col-span-2 sm:col-span-4">
+                      Cancelar
+                    </button>
                     <button
                       type="submit"
-                      disabled={!txDesc.trim() || !txAmount}
-                      className="w-full h-[38px] bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition shadow-xs cursor-pointer"
+                      className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                     >
-                      <span className="material-symbols-outlined text-[18px]">
-                        add
-                      </span>
-                      <span>Lançar na Fatura</span>
+                      <span className="material-symbols-outlined text-[16px]">save</span>
+                      <span>Salvar Alterações</span>
                     </button>
                   </div>
-                </div>
-              </form>
+                </form>
+              </PwaSheetModal>
 
               {/* Busca + Filtros por Tag / Subcategoria da Fatura */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex overflow-x-auto sm:flex-wrap sm:overflow-visible items-center gap-1.5 pb-1 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0 overscroll-x-contain">
                   <button
                     type="button"
                     onClick={() => setSelectedTagFilter('all')}
-                    className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer shrink-0 whitespace-nowrap ${
                       selectedTagFilter === 'all'
                         ? 'bg-surface-ink dark:bg-terracotta-500 text-white border-transparent'
                         : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-700 border-oat-300 dark:border-white/[0.07] hover:border-terracotta-300'
@@ -1912,7 +1854,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           key={tagKey}
                           type="button"
                           onClick={() => setSelectedTagFilter(tagKey)}
-                          className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border flex items-center gap-1 transition cursor-pointer max-w-full ${
+                          className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border flex items-center gap-1 transition cursor-pointer shrink-0 whitespace-nowrap ${
                             selectedTagFilter === tagKey
                               ? 'bg-terracotta-500 text-white border-terracotta-600/40'
                               : 'bg-oat-100 dark:bg-oat-200/60 text-espresso-700 border-oat-300 dark:border-white/[0.07] hover:border-terracotta-300'
@@ -1921,7 +1863,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           <span className="material-symbols-outlined text-[14px] shrink-0">
                             {tagMeta.icon}
                           </span>
-                          <span className="truncate">{tagMeta.label}</span>
+                          <span>{tagMeta.label}</span>
                           <span className="font-mono opacity-85 shrink-0">
                             ({formatCurrency(totalTag)})
                           </span>
@@ -1941,7 +1883,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Buscar na fatura..."
-                      className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl pl-8 pr-2.5 py-1.5 text-xs text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
+                      className="compact-select w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl pl-8 pr-2.5 py-1.5 text-xs text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-terracotta-500"
                     />
                   </div>
                 )}
@@ -1951,14 +1893,18 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
               <div className="overflow-hidden border border-oat-300 dark:border-white/[0.07] rounded-2xl bg-oat-50 dark:bg-oat-100/50">
                 <div className="max-h-[440px] overflow-y-auto divide-y divide-oat-200 dark:divide-white/[0.05]">
                   {filteredTransactions.length === 0 ? (
-                    <div className="p-8 text-center text-espresso-500 text-xs sm:text-sm space-y-1">
+                    <div className="p-7 text-center text-espresso-500 text-xs sm:text-sm space-y-3">
                       <p className="font-bold text-espresso-700">
-                        Nenhuma compra individualizada neste cartão ainda.
+                        Nenhuma compra lançada em {activeCard.name} neste mês.
                       </p>
-                      <p>
-                        Adicione manualmente acima ou clique em{' '}
-                        <strong>“Importar Fatura (PDF / CSV)”</strong> para carregar o arquivo da fatura deste cartão (ex: Banco Inter ou Nubank).
-                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddTxModalOpen(true)}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">add</span>
+                        <span>Adicionar Despesa</span>
+                      </button>
                     </div>
                   ) : (
                     filteredTransactions.map((tx) => {
@@ -1999,7 +1945,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                       tag: e.target.value as CardPurchaseTag,
                                     })
                                   }
-                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer focus:outline-none ${tagMeta.badgeClass}`}
+                                  className={`compact-select text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer focus:outline-none ${tagMeta.badgeClass}`}
                                 >
                                   {(
                                     Object.keys(
@@ -2145,7 +2091,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -2230,7 +2176,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={handleCancelPdfPassword}
           >
             <motion.div
@@ -2430,7 +2376,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setPastedInvoiceModalOpen(false)}
           >
             <motion.div

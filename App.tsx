@@ -2666,7 +2666,7 @@ export const App: React.FC = () => {
       </header>
 
       {/* Conteúdo Principal */}
-      <main className="max-w-7xl w-full mx-auto px-3.5 sm:px-6 pt-4 sm:pt-5 space-y-4 sm:space-y-5 flex-1">
+      <main className="max-w-7xl w-full mx-auto px-3 sm:px-6 pt-3 sm:pt-5 space-y-3.5 sm:space-y-5 flex-1">
         {/* Calendário Interativo de Meses para transitar e preencher/editar qualquer competência */}
         <MonthCalendarBar
           selectedMonthKey={selectedMonthKey}
@@ -2880,36 +2880,38 @@ export const App: React.FC = () => {
                   />
 
                   {/* Sub-navegador da aba Orçamento: Planilha vs Gráficos */}
-                  <div className="flex items-center justify-between gap-3 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1.5 rounded-2xl shadow-xs">
-                    <div className="flex items-center gap-1.5">
+                  <div className="flex items-center justify-between gap-2 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1 rounded-2xl shadow-xs">
+                    <div className="grid grid-cols-2 sm:flex items-center gap-1 w-full sm:w-auto">
                       <button
                         type="button"
                         onClick={() => setBudgetSubView('sheet')}
-                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
                           budgetSubView === 'sheet'
                             ? 'bg-maldives-500 text-white shadow-xs'
                             : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
                         }`}
                       >
-                        <span className="material-symbols-outlined text-[17px]">
+                        <span className="material-symbols-outlined text-[16px] sm:text-[17px]">
                           table_chart
                         </span>
-                        <span>Planilha de Gastos & Aportes</span>
+                        <span className="sm:hidden">Planilha</span>
+                        <span className="hidden sm:inline">Planilha de Gastos & Aportes</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setBudgetSubView('charts')}
-                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
                           budgetSubView === 'charts'
                             ? 'bg-maldives-500 text-white shadow-xs'
                             : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
                         }`}
                       >
-                        <span className="material-symbols-outlined text-[17px]">
+                        <span className="material-symbols-outlined text-[16px] sm:text-[17px]">
                           bar_chart
                         </span>
-                        <span>Gráficos & Análises</span>
+                        <span className="sm:hidden">Gráficos</span>
+                        <span className="hidden sm:inline">Gráficos & Análises</span>
                       </button>
                     </div>
 
@@ -2982,36 +2984,38 @@ export const App: React.FC = () => {
               {activeTab === 'freedom' && (
                 <div className="space-y-6">
                   {/* Sub-navegador da aba Liberdade: Simulador FIRE vs Calculadora de Juros */}
-                  <div className="flex items-center justify-between gap-3 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1.5 rounded-2xl shadow-xs">
-                    <div className="flex items-center gap-1.5">
+                  <div className="flex items-center justify-between gap-2 bg-oat-50/90 dark:bg-oat-50 border border-oat-300 dark:border-white/[0.07] p-1 rounded-2xl shadow-xs">
+                    <div className="grid grid-cols-2 sm:flex items-center gap-1 w-full sm:w-auto">
                       <button
                         type="button"
                         onClick={() => setFreedomSubView('fire')}
-                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
                           freedomSubView === 'fire'
                             ? 'bg-maldives-500 text-white shadow-xs'
                             : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
                         }`}
                       >
-                        <span className="material-symbols-outlined text-[17px]">
+                        <span className="material-symbols-outlined text-[16px] sm:text-[17px]">
                           sailing
                         </span>
-                        <span>Simulador FIRE (Independência)</span>
+                        <span className="sm:hidden">Simulador FIRE</span>
+                        <span className="hidden sm:inline">Simulador FIRE (Independência)</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setFreedomSubView('compound')}
-                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
                           freedomSubView === 'compound'
                             ? 'bg-maldives-500 text-white shadow-xs'
                             : 'text-espresso-700 hover:text-espresso-900 hover:bg-oat-200/70 dark:hover:bg-white/[0.05]'
                         }`}
                       >
-                        <span className="material-symbols-outlined text-[17px]">
+                        <span className="material-symbols-outlined text-[16px] sm:text-[17px]">
                           calculate
                         </span>
-                        <span>Calculadora de Juros Compostos</span>
+                        <span className="sm:hidden">Juros Compostos</span>
+                        <span className="hidden sm:inline">Calculadora de Juros Compostos</span>
                       </button>
                     </div>
 
@@ -3107,7 +3111,7 @@ export const App: React.FC = () => {
       <AnimatePresence>
         {pendingExportFile && (
           <div
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm"
             onClick={() => setPendingExportFile(null)}
           >
             <motion.div
