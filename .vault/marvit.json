@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:48:01.639Z",
+  "updatedAt": "2026-11-10T00:48:10.626Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T00:46:20.017Z",
-    "selectedMonthKey": "2026-11",
+    "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -144,27 +144,28 @@
       }
     },
     "profile": {
-      "monthlyIncome": 22000,
+      "monthlyIncome": 23614.09,
       "additionalIncome": 0,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
     },
     "customGoals": {
-      "essencial": 40,
-      "estilo": 35,
-      "investimento": 25
+      "essencial": 50,
+      "estilo": 30,
+      "investimento": 20
     },
     "expenses": [
       {
-        "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-        "amount": 8791.22,
-        "category": "investimento",
+        "name": "Moto eletrica",
+        "amount": 5000,
+        "category": "estilo",
+        "subcategory": "direto",
         "isCustom": true,
-        "id": "exp-1794007990084"
+        "id": "exp-1794271538289"
       },
       {
         "name": "Cartões (Inter, Nubank, Itau)",
-        "amount": 8000,
+        "amount": 15288.95,
         "category": "estilo",
         "isCustom": true,
         "id": "exp-1794006938471",
