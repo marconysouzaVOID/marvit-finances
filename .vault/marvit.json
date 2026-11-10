@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T07:02:42.810Z",
+  "updatedAt": "2026-11-10T07:03:08.974Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T07:02:27.110Z",
+    "exportedAt": "2026-11-10T07:03:07.958Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T07:02:27.110Z",
+        "updatedAt": "2026-11-10T07:03:07.958Z",
         "profile": {
           "monthlyIncome": 7500,
           "additionalIncome": 500,
@@ -2144,170 +2144,172 @@
         "id": "snap-1794273445526",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T06:54:59.619Z",
+        "dateCreated": "2026-11-10T07:03:07.958Z",
         "profile": {
-          "monthlyIncome": 22000,
-          "additionalIncome": 0,
+          "monthlyIncome": 7500,
+          "additionalIncome": 500,
           "desiredEmergencyMonths": 6,
           "expectedAnnualReturnRate": 10.5
         },
         "customGoals": {
-          "essencial": 40,
-          "estilo": 35,
-          "investimento": 25
+          "essencial": 50,
+          "estilo": 30,
+          "investimento": 20
         },
         "expenses": [
           {
-            "name": "Contas (Luz)",
-            "amount": 1,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794272239955"
-          },
-          {
-            "name": "Contas (Água)",
-            "amount": 1,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794272228065"
-          },
-          {
-            "name": "Nubank Vitoria",
-            "amount": 0,
-            "category": "estilo",
-            "subcategory": "cartao",
-            "cardTransactions": [],
-            "cardLimit": 2500,
-            "cardDueDay": 2,
-            "isCustom": true,
-            "id": "exp-1794272085025",
-            "globalCardId": "exp-1794272085025"
-          },
-          {
-            "name": "Nubank Marcony",
-            "amount": 535.82,
-            "category": "estilo",
-            "subcategory": "cartao",
-            "cardTransactions": [
-              {
-                "id": "csv-tx-1794289511519-1",
-                "description": "Dl *Uberrides",
-                "amount": 8.94,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/11"
-              },
-              {
-                "id": "csv-tx-1794289511520-2",
-                "description": "Ifd*Ifood Club",
-                "amount": 12.9,
-                "tag": "gastronomia",
-                "installment": "À vista",
-                "purchaseDate": "07/11"
-              },
-              {
-                "id": "csv-tx-1794289511520-4",
-                "description": "Dl*Uberrides",
-                "amount": 13.98,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "30/10"
-              },
-              {
-                "id": "csv-tx-1794289511520-5",
-                "description": "Odonto Riso",
-                "amount": 500,
-                "tag": "outros",
-                "installment": "Parcela 7/8",
-                "purchaseDate": "27/10"
-              }
-            ],
-            "cardLimit": 1000,
-            "cardDueDay": 2,
-            "isCustom": true,
-            "id": "exp-1794272073562",
-            "globalCardId": "exp-1794272073562"
-          },
-          {
-            "name": "Inter",
-            "amount": 0,
-            "category": "estilo",
-            "subcategory": "cartao",
-            "cardTransactions": [],
-            "cardLimit": 3000,
-            "cardDueDay": 2,
-            "isCustom": true,
-            "id": "exp-1794272057919",
-            "globalCardId": "exp-1794272057919"
-          },
-          {
-            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-            "amount": 8791.22,
-            "category": "investimento",
-            "isCustom": true,
-            "id": "exp-1794007990084"
-          },
-          {
-            "name": "Financiamento Veículo",
-            "amount": 1253,
-            "category": "essencial",
-            "isCustom": true,
-            "id": "exp-1794006429901"
-          },
-          {
             "id": "1",
             "name": "Aluguel / Parcela Imóvel",
-            "amount": 2986.43,
+            "amount": 1800,
+            "category": "essencial"
+          },
+          {
+            "id": "2",
+            "name": "Supermercado, Feira & Alimentação",
+            "amount": 950,
             "category": "essencial"
           },
           {
             "id": "3",
-            "name": "Contas (Internet)",
-            "amount": 117.8,
+            "name": "Contas (Água, Luz, Internet)",
+            "amount": 420,
             "category": "essencial"
           },
           {
-            "id": "exp-1794272287172",
-            "globalCardId": "exp-1794272287172",
-            "name": "Itau",
-            "amount": 1213.18,
+            "id": "4",
+            "name": "Plano de Saúde & Farmácia",
+            "amount": 380,
+            "category": "essencial"
+          },
+          {
+            "id": "5",
+            "name": "Transporte / Combustível",
+            "amount": 450,
+            "category": "essencial"
+          },
+          {
+            "id": "6",
+            "globalCardId": "6",
+            "name": "Cartão Nubank / Ultravioleta",
+            "amount": 760,
             "category": "estilo",
             "subcategory": "cartao",
-            "cardLimit": 700,
-            "cardDueDay": 2,
+            "cardDueDay": 10,
+            "cardClosingDay": 25,
+            "cardLimit": 1500,
             "cardTransactions": [
               {
-                "id": "tx-1794289467275",
-                "description": "Moto Eletrica",
-                "amount": 647.51,
-                "tag": "compras",
-                "installment": "Parcela 2/10",
-                "purchaseDate": "16/10"
+                "id": "tx-1",
+                "description": "Jantar Especial & Cafeterias",
+                "amount": 340,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "08/11"
               },
               {
-                "id": "tx-1794289441491",
-                "description": "Localiza",
-                "amount": 565.67,
-                "tag": "lazer",
-                "installment": "Parcela 2/3",
-                "purchaseDate": "09/10"
+                "id": "tx-2",
+                "description": "Streaming (Netflix, Spotify, Apple)",
+                "amount": 110,
+                "tag": "assinaturas",
+                "installment": "Recorrente",
+                "purchaseDate": "12/11"
+              },
+              {
+                "id": "tx-3",
+                "description": "Compras Online & Livros",
+                "amount": 310,
+                "tag": "compras",
+                "installment": "1/2",
+                "purchaseDate": "19/11"
               }
-            ],
-            "isCustom": true
+            ]
+          },
+          {
+            "id": "7",
+            "globalCardId": "7",
+            "name": "Cartão Inter / Pontos",
+            "amount": 480,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardDueDay": 15,
+            "cardClosingDay": 5,
+            "cardLimit": 1000,
+            "cardTransactions": [
+              {
+                "id": "tx-4",
+                "description": "iFood & Delivery Fim de Semana",
+                "amount": 260,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "14/11"
+              },
+              {
+                "id": "tx-5",
+                "description": "Passeios, Cinema & Lazer",
+                "amount": 220,
+                "tag": "lazer",
+                "installment": "À vista",
+                "purchaseDate": "22/11"
+              }
+            ]
+          },
+          {
+            "id": "8",
+            "name": "Academia & Autocuidado (Pix/Direto)",
+            "amount": 160,
+            "category": "estilo",
+            "subcategory": "direto",
+            "expenseDate": "05/11"
+          },
+          {
+            "id": "10",
+            "name": "Aportes em Renda Variável (Ações/FIIs)",
+            "amount": 1000,
+            "category": "investimento"
+          },
+          {
+            "id": "11",
+            "name": "Reserva de Emergência / Tesouro Selic",
+            "amount": 500,
+            "category": "investimento"
           }
         ],
         "customLongTermGoals": [
           {
-            "title": "Carro Tiggo",
-            "icon": "directions_car",
-            "targetAmount": 48032.08,
-            "currentAmount": 18744.160000000003,
-            "monthlyContribution": 601.08,
-            "annualInterestRate": 0,
-            "syncWithBudget": true,
+            "id": "goal-1",
+            "title": "Férias nas Maldivas",
+            "icon": "beach_access",
+            "targetAmount": 24000,
+            "currentAmount": 6500,
+            "monthlyContribution": 600,
+            "annualInterestRate": 10.5,
+            "syncWithBudget": false,
             "budgetCategory": "estilo",
-            "notes": "Amortização",
-            "id": "goal-1794008860404"
+            "notes": "Viagem dos sonhos com bangalô sobre as águas cristalinas."
+          },
+          {
+            "id": "goal-2",
+            "title": "Reforma da Cozinha Comfy",
+            "icon": "countertops",
+            "targetAmount": 35000,
+            "currentAmount": 12000,
+            "monthlyContribution": 850,
+            "annualInterestRate": 11,
+            "syncWithBudget": true,
+            "budgetCategory": "investimento",
+            "notes": "Marcenaria verde sálvia, bancada de quartzo creme e ilha gourmet."
+          },
+          {
+            "id": "goal-3",
+            "title": "Entrada do Imóvel Próprio",
+            "icon": "cottage",
+            "targetAmount": 120000,
+            "currentAmount": 38000,
+            "monthlyContribution": 1500,
+            "annualInterestRate": 11.5,
+            "syncWithBudget": false,
+            "budgetCategory": "investimento",
+            "notes": "Fundo dedicado em Tesouro IPCA+ e CDBs de liquidez."
           }
         ],
         "notes": "Compra do primeiro AP",
