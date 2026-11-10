@@ -1,8 +1,22 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExpenseCategory, ExpenseItem, FinancialProfile, MonthDataRecord, MonthSnapshot } from '../types';
 import { formatCurrency, formatPercent } from '../utils/formatters';
 import { formatMonthKeyLabel, formatMonthKeySlashLabel, inferMonthKeyFromLabel } from './MonthCalendarBar';
+
+const SHORT_MONTHS_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+function formatShortMonthSlash(monthKey: string): string {
+  const parts = (monthKey || '').split('-');
+  if (parts.length === 2) {
+    const year = parts[0].slice(-2);
+    const monthIdx = parseInt(parts[1], 10) - 1;
+    if (monthIdx >= 0 && monthIdx < 12) {
+      return `${SHORT_MONTHS_PT[monthIdx]}/${year}`;
+    }
+  }
+  return monthKey;
+}
 
 interface FinancialChartsProps {
   monthsData: Record<string, MonthDataRecord>;
@@ -18,6 +32,7 @@ interface MonthMetric {
   key: string;
   label: string;
   slashLabel: string;
+  shortLabel: string;
   totalIncome: number;
   totalExpenses: number;
   essencial: number;
@@ -41,6 +56,10 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
   const [hoveredMonthKey, setHoveredMonthKey] = useState<string | null>(null);
   const [selectedChartMonthKey, setSelectedChartMonthKey] = useState<string>(selectedMonthKey);
 
+  useEffect(() => {
+    setSelectedChartMonthKey(selectedMonthKey);
+  }, [selectedMonthKey]);
+
   // Compilar métricas cronológicas de todos os meses disponíveis (do histórico + monthsData)
   const allMonthsMetrics = useMemo<MonthMetric[]>(() => {
     const map = new Map<string, MonthMetric>();
@@ -63,6 +82,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
         key: mKey,
         label: formatMonthKeyLabel(mKey),
         slashLabel: formatMonthKeySlashLabel(mKey),
+        shortLabel: formatShortMonthSlash(mKey),
         totalIncome: income,
         totalExpenses: totalExp,
         essencial: es,
@@ -92,6 +112,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
         key: mKey,
         label: formatMonthKeyLabel(mKey),
         slashLabel: formatMonthKeySlashLabel(mKey),
+        shortLabel: formatShortMonthSlash(mKey),
         totalIncome: income,
         totalExpenses: totalExp,
         essencial: es,
@@ -124,6 +145,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
           key: selectedMonthKey,
           label: formatMonthKeyLabel(selectedMonthKey),
           slashLabel: formatMonthKeySlashLabel(selectedMonthKey),
+          shortLabel: formatShortMonthSlash(selectedMonthKey),
           totalIncome: income,
           totalExpenses: es + est + inv,
           essencial: es,
@@ -233,16 +255,16 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
   return (
     <div className="space-y-6">
       {/* Cabeçalho do Painel */}
-      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
-          <div className="flex items-center gap-3">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4 pb-4 border-b border-oat-200 dark:border-white/[0.06]">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="w-11 h-11 rounded-2xl bg-maldives-50 border border-maldives-200 dark:border-maldives-300/25 flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-maldives-600 text-2xl">
                 analytics
               </span>
             </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-display font-bold text-espresso-900">
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-2xl font-display font-bold text-espresso-900 leading-snug">
                 Gráficos & Análise de Gastos
               </h2>
               <p className="text-xs sm:text-sm text-espresso-600">
@@ -251,19 +273,21 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="text-xs font-bold text-espresso-600">Mês em Análise:</span>
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto min-w-0 shrink-0">
+            <span className="text-[11px] sm:text-xs font-bold text-espresso-600 whitespace-nowrap shrink-0">
+              Mês em Análise:
+            </span>
             <select
               value={selectedChartMonthKey}
               onChange={(e) => {
                 setSelectedChartMonthKey(e.target.value);
                 onSelectMonth(e.target.value);
               }}
-              className="bg-surface-input border border-oat-300 dark:border-white/[0.08] text-espresso-900 text-xs font-bold rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-maldives-500 cursor-pointer"
+              className="compact-select min-w-0 flex-1 sm:flex-initial max-w-[215px] sm:max-w-[240px] truncate bg-surface-input border border-oat-300 dark:border-white/[0.08] text-espresso-900 text-xs font-bold rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-maldives-500 cursor-pointer"
             >
               {activeMetricsList.map((m) => (
                 <option key={m.key} value={m.key}>
-                  {m.slashLabel} ({formatCurrency(m.totalExpenses)})
+                  {m.shortLabel} ({formatCurrency(m.totalExpenses)})
                 </option>
               ))}
             </select>
@@ -335,8 +359,8 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
       </div>
 
       {/* Gráfico 1: Evolução Histórica dos Gastos Mensais */}
-      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
           <div>
             <h3 className="text-base sm:text-lg font-display font-bold text-espresso-900 flex items-center gap-2">
               <span className="material-symbols-outlined text-maldives-600">
@@ -370,112 +394,177 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
           </div>
         </div>
 
-        {/* Visualização de Barras */}
-        <div className="relative pt-28 pb-2">
-          {/* Container das Barras */}
-          <div className="relative h-64 sm:h-72 flex items-end justify-around gap-2 sm:gap-4 px-2 border-b border-oat-300 dark:border-white/[0.08]">
-            {/* Linha da Média */}
-            {averages.avgTotal > 0 && (
-              <div
-                className="absolute left-0 right-0 border-t-2 border-dashed border-espresso-400/70 pointer-events-none z-10"
-                style={{
-                  bottom: `${Math.min(95, Math.max(8, (averages.avgTotal / maxBarValue) * 100))}%`,
-                }}
-              >
-                <span className="absolute right-0 -top-6 text-[10px] font-mono font-bold bg-oat-200 text-espresso-700 px-2 py-0.5 rounded-full border border-oat-300 dark:border-white/[0.08] shadow-xs">
-                  Média: {formatCurrency(averages.avgTotal)}
-                </span>
-              </div>
-            )}
+        {activeMetricsList.length > 3 && (
+          <div className="flex items-center justify-end gap-1.5 text-[11px] font-semibold text-espresso-500 mb-2 sm:hidden">
+            <span className="material-symbols-outlined text-[15px] text-maldives-600">
+              swipe
+            </span>
+            <span>Deslize lateralmente nos meses</span>
+          </div>
+        )}
 
-            {activeMetricsList.map((m) => {
-              const isSelected = m.key === selectedChartMonthKey;
-              const isHovered = m.key === hoveredMonthKey;
-              const totalHeightPct = Math.min(100, (m.totalExpenses / maxBarValue) * 100);
+        {/* Faixa Resumo Fixa do Mês Selecionado (evita tooltips cortados no mobile) */}
+        {currentChartMonth && (
+          <div className="mb-3 p-2.5 sm:px-3.5 sm:py-2.5 rounded-2xl bg-oat-100/80 dark:bg-oat-200/50 border border-oat-200 dark:border-white/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <div className="flex items-center justify-between sm:justify-start gap-2">
+              <span className="font-bold text-espresso-900 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-maldives-500 inline-block shrink-0" />
+                {currentChartMonth.label}
+              </span>
+              <span className="font-mono font-bold text-espresso-900 sm:hidden">
+                {formatCurrency(currentChartMonth.totalExpenses)}
+              </span>
+            </div>
 
-              const esPct = m.totalExpenses > 0 ? (m.essencial / m.totalExpenses) * 100 : 0;
-              const estPct = m.totalExpenses > 0 ? (m.estilo / m.totalExpenses) * 100 : 0;
-              const invPct = m.totalExpenses > 0 ? (m.investimento / m.totalExpenses) * 100 : 0;
+            <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-[11px] font-mono">
+              <span className="text-sage-600 font-semibold">
+                Ess: {formatCurrency(currentChartMonth.essencial)}
+              </span>
+              <span className="text-terracotta-600 font-semibold">
+                Est: {formatCurrency(currentChartMonth.estilo)}
+              </span>
+              <span className="text-maldives-600 font-semibold">
+                Inv: {formatCurrency(currentChartMonth.investimento)}
+              </span>
+              <span className="hidden sm:inline font-bold text-espresso-900 pl-2 border-l border-oat-300 dark:border-white/[0.12]">
+                Total: {formatCurrency(currentChartMonth.totalExpenses)}
+              </span>
+            </div>
+          </div>
+        )}
 
-              return (
+        {/* Visualização de Barras com Navegação Horizontal Fluida */}
+        <div className="overflow-x-auto pb-2 -mx-2 px-2 overscroll-x-contain">
+          <div className="min-w-full w-max pt-8 sm:pt-28 pb-1">
+            {/* Área de Plotagem dos Prédios + Linha da Média */}
+            <div className="relative h-56 sm:h-64 flex items-end justify-around gap-3 sm:gap-4 px-2 border-b border-oat-300 dark:border-white/[0.08]">
+              {/* Linha da Média */}
+              {averages.avgTotal > 0 && (
                 <div
-                  key={m.key}
-                  onMouseEnter={() => setHoveredMonthKey(m.key)}
-                  onMouseLeave={() => setHoveredMonthKey(null)}
-                  onClick={() => {
-                    setSelectedChartMonthKey(m.key);
-                    onSelectMonth(m.key);
+                  className="absolute left-0 right-0 border-t-2 border-dashed border-espresso-400/75 pointer-events-none z-10"
+                  style={{
+                    bottom: `${Math.min(95, Math.max(8, (averages.avgTotal / maxBarValue) * 100))}%`,
                   }}
-                  className="flex-1 max-w-[80px] h-full flex flex-col justify-end items-center cursor-pointer group relative z-20"
                 >
-                  {/* Tooltip ao passar o mouse ou selecionar */}
-                  {(isHovered || isSelected) && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="absolute -top-24 z-30 bg-surface-ink/95 backdrop-blur-md text-white text-[11px] p-2.5 rounded-xl shadow-cozy-lg border border-white/10 font-mono pointer-events-none whitespace-nowrap"
-                    >
-                      <p className="font-sans font-bold text-white border-b border-white/15 pb-1 mb-1">
-                        {m.label}
-                      </p>
-                      <div className="space-y-0.5">
-                        <p className="text-[#A7D7B8]">Essencial: {formatCurrency(m.essencial)}</p>
-                        <p className="text-[#F4B6A4]">Estilo: {formatCurrency(m.estilo)}</p>
-                        <p className="text-[#5EEAD4]">Investimentos: {formatCurrency(m.investimento)}</p>
-                        <p className="text-white font-bold pt-0.5 border-t border-white/15">
-                          Total: {formatCurrency(m.totalExpenses)}
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
+                  <span className="sticky left-2 inline-block -translate-y-6 text-[10px] font-mono font-bold bg-oat-200 text-espresso-700 px-2 py-0.5 rounded-full border border-oat-300 dark:border-white/[0.08] shadow-xs whitespace-nowrap">
+                    Média: {formatCurrency(averages.avgTotal)}
+                  </span>
+                </div>
+              )}
 
-                  {/* Barra Empilhada */}
+              {activeMetricsList.map((m, idx) => {
+                const isSelected = m.key === selectedChartMonthKey;
+                const isHovered = m.key === hoveredMonthKey;
+                const totalHeightPct = Math.min(100, (m.totalExpenses / maxBarValue) * 100);
+
+                const esPct = m.totalExpenses > 0 ? (m.essencial / m.totalExpenses) * 100 : 0;
+                const estPct = m.totalExpenses > 0 ? (m.estilo / m.totalExpenses) * 100 : 0;
+                const invPct = m.totalExpenses > 0 ? (m.investimento / m.totalExpenses) * 100 : 0;
+
+                const tooltipAlignClass =
+                  activeMetricsList.length <= 1
+                    ? 'left-1/2 -translate-x-1/2'
+                    : idx === 0
+                    ? 'left-0'
+                    : idx === activeMetricsList.length - 1
+                    ? 'right-0'
+                    : 'left-1/2 -translate-x-1/2';
+
+                return (
                   <div
-                    style={{ height: `${Math.max(totalHeightPct, 6)}%` }}
-                    className={`w-full rounded-2xl overflow-hidden flex flex-col-reverse transition-all duration-300 shadow-sm ${
-                      isSelected
-                        ? 'ring-4 ring-maldives-500/40 shadow-md scale-102'
-                        : 'group-hover:opacity-95 group-hover:scale-101'
-                    }`}
+                    key={m.key}
+                    onMouseEnter={() => setHoveredMonthKey(m.key)}
+                    onMouseLeave={() => setHoveredMonthKey(null)}
+                    onClick={() => {
+                      setSelectedChartMonthKey(m.key);
+                      onSelectMonth(m.key);
+                    }}
+                    className="w-[84px] sm:w-[92px] flex-1 max-w-[116px] shrink-0 h-full flex flex-col justify-end items-center cursor-pointer group relative z-20"
                   >
-                    {/* Investimento (base da barra) */}
-                    <div
-                      style={{ height: `${invPct}%` }}
-                      className="w-full bg-maldives-500 transition-all"
-                      title={`Investimento: ${formatCurrency(m.investimento)}`}
-                    />
-                    {/* Estilo de Vida (meio da barra) */}
-                    <div
-                      style={{ height: `${estPct}%` }}
-                      className="w-full bg-terracotta-500 transition-all"
-                      title={`Estilo: ${formatCurrency(m.estilo)}`}
-                    />
-                    {/* Essencial (topo da barra) */}
-                    <div
-                      style={{ height: `${esPct}%` }}
-                      className="w-full bg-sage-600 transition-all"
-                      title={`Essencial: ${formatCurrency(m.essencial)}`}
-                    />
-                  </div>
+                    {/* Tooltip flutuante apenas no hover desktop */}
+                    {isHovered && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`hidden sm:block absolute -top-24 ${tooltipAlignClass} z-30 bg-surface-ink/95 backdrop-blur-md text-white text-[11px] p-2.5 rounded-xl shadow-cozy-lg border border-white/10 font-mono pointer-events-none whitespace-nowrap`}
+                      >
+                        <p className="font-sans font-bold text-white border-b border-white/15 pb-1 mb-1">
+                          {m.label}
+                        </p>
+                        <div className="space-y-0.5">
+                          <p className="text-[#A7D7B8]">Essencial: {formatCurrency(m.essencial)}</p>
+                          <p className="text-[#F4B6A4]">Estilo: {formatCurrency(m.estilo)}</p>
+                          <p className="text-[#5EEAD4]">Investimentos: {formatCurrency(m.investimento)}</p>
+                          <p className="text-white font-bold pt-0.5 border-t border-white/15">
+                            Total: {formatCurrency(m.totalExpenses)}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
 
-                  {/* Rótulo do Mês */}
-                  <div className="mt-2 text-center">
-                    <span
-                      className={`text-[11px] font-bold block truncate transition ${
+                    {/* Barra Empilhada */}
+                    <div
+                      style={{ height: `${Math.max(totalHeightPct, 6)}%` }}
+                      className={`w-12 sm:w-14 rounded-t-2xl overflow-hidden flex flex-col-reverse transition-all duration-300 shadow-sm ${
                         isSelected
-                          ? 'text-maldives-700 underline underline-offset-4 decoration-2 font-extrabold'
-                          : 'text-espresso-600 group-hover:text-espresso-900'
+                          ? 'ring-4 ring-maldives-500/40 shadow-md scale-[1.03]'
+                          : 'group-hover:opacity-95 group-hover:scale-[1.01]'
                       }`}
                     >
-                      {m.slashLabel}
+                      {/* Investimento (base da barra) */}
+                      <div
+                        style={{ height: `${invPct}%` }}
+                        className="w-full bg-maldives-500 transition-all"
+                        title={`Investimento: ${formatCurrency(m.investimento)}`}
+                      />
+                      {/* Estilo de Vida (meio da barra) */}
+                      <div
+                        style={{ height: `${estPct}%` }}
+                        className="w-full bg-terracotta-500 transition-all"
+                        title={`Estilo: ${formatCurrency(m.estilo)}`}
+                      />
+                      {/* Essencial (topo da barra) */}
+                      <div
+                        style={{ height: `${esPct}%` }}
+                        className="w-full bg-sage-600 transition-all"
+                        title={`Essencial: ${formatCurrency(m.essencial)}`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Rótulos Inferiores dos Meses (alinhados sob a linha de base sem colapsar) */}
+            <div className="flex items-start justify-around gap-3 sm:gap-4 px-2 pt-2.5">
+              {activeMetricsList.map((m) => {
+                const isSelected = m.key === selectedChartMonthKey;
+                return (
+                  <button
+                    key={`label-${m.key}`}
+                    type="button"
+                    onClick={() => {
+                      setSelectedChartMonthKey(m.key);
+                      onSelectMonth(m.key);
+                    }}
+                    className="w-[84px] sm:w-[92px] flex-1 max-w-[116px] shrink-0 text-center cursor-pointer group focus:outline-none"
+                  >
+                    <span
+                      className={`text-[11px] sm:text-xs font-bold block whitespace-nowrap transition ${
+                        isSelected
+                          ? 'text-maldives-700 underline underline-offset-4 decoration-2 font-extrabold'
+                          : 'text-espresso-700 group-hover:text-espresso-900'
+                      }`}
+                    >
+                      {m.shortLabel}
                     </span>
-                    <span className="text-[10px] font-mono text-espresso-400 block">
+                    <span className="text-[10px] font-mono text-espresso-500 block whitespace-nowrap mt-0.5">
                       {formatCurrency(m.totalExpenses)}
                     </span>
-                  </div>
-                </div>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -724,7 +813,7 @@ export const FinancialCharts: React.FC<FinancialChartsProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="border-b border-oat-200 dark:border-white/[0.07] text-espresso-500 font-semibold">
+              <tr className="border-b border-oat-200 dark:border-white/[0.07] text-espresso-500 font-semibold whitespace-nowrap">
                 <th className="py-2.5 px-3">Competência</th>
                 <th className="py-2.5 px-3 font-mono">Total Gasto</th>
                 <th className="py-2.5 px-3 font-mono">Essenciais</th>

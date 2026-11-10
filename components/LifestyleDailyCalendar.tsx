@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CARD_PURCHASE_TAGS } from '../constants';
 import {
@@ -246,6 +246,10 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
     }
     return 1;
   });
+
+  useEffect(() => {
+    setSelectedDay((prev) => Math.min(prev, daysInMonth));
+  }, [daysInMonth, selectedMonthKey]);
 
   // Estado para formulário de adicionar novo gasto no dia selecionado
   const [isAddingInDay, setIsAddingInDay] = useState(false);
@@ -690,7 +694,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
             <select
               value={selectedSourceFilter}
               onChange={(e) => setSelectedSourceFilter(e.target.value)}
-              className="bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-bold text-espresso-800 focus:outline-none focus:border-terracotta-500 cursor-pointer"
+              className="compact-select w-full sm:w-auto max-w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-bold text-espresso-800 focus:outline-none focus:border-terracotta-500 cursor-pointer"
             >
               <option value="all">Todos os Cartões & Pix</option>
               {availableCards.map((c) => (
@@ -724,142 +728,155 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
       </div>
 
       {/* Grade do Calendário Mensal */}
-      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-3.5 sm:p-6 shadow-cozy">
-        {/* Cabeçalho dos Dias da Semana (Dom a Sáb) */}
-        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
-          {WEEKDAYS.map((wd, idx) => (
-            <div
-              key={wd}
-              className={`text-center py-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider ${
-                idx === 0 || idx === 6
-                  ? 'text-terracotta-600 font-extrabold'
-                  : 'text-espresso-500'
-              }`}
-            >
-              {wd}
-            </div>
-          ))}
+      <div className="bg-oat-50/95 border border-oat-300 dark:border-white/[0.07] rounded-3xl p-3.5 sm:p-6 shadow-cozy overflow-hidden">
+        <div className="flex items-center justify-between gap-2 pb-2.5 mb-2 border-b border-oat-200/80 dark:border-white/[0.06] sm:hidden">
+          <span className="text-[11px] font-semibold text-espresso-600 flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[15px] text-terracotta-500">
+              swipe
+            </span>
+            Deslize lateralmente no calendário para ver todos os dias
+          </span>
         </div>
 
-        {/* Células dos Dias */}
-        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-          {/* Espaçadores vazios para compensar o dia da semana do dia 1 */}
-          {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-            <div
-              key={`empty-${i}`}
-              className="h-20 sm:h-28 rounded-2xl bg-oat-100/20 dark:bg-white/[0.015] border border-dashed border-oat-200/40 dark:border-white/[0.05]"
-            />
-          ))}
+        <div className="overflow-x-auto pb-2 -mx-1 px-1 overscroll-x-contain">
+          <div className="min-w-[665px] sm:min-w-0">
+            {/* Cabeçalho dos Dias da Semana (Dom a Sáb) */}
+            <div className="grid grid-cols-7 gap-1.5 sm:gap-2 mb-2">
+              {WEEKDAYS.map((wd, idx) => (
+                <div
+                  key={wd}
+                  className={`text-center py-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider ${
+                    idx === 0 || idx === 6
+                      ? 'text-terracotta-600 font-extrabold'
+                      : 'text-espresso-500'
+                  }`}
+                >
+                  {wd}
+                </div>
+              ))}
+            </div>
 
-          {/* Dias 1 a daysInMonth */}
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const dayNum = i + 1;
-            const isToday = isCurrentSystemMonth && dayNum === systemTodayDay;
-            const isSelected = dayNum === selectedDay;
-            const dayPurchases = dailyMetrics.filteredPurchasesMap[dayNum] || [];
-            const dayTotal = dailyMetrics.totals[dayNum] || 0;
-            const hasPurchases = dayPurchases.length > 0;
-            const isPeak = dayNum === dailyMetrics.peakDay && dayTotal > 0;
-            const hasCycleItem = dayPurchases.some((p) => p.isPreviousMonthCycle);
+            {/* Células dos Dias */}
+            <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+              {/* Espaçadores vazios para compensar o dia da semana do dia 1 */}
+              {Array.from({ length: firstDayOfWeek }).map((_, i) => (
+                <div
+                  key={`empty-${i}`}
+                  className="h-24 sm:h-28 rounded-2xl bg-oat-100/20 dark:bg-white/[0.015] border border-dashed border-oat-200/40 dark:border-white/[0.05]"
+                />
+              ))}
 
-            // Extrai ícones únicos de categorias deste dia
-            const uniqueTagIcons = Array.from(
-              new Set(dayPurchases.map((p) => CARD_PURCHASE_TAGS[p.tag]?.icon || 'receipt'))
-            ).slice(0, 3);
+              {/* Dias 1 a daysInMonth */}
+              {Array.from({ length: daysInMonth }).map((_, i) => {
+                const dayNum = i + 1;
+                const isToday = isCurrentSystemMonth && dayNum === systemTodayDay;
+                const isSelected = dayNum === selectedDay;
+                const dayPurchases = dailyMetrics.filteredPurchasesMap[dayNum] || [];
+                const dayTotal = dailyMetrics.totals[dayNum] || 0;
+                const hasPurchases = dayPurchases.length > 0;
+                const isPeak = dayNum === dailyMetrics.peakDay && dayTotal > 0;
+                const hasCycleItem = dayPurchases.some((p) => p.isPreviousMonthCycle);
 
-            return (
-              <motion.button
-                key={`day-${dayNum}`}
-                type="button"
-                whileTap={{ scale: 0.96 }}
-                onClick={() => {
-                  setSelectedDay(dayNum);
-                  setIsAddingInDay(false);
-                }}
-                className={`relative h-20 sm:h-28 p-1.5 sm:p-2.5 rounded-2xl border flex flex-col justify-between text-left transition-all cursor-pointer ${getDayThermalStyle(
-                  dayTotal,
-                  isSelected
-                )}`}
-              >
-                {/* Linha superior: número do dia + badge hoje/pico/ciclo */}
-                <div className="flex items-center justify-between w-full">
-                  <span
-                    className={`text-xs sm:text-sm font-bold font-mono rounded-lg px-1.5 py-0.2 ${
+                // Extrai ícones únicos de categorias deste dia
+                const uniqueTagIcons = Array.from(
+                  new Set(dayPurchases.map((p) => CARD_PURCHASE_TAGS[p.tag]?.icon || 'receipt'))
+                ).slice(0, 3);
+
+                return (
+                  <motion.button
+                    key={`day-${dayNum}`}
+                    type="button"
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => {
+                      setSelectedDay(dayNum);
+                      setIsAddingInDay(false);
+                    }}
+                    className={`relative h-24 sm:h-28 p-2 sm:p-2.5 rounded-2xl border flex flex-col justify-between text-left transition-all cursor-pointer min-w-0 ${getDayThermalStyle(
+                      dayTotal,
                       isSelected
-                        ? 'bg-terracotta-500 text-white'
-                        : isToday
-                        ? 'bg-maldives-500 text-white'
-                        : 'text-espresso-700'
-                    }`}
+                    )}`}
                   >
-                    {dayNum}
-                  </span>
-
-                  <div className="flex items-center gap-1">
-                    {hasCycleItem && (
+                    {/* Linha superior: número do dia + badge hoje/pico/ciclo */}
+                    <div className="flex items-center justify-between w-full">
                       <span
-                        title="Possui compras do ciclo de fechamento da fatura"
-                        className="text-[8px] sm:text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-400/30"
+                        className={`text-xs sm:text-sm font-bold font-mono rounded-lg px-1.5 py-0.2 ${
+                          isSelected
+                            ? 'bg-terracotta-500 text-white'
+                            : isToday
+                            ? 'bg-maldives-500 text-white'
+                            : 'text-espresso-700'
+                        }`}
                       >
-                        ↺
+                        {dayNum}
                       </span>
-                    )}
 
-                    {isToday && !isSelected && (
-                      <span className="text-[9px] font-bold uppercase text-maldives-600 hidden sm:inline">
-                        Hoje
-                      </span>
-                    )}
+                      <div className="flex items-center gap-1">
+                        {hasCycleItem && (
+                          <span
+                            title="Possui compras do ciclo de fechamento da fatura"
+                            className="text-[8px] sm:text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-400/30"
+                          >
+                            ↺
+                          </span>
+                        )}
 
-                    {isPeak && dayTotal > 0 && (
-                      <span
-                        title="Dia de maior gasto no mês"
-                        className="material-symbols-outlined text-terracotta-600 text-[14px] sm:text-[16px]"
-                      >
-                        local_fire_department
-                      </span>
-                    )}
-                  </div>
-                </div>
+                        {isToday && !isSelected && (
+                          <span className="text-[9px] font-bold uppercase text-maldives-600 hidden sm:inline">
+                            Hoje
+                          </span>
+                        )}
 
-                {/* Centro: ícones de tags */}
-                {hasPurchases ? (
-                  <div className="flex items-center gap-0.5 sm:gap-1 flex-wrap my-0.5">
-                    {uniqueTagIcons.map((icon, iconIdx) => (
-                      <span
-                        key={iconIdx}
-                        className="material-symbols-outlined text-[11px] sm:text-[13px] text-espresso-600 opacity-85"
-                      >
-                        {icon}
-                      </span>
-                    ))}
-                    {dayPurchases.length > 3 && (
-                      <span className="text-[9px] font-mono font-bold text-espresso-500">
-                        +{dayPurchases.length - 3}
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1 text-[10px] text-espresso-400 opacity-60">
-                    <span>🍃</span>
-                  </div>
-                )}
-
-                {/* Base: Valor gasto no dia */}
-                <div className="w-full truncate">
-                  {dayTotal > 0 ? (
-                    <div className="text-[11px] sm:text-xs font-mono font-bold text-terracotta-700 truncate">
-                      {formatCurrency(dayTotal)}
+                        {isPeak && dayTotal > 0 && (
+                          <span
+                            title="Dia de maior gasto no mês"
+                            className="material-symbols-outlined text-terracotta-600 text-[14px] sm:text-[16px]"
+                          >
+                            local_fire_department
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-[10px] sm:text-[11px] font-mono text-sage-600/80 truncate">
-                      R$ 0,00
+
+                    {/* Centro: ícones de tags */}
+                    {hasPurchases ? (
+                      <div className="flex items-center gap-0.5 sm:gap-1 flex-wrap my-0.5">
+                        {uniqueTagIcons.map((icon, iconIdx) => (
+                          <span
+                            key={iconIdx}
+                            className="material-symbols-outlined text-[12px] sm:text-[13px] text-espresso-600 opacity-85"
+                          >
+                            {icon}
+                          </span>
+                        ))}
+                        {dayPurchases.length > 3 && (
+                          <span className="text-[9px] font-mono font-bold text-espresso-500">
+                            +{dayPurchases.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-[10px] text-espresso-400 opacity-60">
+                        <span>🍃</span>
+                      </div>
+                    )}
+
+                    {/* Base: Valor gasto no dia */}
+                    <div className="w-full min-w-0">
+                      {dayTotal > 0 ? (
+                        <div className="text-[10.5px] sm:text-xs font-mono font-bold text-terracotta-700 leading-tight whitespace-nowrap tracking-tight">
+                          {formatCurrency(dayTotal)}
+                        </div>
+                      ) : (
+                        <div className="text-[10px] sm:text-[11px] font-mono text-sage-600/80 leading-tight whitespace-nowrap">
+                          R$ 0,00
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </motion.button>
-            );
-          })}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1152,7 +1169,7 @@ export const LifestyleDailyCalendar: React.FC<LifestyleDailyCalendarProps> = ({
                         handleAssignDayToUndated(u, val);
                       }
                     }}
-                    className="bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-2 py-1 text-[11px] font-mono text-espresso-800 cursor-pointer"
+                    className="compact-select bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-lg px-2 py-1 text-[11px] font-mono text-espresso-800 cursor-pointer"
                   >
                     <option value="" disabled>
                       Definir Dia...
