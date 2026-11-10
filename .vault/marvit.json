@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:36:46.281Z",
+  "updatedAt": "2026-11-10T05:38:16.758Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:36:45.036Z",
+    "exportedAt": "2026-11-10T05:38:15.457Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -117,7 +117,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T05:36:45.036Z",
+        "updatedAt": "2026-11-10T05:38:15.457Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -861,7 +861,7 @@
                 "amount": 500,
                 "tag": "outros",
                 "installment": "Parcela 6/8",
-                "purchaseDate": ""
+                "purchaseDate": "26/10"
               },
               {
                 "id": "csv-tx-1794284097091-22",
@@ -2399,7 +2399,7 @@
             "amount": 500,
             "tag": "outros",
             "installment": "Parcela 6/8",
-            "purchaseDate": ""
+            "purchaseDate": "26/10"
           },
           {
             "id": "csv-tx-1794284097091-22",
@@ -3234,7 +3234,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T05:36:45.036Z",
+        "dateCreated": "2026-11-10T05:38:15.457Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -3978,7 +3978,7 @@
                 "amount": 500,
                 "tag": "outros",
                 "installment": "Parcela 6/8",
-                "purchaseDate": ""
+                "purchaseDate": "26/10"
               },
               {
                 "id": "csv-tx-1794284097091-22",
