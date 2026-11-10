@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T15:44:51.277Z",
+  "updatedAt": "2026-11-10T15:44:55.549Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T07:04:45.484Z",
+    "exportedAt": "2026-11-10T15:44:54.347Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T07:04:45.484Z",
+        "updatedAt": "2026-11-10T15:44:54.347Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -38,10 +38,187 @@
           },
           {
             "name": "Nubank Vitoria",
-            "amount": 0,
+            "amount": 1318.06,
             "category": "estilo",
             "subcategory": "cartao",
-            "cardTransactions": [],
+            "cardTransactions": [
+              {
+                "id": "csv-tx-1794325241107-1",
+                "description": "Petrox Comercial",
+                "amount": 70,
+                "tag": "mobilidade",
+                "installment": "À vista",
+                "purchaseDate": "08/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-2",
+                "description": "Petrox Comercial",
+                "amount": 22.29,
+                "tag": "mobilidade",
+                "installment": "À vista",
+                "purchaseDate": "08/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-3",
+                "description": "Wellhub Vitoria Cezimb",
+                "amount": 174.1,
+                "tag": "autocuidado",
+                "installment": "À vista",
+                "purchaseDate": "07/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-4",
+                "description": "Conta Vivo",
+                "amount": 72.23,
+                "tag": "assinaturas",
+                "installment": "À vista",
+                "purchaseDate": "07/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-5",
+                "description": "Clinicahorto",
+                "amount": 5,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "05/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-6",
+                "description": "Rallucoffee",
+                "amount": 6,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "04/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-7",
+                "description": "Apple.Com/Bill",
+                "amount": 66.9,
+                "tag": "assinaturas",
+                "installment": "À vista",
+                "purchaseDate": "03/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-8",
+                "description": "Petrox Comercial",
+                "amount": 10.99,
+                "tag": "mobilidade",
+                "installment": "À vista",
+                "purchaseDate": "03/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-9",
+                "description": "Villa do Sushi",
+                "amount": 95,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "02/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-10",
+                "description": "Bruna Oliveira",
+                "amount": 30,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "01/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-11",
+                "description": "Kobe Sushi",
+                "amount": 119.19,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "31/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-12",
+                "description": "Cabide das Dondocas",
+                "amount": 100.5,
+                "tag": "outros",
+                "installment": "Parcela 1/4",
+                "purchaseDate": "29/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-13",
+                "description": "Rallucoffee",
+                "amount": 6,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "28/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-14",
+                "description": "Auto Park Se - Stanley",
+                "amount": 16,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "28/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-15",
+                "description": "Bazar das Ninas  - NuPay",
+                "amount": 55,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "27/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-17",
+                "description": "Ifd*Helena Food",
+                "amount": 42.99,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "26/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-18",
+                "description": "Felifarma",
+                "amount": 109.66,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "26/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-19",
+                "description": "Decathlon",
+                "amount": 51.99,
+                "tag": "compras",
+                "installment": "Parcela 4/5",
+                "purchaseDate": "25/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-20",
+                "description": "Hna*Oboticario",
+                "amount": 87.84,
+                "tag": "autocuidado",
+                "installment": "Parcela 2/5",
+                "purchaseDate": "25/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-21",
+                "description": "Porto Seguro Cia Seg G",
+                "amount": 25.72,
+                "tag": "compras",
+                "installment": "Parcela 3/10",
+                "purchaseDate": "25/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-22",
+                "description": "Pointdosucao",
+                "amount": 37,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "25/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-23",
+                "description": "111 - Riachuelo - Barr",
+                "amount": 113.66,
+                "tag": "compras",
+                "installment": "Parcela 2/3",
+                "purchaseDate": "25/10"
+              }
+            ],
             "cardLimit": 2500,
             "cardDueDay": 2,
             "isCustom": true,
@@ -2004,10 +2181,187 @@
       },
       {
         "name": "Nubank Vitoria",
-        "amount": 0,
+        "amount": 1318.06,
         "category": "estilo",
         "subcategory": "cartao",
-        "cardTransactions": [],
+        "cardTransactions": [
+          {
+            "id": "csv-tx-1794325241107-1",
+            "description": "Petrox Comercial",
+            "amount": 70,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "08/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-2",
+            "description": "Petrox Comercial",
+            "amount": 22.29,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "08/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-3",
+            "description": "Wellhub Vitoria Cezimb",
+            "amount": 174.1,
+            "tag": "autocuidado",
+            "installment": "À vista",
+            "purchaseDate": "07/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-4",
+            "description": "Conta Vivo",
+            "amount": 72.23,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "07/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-5",
+            "description": "Clinicahorto",
+            "amount": 5,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "05/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-6",
+            "description": "Rallucoffee",
+            "amount": 6,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "04/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-7",
+            "description": "Apple.Com/Bill",
+            "amount": 66.9,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "03/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-8",
+            "description": "Petrox Comercial",
+            "amount": 10.99,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "03/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-9",
+            "description": "Villa do Sushi",
+            "amount": 95,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "02/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-10",
+            "description": "Bruna Oliveira",
+            "amount": 30,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "01/11"
+          },
+          {
+            "id": "csv-tx-1794325241107-11",
+            "description": "Kobe Sushi",
+            "amount": 119.19,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "31/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-12",
+            "description": "Cabide das Dondocas",
+            "amount": 100.5,
+            "tag": "outros",
+            "installment": "Parcela 1/4",
+            "purchaseDate": "29/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-13",
+            "description": "Rallucoffee",
+            "amount": 6,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "28/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-14",
+            "description": "Auto Park Se - Stanley",
+            "amount": 16,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "28/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-15",
+            "description": "Bazar das Ninas  - NuPay",
+            "amount": 55,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "27/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-17",
+            "description": "Ifd*Helena Food",
+            "amount": 42.99,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "26/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-18",
+            "description": "Felifarma",
+            "amount": 109.66,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "26/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-19",
+            "description": "Decathlon",
+            "amount": 51.99,
+            "tag": "compras",
+            "installment": "Parcela 4/5",
+            "purchaseDate": "25/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-20",
+            "description": "Hna*Oboticario",
+            "amount": 87.84,
+            "tag": "autocuidado",
+            "installment": "Parcela 2/5",
+            "purchaseDate": "25/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-21",
+            "description": "Porto Seguro Cia Seg G",
+            "amount": 25.72,
+            "tag": "compras",
+            "installment": "Parcela 3/10",
+            "purchaseDate": "25/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-22",
+            "description": "Pointdosucao",
+            "amount": 37,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "25/10"
+          },
+          {
+            "id": "csv-tx-1794325241107-23",
+            "description": "111 - Riachuelo - Barr",
+            "amount": 113.66,
+            "tag": "compras",
+            "installment": "Parcela 2/3",
+            "purchaseDate": "25/10"
+          }
+        ],
         "cardLimit": 2500,
         "cardDueDay": 2,
         "isCustom": true,
@@ -2172,7 +2526,7 @@
         "id": "snap-1794294285484",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T07:04:45.484Z",
+        "dateCreated": "2026-11-10T15:44:54.347Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -2201,10 +2555,187 @@
           },
           {
             "name": "Nubank Vitoria",
-            "amount": 0,
+            "amount": 1318.06,
             "category": "estilo",
             "subcategory": "cartao",
-            "cardTransactions": [],
+            "cardTransactions": [
+              {
+                "id": "csv-tx-1794325241107-1",
+                "description": "Petrox Comercial",
+                "amount": 70,
+                "tag": "mobilidade",
+                "installment": "À vista",
+                "purchaseDate": "08/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-2",
+                "description": "Petrox Comercial",
+                "amount": 22.29,
+                "tag": "mobilidade",
+                "installment": "À vista",
+                "purchaseDate": "08/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-3",
+                "description": "Wellhub Vitoria Cezimb",
+                "amount": 174.1,
+                "tag": "autocuidado",
+                "installment": "À vista",
+                "purchaseDate": "07/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-4",
+                "description": "Conta Vivo",
+                "amount": 72.23,
+                "tag": "assinaturas",
+                "installment": "À vista",
+                "purchaseDate": "07/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-5",
+                "description": "Clinicahorto",
+                "amount": 5,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "05/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-6",
+                "description": "Rallucoffee",
+                "amount": 6,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "04/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-7",
+                "description": "Apple.Com/Bill",
+                "amount": 66.9,
+                "tag": "assinaturas",
+                "installment": "À vista",
+                "purchaseDate": "03/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-8",
+                "description": "Petrox Comercial",
+                "amount": 10.99,
+                "tag": "mobilidade",
+                "installment": "À vista",
+                "purchaseDate": "03/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-9",
+                "description": "Villa do Sushi",
+                "amount": 95,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "02/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-10",
+                "description": "Bruna Oliveira",
+                "amount": 30,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "01/11"
+              },
+              {
+                "id": "csv-tx-1794325241107-11",
+                "description": "Kobe Sushi",
+                "amount": 119.19,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "31/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-12",
+                "description": "Cabide das Dondocas",
+                "amount": 100.5,
+                "tag": "outros",
+                "installment": "Parcela 1/4",
+                "purchaseDate": "29/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-13",
+                "description": "Rallucoffee",
+                "amount": 6,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "28/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-14",
+                "description": "Auto Park Se - Stanley",
+                "amount": 16,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "28/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-15",
+                "description": "Bazar das Ninas  - NuPay",
+                "amount": 55,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "27/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-17",
+                "description": "Ifd*Helena Food",
+                "amount": 42.99,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "26/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-18",
+                "description": "Felifarma",
+                "amount": 109.66,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "26/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-19",
+                "description": "Decathlon",
+                "amount": 51.99,
+                "tag": "compras",
+                "installment": "Parcela 4/5",
+                "purchaseDate": "25/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-20",
+                "description": "Hna*Oboticario",
+                "amount": 87.84,
+                "tag": "autocuidado",
+                "installment": "Parcela 2/5",
+                "purchaseDate": "25/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-21",
+                "description": "Porto Seguro Cia Seg G",
+                "amount": 25.72,
+                "tag": "compras",
+                "installment": "Parcela 3/10",
+                "purchaseDate": "25/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-22",
+                "description": "Pointdosucao",
+                "amount": 37,
+                "tag": "gastronomia",
+                "installment": "À vista",
+                "purchaseDate": "25/10"
+              },
+              {
+                "id": "csv-tx-1794325241107-23",
+                "description": "111 - Riachuelo - Barr",
+                "amount": 113.66,
+                "tag": "compras",
+                "installment": "Parcela 2/3",
+                "purchaseDate": "25/10"
+              }
+            ],
             "cardLimit": 2500,
             "cardDueDay": 2,
             "isCustom": true,
