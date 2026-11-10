@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T07:02:02.420Z",
+  "updatedAt": "2026-11-10T07:02:10.652Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T07:02:01.314Z",
+    "exportedAt": "2026-11-10T07:02:09.576Z",
     "selectedMonthKey": "2026-09",
     "monthsData": {
       "2026-11": {
@@ -1881,7 +1881,7 @@
       },
       "2026-09": {
         "monthKey": "2026-09",
-        "updatedAt": "2026-11-10T07:02:01.314Z",
+        "updatedAt": "2026-11-10T07:02:09.576Z",
         "profile": {
           "monthlyIncome": 0,
           "additionalIncome": 0,
@@ -1894,19 +1894,6 @@
           "investimento": 25
         },
         "expenses": [
-          {
-            "id": "6",
-            "globalCardId": "6",
-            "name": "Cartão Nubank / Ultravioleta",
-            "amount": 0,
-            "category": "estilo",
-            "subcategory": "cartao",
-            "cardLimit": 1500,
-            "cardDueDay": 10,
-            "cardClosingDay": 25,
-            "cardTransactions": [],
-            "isCustom": true
-          },
           {
             "id": "7",
             "globalCardId": "7",
@@ -1938,19 +1925,6 @@
     },
     "expenses": [
       {
-        "id": "6",
-        "globalCardId": "6",
-        "name": "Cartão Nubank / Ultravioleta",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardLimit": 1500,
-        "cardDueDay": 10,
-        "cardClosingDay": 25,
-        "cardTransactions": [],
-        "isCustom": true
-      },
-      {
         "id": "7",
         "globalCardId": "7",
         "name": "Cartão Inter / Pontos",
@@ -1960,6 +1934,19 @@
         "cardLimit": 1000,
         "cardDueDay": 15,
         "cardClosingDay": 5,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "6",
+        "globalCardId": "6",
+        "name": "Cartão Nubank / Ultravioleta",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 1500,
+        "cardDueDay": 10,
+        "cardClosingDay": 25,
         "cardTransactions": [],
         "isCustom": true
       }
