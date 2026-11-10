@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:45:21.237Z",
+  "updatedAt": "2026-11-10T00:45:39.254Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T00:45:20.290Z",
+    "exportedAt": "2026-11-10T00:45:38.288Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -76,7 +76,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T00:45:20.290Z",
+        "updatedAt": "2026-11-10T00:45:38.288Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -89,6 +89,14 @@
           "investimento": 20
         },
         "expenses": [
+          {
+            "name": "Moto eletrica",
+            "amount": 5000,
+            "category": "estilo",
+            "subcategory": "direto",
+            "isCustom": true,
+            "id": "exp-1794271538289"
+          },
           {
             "name": "Cartões (Inter, Nubank, Itau)",
             "amount": 15288.95,
@@ -146,6 +154,14 @@
       "investimento": 20
     },
     "expenses": [
+      {
+        "name": "Moto eletrica",
+        "amount": 5000,
+        "category": "estilo",
+        "subcategory": "direto",
+        "isCustom": true,
+        "id": "exp-1794271538289"
+      },
       {
         "name": "Cartões (Inter, Nubank, Itau)",
         "amount": 15288.95,
@@ -207,7 +223,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T00:45:20.290Z",
+        "dateCreated": "2026-11-10T00:45:38.288Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -220,6 +236,14 @@
           "investimento": 20
         },
         "expenses": [
+          {
+            "name": "Moto eletrica",
+            "amount": 5000,
+            "category": "estilo",
+            "subcategory": "direto",
+            "isCustom": true,
+            "id": "exp-1794271538289"
+          },
           {
             "name": "Cartões (Inter, Nubank, Itau)",
             "amount": 15288.95,
