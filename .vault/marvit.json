@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T04:20:26.794Z",
+  "updatedAt": "2026-11-10T04:20:28.524Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T04:20:25.696Z",
+    "exportedAt": "2026-11-10T04:20:27.288Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -129,7 +129,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T04:20:25.696Z",
+        "updatedAt": "2026-11-10T04:20:27.288Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -196,7 +196,7 @@
             "globalCardId": "exp-1794272287172"
           },
           {
-            "name": "Moto E",
+            "name": "Moto Eletria",
             "amount": 5000,
             "category": "estilo",
             "subcategory": "direto",
@@ -989,7 +989,7 @@
         "globalCardId": "exp-1794272287172"
       },
       {
-        "name": "Moto E",
+        "name": "Moto Eletria",
         "amount": 5000,
         "category": "estilo",
         "subcategory": "direto",
@@ -1762,7 +1762,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T04:20:25.696Z",
+        "dateCreated": "2026-11-10T04:20:27.288Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -1829,7 +1829,7 @@
             "globalCardId": "exp-1794272287172"
           },
           {
-            "name": "Moto E",
+            "name": "Moto Eletria",
             "amount": 5000,
             "category": "estilo",
             "subcategory": "direto",
