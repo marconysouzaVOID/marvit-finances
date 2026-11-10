@@ -26,6 +26,7 @@ import { GoalsManager } from './components/GoalsManager';
 import { HistoryManager } from './components/HistoryManager';
 import { IncomeCard } from './components/IncomeCard';
 import { InteractiveAsset } from './components/InteractiveAsset';
+import { InteractiveBrandTitle } from './components/InteractiveBrandTitle';
 import { FinancialCharts } from './components/FinancialCharts';
 import { CompoundInterestCalculator } from './components/CompoundInterestCalculator';
 import { SingleMonthImportModal } from './components/SingleMonthImportModal';
@@ -2276,14 +2277,35 @@ export const App: React.FC = () => {
     const hasBio = pwa && Boolean(hasRegisteredBiometrics());
 
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-oat-100 relative">
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-oat-100 relative overflow-hidden">
+        {/* Plano de Fundo Atmosférico (Vila Costeira Cozy + Lagoa Maldivas) */}
+        <motion.img
+          src="/assets/marvit-lock-bg.jpg"
+          alt=""
+          aria-hidden="true"
+          initial={{ scale: 1.07, opacity: 0 }}
+          animate={{ scale: 1.02, opacity: 1 }}
+          transition={{ duration: 1.1, ease: 'easeOut' }}
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+        />
+
+        {/* Véu Atmosférico Adaptativo (Modo Claro Cozy & Modo Escuro Velvet Slate) */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#FAF6F0]/30 via-[#FAF6F0]/10 to-[#FAF6F0]/35 dark:from-[#0B0D11]/75 dark:via-[#0B0D11]/40 dark:to-[#0B0D11]/80 backdrop-blur-[1px]"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(250,246,240,0.24)_0%,transparent_65%)] dark:bg-[radial-gradient(circle_at_center,rgba(11,13,17,0.52)_0%,transparent_68%)]"
+        />
+
         <div className="fixed top-4 right-4 z-30">
           <button
             type="button"
             onClick={toggleTheme}
-            className="px-3.5 py-2 rounded-2xl bg-oat-50/90 dark:bg-surface-elevated border border-oat-300 dark:border-white/[0.08] text-espresso-800 text-xs font-bold flex items-center gap-2 shadow-cozy hover:border-maldives-500/60 transition cursor-pointer"
+            className="px-3.5 py-2 rounded-2xl bg-oat-50/90 dark:bg-surface-elevated/85 backdrop-blur-md border border-oat-300/90 dark:border-white/[0.12] text-espresso-800 text-xs font-bold flex items-center gap-2 shadow-cozy hover:border-maldives-500/60 transition cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[18px] text-maldives-600">
+            <span aria-hidden="true" className="material-symbols-outlined text-[18px] text-maldives-600">
               {isDark ? 'light_mode' : 'dark_mode'}
             </span>
             <span>{isDark ? 'Modo Claro' : 'Modo Escuro'}</span>
@@ -2291,18 +2313,45 @@ export const App: React.FC = () => {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-surface-elevated border border-oat-300 dark:border-white/[0.08] rounded-3xl max-w-md w-full p-7 shadow-cozy-lg text-center space-y-5"
+          initial={{ opacity: 0, y: 12, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+          className="relative z-10 bg-oat-50/85 dark:bg-[#14171D]/80 backdrop-blur-xl border border-white/75 dark:border-white/[0.12] rounded-[2rem] max-w-md w-full px-6 py-7 sm:px-8 sm:py-8 shadow-[0_28px_70px_-15px_rgba(12,15,20,0.35)] dark:shadow-[0_32px_80px_-12px_rgba(0,0,0,0.78)] text-center space-y-5"
         >
-          <div className="flex justify-center">
-            <InteractiveAsset
-              src="/assets/marvit-logo.png"
-              alt="Marvit&Finances Mascote"
-              size="xl"
-              tone="maldives"
-              badgeIcon="lock"
-            />
+          {/* Mascote / Medalhão Central Ampliado */}
+          <div className="flex justify-center pt-1">
+            <motion.div
+              className="relative group flex items-center justify-center w-44 h-44 sm:w-52 sm:h-52 cursor-pointer"
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.05, rotate: 1.2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {/* Halo luminoso suave atrás da moeda */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-2 rounded-full bg-gradient-to-tr from-maldives-500/35 via-[#E8BE6A]/35 to-terracotta-400/25 blur-2xl opacity-75 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              />
+
+              {/* Aro circular translúcido em volta do medalhão */}
+              <div className="relative w-full h-full rounded-full p-1.5 bg-gradient-to-b from-white/70 via-white/25 to-white/10 dark:from-[#E9BE6A]/25 dark:via-white/[0.06] dark:to-white/[0.02] ring-1 ring-white/60 dark:ring-[#E9BE6A]/30 shadow-[0_18px_42px_-12px_rgba(15,17,21,0.45)] flex items-center justify-center overflow-hidden">
+                <img
+                  src="/assets/marvit-logo.png"
+                  alt="Marvit & Finances Mascote"
+                  className="w-full h-full object-contain rounded-full select-none pointer-events-none drop-shadow-xl"
+                />
+              </div>
+
+              {/* Selo discreto de proteção no canto inferior */}
+              <div
+                aria-hidden="true"
+                className="absolute bottom-1.5 right-2 w-10 h-10 rounded-2xl bg-oat-50/95 dark:bg-surface-elevated/95 backdrop-blur-md border border-oat-300/80 dark:border-white/[0.14] shadow-md flex items-center justify-center group-hover:scale-110 transition-transform duration-200"
+              >
+                <span className="material-symbols-outlined text-[20px] text-maldives-600 dark:text-[#E9BE6A]">
+                  lock
+                </span>
+              </div>
+            </motion.div>
           </div>
 
           {showFirstAccessChangePin ? (
@@ -2325,14 +2374,14 @@ export const App: React.FC = () => {
                   value={firstAccessNewPin}
                   onChange={(e) => setFirstAccessNewPin(e.target.value)}
                   placeholder="Digite seu novo PIN (mín. 4 dígitos)"
-                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
+                  className="w-full bg-white/80 dark:bg-surface-input/90 border border-oat-300 dark:border-white/[0.10] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                 />
                 <input
                   type="password"
                   value={firstAccessConfirmPin}
                   onChange={(e) => setFirstAccessConfirmPin(e.target.value)}
                   placeholder="Confirme seu novo PIN"
-                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
+                  className="w-full bg-white/80 dark:bg-surface-input/90 border border-oat-300 dark:border-white/[0.10] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                 />
                 {lockError && (
                   <p className="text-xs text-terracotta-600 font-semibold">
@@ -2357,11 +2406,9 @@ export const App: React.FC = () => {
             </div>
           ) : (
             <>
-              <div>
-                <h1 className="text-2xl font-display font-bold text-espresso-900">
-                  Cofre Marvit Protegido
-                </h1>
-                <p className="text-xs text-espresso-600 mt-1">
+              <div className="space-y-1.5">
+                <InteractiveBrandTitle text="Marvit & Finances" isDark={isDark} />
+                <p className="text-xs text-espresso-600">
                   {hasBio
                     ? 'Valide sua Biometria ou digite seu PIN para abrir seu planejamento financeiro.'
                     : 'Digite seu PIN de acesso para abrir seu planejamento financeiro.'}
@@ -2388,7 +2435,7 @@ export const App: React.FC = () => {
                   value={lockPinInput}
                   onChange={(e) => setLockPinInput(e.target.value)}
                   placeholder="Digite seu PIN secreto..."
-                  className="w-full bg-surface-input border border-oat-300 dark:border-white/[0.08] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
+                  className="w-full bg-white/80 dark:bg-surface-input/90 border border-oat-300 dark:border-white/[0.10] rounded-xl px-4 py-2.5 text-center text-sm font-mono font-bold text-espresso-900 placeholder:text-espresso-400 focus:outline-none focus:border-maldives-500"
                 />
                 {lockError && (
                   <p className="text-xs text-terracotta-600 font-semibold">
@@ -2398,15 +2445,15 @@ export const App: React.FC = () => {
                 <button
                   type="submit"
                   disabled={lockLoading}
-                  className="w-full py-3 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white text-xs sm:text-sm font-bold transition shadow-sm cursor-pointer"
+                  className="w-full py-3 rounded-2xl bg-maldives-500 hover:bg-maldives-600 text-white text-xs sm:text-sm font-bold transition shadow-md cursor-pointer"
                 >
                   {lockLoading ? 'Verificando PIN...' : 'Entrar com PIN'}
                 </button>
               </form>
 
-              <p className="text-[11px] text-espresso-500 pt-1">
+              <p className="text-[11px] text-espresso-600 pt-1">
                 Primeiro acesso? Utilize o PIN padrão inicial:{' '}
-                <strong className="font-mono text-maldives-700">2026</strong>
+                <strong className="font-mono text-maldives-700 dark:text-[#65D0E0]">2026</strong>
               </p>
             </>
           )}
