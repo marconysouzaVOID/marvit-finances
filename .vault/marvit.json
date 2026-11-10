@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T07:02:10.652Z",
+  "updatedAt": "2026-11-10T07:02:11.235Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T07:02:09.576Z",
+    "exportedAt": "2026-11-10T07:02:10.242Z",
     "selectedMonthKey": "2026-09",
     "monthsData": {
       "2026-11": {
@@ -1881,7 +1881,7 @@
       },
       "2026-09": {
         "monthKey": "2026-09",
-        "updatedAt": "2026-11-10T07:02:09.576Z",
+        "updatedAt": "2026-11-10T07:02:10.242Z",
         "profile": {
           "monthlyIncome": 0,
           "additionalIncome": 0,
@@ -1893,21 +1893,7 @@
           "estilo": 35,
           "investimento": 25
         },
-        "expenses": [
-          {
-            "id": "7",
-            "globalCardId": "7",
-            "name": "Cartão Inter / Pontos",
-            "amount": 0,
-            "category": "estilo",
-            "subcategory": "cartao",
-            "cardLimit": 1000,
-            "cardDueDay": 15,
-            "cardClosingDay": 5,
-            "cardTransactions": [],
-            "isCustom": true
-          }
-        ],
+        "expenses": [],
         "excludedGoalIds": [],
         "goalContributionOverrides": {}
       }
@@ -1925,19 +1911,6 @@
     },
     "expenses": [
       {
-        "id": "7",
-        "globalCardId": "7",
-        "name": "Cartão Inter / Pontos",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardLimit": 1000,
-        "cardDueDay": 15,
-        "cardClosingDay": 5,
-        "cardTransactions": [],
-        "isCustom": true
-      },
-      {
         "id": "6",
         "globalCardId": "6",
         "name": "Cartão Nubank / Ultravioleta",
@@ -1947,6 +1920,19 @@
         "cardLimit": 1500,
         "cardDueDay": 10,
         "cardClosingDay": 25,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "7",
+        "globalCardId": "7",
+        "name": "Cartão Inter / Pontos",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 1000,
+        "cardDueDay": 15,
+        "cardClosingDay": 5,
         "cardTransactions": [],
         "isCustom": true
       }
