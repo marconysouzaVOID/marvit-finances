@@ -8,7 +8,7 @@ import {
   GlobalCreditCard,
 } from '../types';
 import { formatCurrency, formatMonthKeyLabel, formatPercent, inferCardPurchaseTag } from '../utils/formatters';
-import { parsePdfInvoice, isPdfFile } from '../utils/pdfInvoiceParser';
+import { parsePdfInvoice, isPdfFile, parsePastedInvoiceText } from '../utils/pdfInvoiceParser';
 import { InteractiveAsset } from './InteractiveAsset';
 import { LifestyleDailyCalendar } from './LifestyleDailyCalendar';
 
@@ -309,6 +309,13 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   const [pdfPasswordError, setPdfPasswordError] = useState<string | null>(null);
   const [pendingPdfFile, setPendingPdfFile] = useState<File | null>(null);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
+  const [pdfDebugLines, setPdfDebugLines] = useState<string[]>([]);
+  const [showDebugLines, setShowDebugLines] = useState(false);
+  const [isCopiedDebug, setIsCopiedDebug] = useState(false);
+
+  // Modal para colar texto de fatura diretamente
+  const [pastedInvoiceModalOpen, setPastedInvoiceModalOpen] = useState(false);
+  const [pastedInvoiceText, setPastedInvoiceText] = useState('');
 
   // Estado para adicionar gasto individualizado na fatura do cartão selecionado
   const [txDesc, setTxDesc] = useState('');
@@ -598,6 +605,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
       );
       if (res.success && res.summary) {
         if (res.summary.transactions.length === 0) {
+          setPdfDebugLines(res.rawLines || []);
           setPdfPasswordError(
             'Fatura descriptografada com sucesso, mas nenhuma compra foi identificada no padrão esperado.'
           );
@@ -607,6 +615,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           setPdfPasswordModalOpen(false);
           setPendingPdfFile(null);
           setPdfPasswordInput('');
+          setPdfDebugLines([]);
+          setShowDebugLines(false);
         }
       } else if (res.isWrongPassword || res.needsPassword) {
         setPdfPasswordError(
@@ -631,6 +641,26 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     setPdfPasswordInput('');
     setPdfPasswordError(null);
     setIsParsingPdf(false);
+    setPdfDebugLines([]);
+    setShowDebugLines(false);
+  };
+
+  const handleProcessPastedInvoice = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pastedInvoiceText.trim() || !activeCard) return;
+
+    const summary = parsePastedInvoiceText(pastedInvoiceText, 'Texto Colado');
+    if (summary.transactions.length > 0) {
+      setCsvImportMode('replace');
+      setCsvPreview(summary);
+      setPastedInvoiceModalOpen(false);
+      setPastedInvoiceText('');
+      setPdfPasswordModalOpen(false);
+    } else {
+      alert(
+        'Não foi possível encontrar compras no texto informado. Verifique se o conteúdo possui data e valor.'
+      );
+    }
   };
 
   // Carregar a fatura exemplo Nubank_2026-11-01.csv diretamente no preview do cartão selecionado
@@ -1278,6 +1308,18 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       picture_as_pdf
                     </span>
                     <span>Fatura Inter (PDF)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPastedInvoiceModalOpen(true)}
+                    className="px-2.5 py-1.5 rounded-xl bg-oat-100 hover:bg-oat-200 text-espresso-800 border border-oat-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    title="Colar texto de extrato ou fatura copiado do app ou PDF"
+                  >
+                    <span className="material-symbols-outlined text-[16px] text-espresso-600">
+                      content_paste
+                    </span>
+                    <span>Colar Texto</span>
                   </button>
 
                   <button
@@ -2130,44 +2172,182 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     </button>
                   </div>
                   {pdfPasswordError && (
-                    <p className="text-xs text-terracotta-600 font-semibold mt-1.5 flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">
-                        error
-                      </span>
-                      {pdfPasswordError}
-                    </p>
+                    <div className="space-y-2 mt-2">
+                      <p className="text-xs text-terracotta-600 font-semibold flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">
+                          error
+                        </span>
+                        {pdfPasswordError}
+                      </p>
+
+                      {pdfDebugLines.length > 0 && (
+                        <div className="rounded-xl border border-oat-300 dark:border-espresso-700 bg-oat-100 dark:bg-espresso-800 p-2.5 text-xs space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-espresso-800 dark:text-oat-100 flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[16px] text-maldives-600">
+                                terminal
+                              </span>
+                              <span>Linhas lidas do PDF ({pdfDebugLines.length})</span>
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(
+                                    pdfDebugLines.join('\n')
+                                  );
+                                  setIsCopiedDebug(true);
+                                  setTimeout(() => setIsCopiedDebug(false), 2000);
+                                }}
+                                className="px-2 py-0.5 rounded-lg bg-white dark:bg-espresso-700 border border-oat-300 text-[10px] font-bold text-espresso-700 dark:text-oat-200 hover:bg-oat-200 cursor-pointer"
+                              >
+                                {isCopiedDebug ? 'Copiado!' : 'Copiar Texto'}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setShowDebugLines(!showDebugLines)}
+                                className="px-2 py-0.5 rounded-lg bg-white dark:bg-espresso-700 border border-oat-300 text-[10px] font-bold text-espresso-700 dark:text-oat-200 hover:bg-oat-200 cursor-pointer"
+                              >
+                                {showDebugLines ? 'Recolher' : 'Expandir'}
+                              </button>
+                            </div>
+                          </div>
+
+                          {showDebugLines && (
+                            <pre className="max-h-40 overflow-y-auto text-[10px] font-mono p-2 bg-white dark:bg-espresso-950 rounded-lg border border-oat-200 dark:border-espresso-800 text-espresso-800 dark:text-oat-200 whitespace-pre-wrap select-all">
+                              {pdfDebugLines.slice(0, 35).join('\n')}
+                            </pre>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
+
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPdfPasswordModalOpen(false);
+                      setPastedInvoiceModalOpen(true);
+                    }}
+                    className="text-[11px] font-bold text-terracotta-600 hover:text-terracotta-700 hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">
+                      content_paste
+                    </span>
+                    <span>Colar texto manualmente</span>
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCancelPdfPassword}
+                      disabled={isParsingPdf}
+                      className="px-4 py-2 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 transition cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isParsingPdf || !pdfPasswordInput.trim()}
+                      className="px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
+                    >
+                      {isParsingPdf ? (
+                        <>
+                          <span className="animate-spin material-symbols-outlined text-base">
+                            progress_activity
+                          </span>
+                          <span>Descriptografando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-base">
+                            lock_open
+                          </span>
+                          <span>Desbloquear e Importar</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal para Colar Texto da Fatura Manualmente */}
+      <AnimatePresence>
+        {pastedInvoiceModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-espresso-950/60 backdrop-blur-xs flex items-center justify-center p-4"
+            onClick={() => setPastedInvoiceModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg bg-oat-50 dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 rounded-3xl p-6 shadow-2xl space-y-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-maldives-100 dark:bg-maldives-900/40 text-maldives-700 dark:text-maldives-300 flex items-center justify-center shadow-2xs">
+                    <span className="material-symbols-outlined text-2xl">
+                      content_paste
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-display font-bold text-espresso-900 dark:text-oat-100">
+                      Colar Texto da Fatura
+                    </h3>
+                    <p className="text-xs text-espresso-600 dark:text-espresso-400">
+                      Copie o extrato de compras do seu app ou PDF e cole abaixo
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPastedInvoiceModalOpen(false)}
+                  className="p-1 rounded-full text-espresso-400 hover:text-espresso-700 hover:bg-oat-200 transition cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-lg">close</span>
+                </button>
+              </div>
+
+              <form onSubmit={handleProcessPastedInvoice} className="space-y-3">
+                <textarea
+                  value={pastedInvoiceText}
+                  onChange={(e) => setPastedInvoiceText(e.target.value)}
+                  placeholder="Exemplo de linhas que você pode colar aqui:
+12/10 IFOOD *RESTAURANTE 45,90
+14/10 SHEIN BRASIL 129,90 01/03
+18/10 UBER TRIP 24,90"
+                  rows={8}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-espresso-800 border border-oat-300 dark:border-espresso-700 text-xs font-mono text-espresso-900 dark:text-oat-100 placeholder:text-espresso-400 focus:outline-hidden focus:ring-2 focus:ring-terracotta-500"
+                />
 
                 <div className="flex items-center justify-end gap-2 pt-1">
                   <button
                     type="button"
-                    onClick={handleCancelPdfPassword}
-                    disabled={isParsingPdf}
+                    onClick={() => setPastedInvoiceModalOpen(false)}
                     className="px-4 py-2 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 transition cursor-pointer"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    disabled={isParsingPdf || !pdfPasswordInput.trim()}
-                    className="px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
+                    disabled={!pastedInvoiceText.trim()}
+                    className="px-4 py-2 rounded-xl bg-maldives-500 hover:bg-maldives-600 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
                   >
-                    {isParsingPdf ? (
-                      <>
-                        <span className="animate-spin material-symbols-outlined text-base">
-                          progress_activity
-                        </span>
-                        <span>Descriptografando...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="material-symbols-outlined text-base">
-                          lock_open
-                        </span>
-                        <span>Desbloquear e Importar</span>
-                      </>
-                    )}
+                    <span className="material-symbols-outlined text-base">
+                      playlist_add_check
+                    </span>
+                    <span>Processar Texto Colado</span>
                   </button>
                 </div>
               </form>

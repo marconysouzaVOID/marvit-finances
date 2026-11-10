@@ -8,6 +8,7 @@ export interface InvoiceParseSummary {
   ignoredPaymentsCount: number;
   ignoredPaymentsTotal: number;
   detectedBank?: string;
+  rawLines?: string[];
 }
 
 export interface PdfParseResult {
@@ -16,6 +17,7 @@ export interface PdfParseResult {
   isWrongPassword?: boolean;
   error?: string;
   summary?: InvoiceParseSummary;
+  rawLines?: string[];
 }
 
 /** Garante que a biblioteca PDF.js esteja carregada no navegador */
@@ -74,11 +76,22 @@ const PT_MONTHS: Record<string, string> = {
 export function normalizeInvoiceDate(rawDate: string): string {
   const trimmed = rawDate.trim().toLowerCase();
 
-  // Ex: "15/10/2026" ou "15/10/26" -> "15/10"
-  const dmyMatch = trimmed.match(/^(\d{1,2})[\/\.](\d{1,2})(?:[\/\.]\d{2,4})?$/);
+  // Ex: "15/10/2026", "15.10.2026", "15-10-2026", "15/10"
+  const dmyMatch = trimmed.match(/^(\d{1,2})[\/\.-](\d{1,2})(?:[\/\.-]\d{2,4})?$/);
   if (dmyMatch) {
     const day = dmyMatch[1].padStart(2, '0');
     const month = dmyMatch[2].padStart(2, '0');
+    return `${day}/${month}`;
+  }
+
+  // Ex: "15/out", "15/out/2026", "15-out-2026"
+  const slashMonthMatch = trimmed.match(
+    /^(\d{1,2})[\/\.-](jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*(?:[\/\.-]\d{2,4})?$/i
+  );
+  if (slashMonthMatch) {
+    const day = slashMonthMatch[1].padStart(2, '0');
+    const monthCode = slashMonthMatch[2].toLowerCase().substring(0, 3);
+    const month = PT_MONTHS[monthCode] || '01';
     return `${day}/${month}`;
   }
 
@@ -96,15 +109,31 @@ export function normalizeInvoiceDate(rawDate: string): string {
   return rawDate;
 }
 
-/** Extrai informações de parcelamento da descrição (ex: "AMAZON 02/05" -> "Parcela 2/5") */
-export function extractInstallmentInfo(rawDesc: string): {
+/** Extrai informações de parcelamento da descrição ou de texto sufixo */
+export function extractInstallmentInfo(
+  rawDesc: string,
+  trailingStr?: string
+): {
   cleanTitle: string;
   installment: string;
 } {
   let cleanTitle = rawDesc.trim();
   let installment = 'À vista';
 
-  // 1. Padrão "Parcela X/Y" ou "- Parcela X/Y"
+  // 1. Verificar se o sufixo contém parcela (ex: "01/03" ou "Parcela 2 de 5")
+  if (trailingStr && trailingStr.trim()) {
+    const t = trailingStr.trim();
+    const tm1 = t.match(/(?:-\s*)?Parcela\s+(\d+\/\d+)/i);
+    if (tm1) return { cleanTitle, installment: `Parcela ${tm1[1]}` };
+
+    const tm2 = t.match(/(\d{1,2}\/\d{1,2})/);
+    if (tm2) return { cleanTitle, installment: `Parcela ${tm2[1]}` };
+
+    const tm3 = t.match(/(\d{1,2})\s+de\s+(\d{1,2})/i);
+    if (tm3) return { cleanTitle, installment: `Parcela ${tm3[1]}/${tm3[2]}` };
+  }
+
+  // 2. Padrão "Parcela X/Y" ou "- Parcela X/Y" no corpo da descrição
   const m1 = cleanTitle.match(/(?:-\s*)?Parcela\s+(\d+\/\d+)/i);
   if (m1) {
     installment = `Parcela ${m1[1]}`;
@@ -112,7 +141,7 @@ export function extractInstallmentInfo(rawDesc: string): {
     return { cleanTitle, installment };
   }
 
-  // 2. Padrão "01/03" ou "2/6" no final da string
+  // 3. Padrão "01/03" ou "2/6" no final da string
   const m2 = cleanTitle.match(/(?:\s+|-)(\d{1,2}\/\d{1,2})$/);
   if (m2) {
     installment = `Parcela ${m2[1]}`;
@@ -120,7 +149,7 @@ export function extractInstallmentInfo(rawDesc: string): {
     return { cleanTitle, installment };
   }
 
-  // 3. Padrão "X de Y" (ex: "1 de 5")
+  // 4. Padrão "X de Y" (ex: "1 de 5")
   const m3 = cleanTitle.match(/(?:-\s*)?(\d{1,2})\s+de\s+(\d{1,2})$/i);
   if (m3) {
     installment = `Parcela ${m3[1]}/${m3[2]}`;
@@ -133,8 +162,10 @@ export function extractInstallmentInfo(rawDesc: string): {
 
 /** Converte texto de valor monetário brasileiro ("1.250,50", "R$ 45,90", "- 500,00") para número */
 export function parseBrlAmount(rawVal: string): number {
-  const isNegative = rawVal.includes('-') || /\b(estorno|crédito|credito|pgto|pagamento)\b/i.test(rawVal);
-  const cleaned = rawVal.replace(/[R$\s\-+]/gi, '');
+  const isNegative =
+    rawVal.includes('-') ||
+    /\b(estorno|crédito|credito|pgto|pagamento)\b/i.test(rawVal);
+  const cleaned = rawVal.replace(/[R$US\s\-+]/gi, '');
   let normalized = cleaned;
   if (cleaned.includes(',')) {
     normalized = cleaned.replace(/\./g, '').replace(',', '.');
@@ -148,38 +179,183 @@ export function parseBrlAmount(rawVal: string): number {
 export function isPaymentOrCreditLine(desc: string, amount: number): boolean {
   if (amount < 0) return true;
   const lower = desc.toLowerCase();
-  return (
-    /pagamento\s+(?:de\s+fatura|recebido|efetuado|via\s+pix|por\s+debito)|quitac|credito\s+de\s+fatura|estorno\s+de\s+pagamento/i.test(
-      lower
-    )
+  return /pagamento\s+(?:de\s+fatura|recebido|efetuado|via\s+pix|por\s+debito)|quitac|credito\s+de\s+fatura|estorno\s+de\s+pagamento/i.test(
+    lower
   );
 }
 
-/** Expressão regular flexível para identificar linhas de transações bancárias em PDF */
-const TX_LINE_REGEX =
-  /^(\d{1,2}[\/\.]\d{1,2}(?:[\/\.]\d{2,4})?|\d{1,2}\s+(?:jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*(?:\s*\d{2,4})?)\s+(.+?)\s+(-?\s*(?:R\$\s*)?\d{1,3}(?:\.\d{3})*,\d{2}|-?\s*(?:R\$\s*)?\d+,\d{2}|\d{1,3}(?:\.\d{3})*,\d{2}\s*-)$/i;
+/** Expressões regulares amplas para capturar transações em faturas bancárias */
+const DATE_PATTERN =
+  '(\\d{1,2}(?:[\\/\\.-]|\\s+(?:de\\s+)?)(?:\\d{1,2}|jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*(?:[\\/\\.-]\\d{2,4}|\\s+\\d{2,4})?)';
 
-/** Palavras ou frases que indicam que a linha NÃO é uma compra comum */
-const IGNORED_HEADER_FOOTER_PATTERNS = [
+const AMOUNT_PATTERN =
+  '(-?\\s*(?:R\\$\\s*|US\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d{2}|-?\\s*(?:R\\$\\s*|US\\$\\s*)?\\d+,\\d{2}|\\d{1,3}(?:\\.\\d{3})*,\\d{2}\\s*-)';
+
+// Padrão 1: Data ... Estabelecimento ... Valor (ex: "15/10 IFOOD 45,90" ou "15/10/2026 SHEIN 120,00 01/03")
+const TX_DATE_FIRST = new RegExp(
+  `(?:^|\\s+)${DATE_PATTERN}\\s+(.+?)\\s+${AMOUNT_PATTERN}(?:\\s+(.*))?$`,
+  'i'
+);
+
+// Padrão 2: Estabelecimento ... Data ... Valor (ex: "IFOOD RESTAURANTE 15/10 45,90")
+const TX_DESC_FIRST = new RegExp(
+  `^(.+?)\\s+${DATE_PATTERN}\\s+${AMOUNT_PATTERN}(?:\\s+(.*))?$`,
+  'i'
+);
+
+/** Palavras do cabeçalho / resumo geral que NÃO são compras */
+const NON_PURCHASE_PHRASES = [
   /total\s+da\s+fatura/i,
   /vencimento/i,
   /pagamento\s+m[íi]nimo/i,
   /saldo\s+anterior/i,
   /limite\s+(?:total|utilizado|dispon[íi]vel)/i,
   /encargos\s+financeiros/i,
-  /taxas\s+e\s+tarifas/i,
-  /cet\s+anual/i,
-  /central\s+de\s+atendimento/i,
-  /ouvidoria/i,
-  /p[áa]gina\s+\d+/i,
-  /banco\s+inter\s+s\.?a\.?/i,
   /autentica[çc][ãa]o\s+mec[âa]nica/i,
   /resumo\s+da\s+fatura/i,
 ];
 
 /**
- * Faz a leitura de uma fatura de cartão em PDF (Banco Inter, Nubank, C6, Itaú, etc.)
- * Suporta descriptografia de PDFs protegidos por senha (ex: dígitos do CPF do Inter).
+ * Processa uma lista de linhas de texto (com suporte a janela deslizante de 1, 2 ou 3 linhas consecutivas)
+ * para identificar compras de faturas bancárias mesmo com quebras de linha.
+ */
+export function extractTransactionsFromLines(
+  lines: string[],
+  detectedBank = 'Banco Inter',
+  fileName = 'fatura.pdf'
+): {
+  transactions: CreditCardTransaction[];
+  ignoredPaymentsCount: number;
+  ignoredPaymentsTotal: number;
+} {
+  const transactions: CreditCardTransaction[] = [];
+  let ignoredPaymentsCount = 0;
+  let ignoredPaymentsTotal = 0;
+
+  let i = 0;
+  while (i < lines.length) {
+    const l1 = lines[i].trim();
+    if (!l1) {
+      i++;
+      continue;
+    }
+
+    let matchData: {
+      date: string;
+      desc: string;
+      val: string;
+      trailing?: string;
+      consumedLines: number;
+    } | null = null;
+
+    // 1. Tenta casar 1 linha
+    let m = l1.match(TX_DATE_FIRST);
+    if (m) {
+      matchData = {
+        date: m[1],
+        desc: m[2],
+        val: m[3],
+        trailing: m[4],
+        consumedLines: 1,
+      };
+    } else {
+      let mRev = l1.match(TX_DESC_FIRST);
+      if (mRev) {
+        matchData = {
+          date: mRev[2],
+          desc: mRev[1],
+          val: mRev[3],
+          trailing: mRev[4],
+          consumedLines: 1,
+        };
+      }
+    }
+
+    // 2. Se não casou e há linha seguinte, tenta combinar 2 linhas
+    if (!matchData && i + 1 < lines.length) {
+      const l2 = `${l1} ${lines[i + 1].trim()}`;
+      m = l2.match(TX_DATE_FIRST);
+      if (m) {
+        matchData = {
+          date: m[1],
+          desc: m[2],
+          val: m[3],
+          trailing: m[4],
+          consumedLines: 2,
+        };
+      } else {
+        let mRev = l2.match(TX_DESC_FIRST);
+        if (mRev) {
+          matchData = {
+            date: mRev[2],
+            desc: mRev[1],
+            val: mRev[3],
+            trailing: mRev[4],
+            consumedLines: 2,
+          };
+        }
+      }
+    }
+
+    // 3. Se não casou e há 3 linhas, tenta combinar 3 linhas (layout com Data na l1, Desc na l2, Valor na l3)
+    if (!matchData && i + 2 < lines.length) {
+      const l3 = `${l1} ${lines[i + 1].trim()} ${lines[i + 2].trim()}`;
+      m = l3.match(TX_DATE_FIRST);
+      if (m) {
+        matchData = {
+          date: m[1],
+          desc: m[2],
+          val: m[3],
+          trailing: m[4],
+          consumedLines: 3,
+        };
+      }
+    }
+
+    if (matchData) {
+      const { date, desc, val, trailing, consumedLines } = matchData;
+      const amount = parseBrlAmount(val);
+
+      // Descartar se o texto descritivo for cabeçalho ou resumo geral
+      const isHeaderPhrase = NON_PURCHASE_PHRASES.some((p) => p.test(desc));
+      if (!isHeaderPhrase && amount !== 0) {
+        if (isPaymentOrCreditLine(desc, amount)) {
+          ignoredPaymentsCount += 1;
+          ignoredPaymentsTotal += Math.abs(amount);
+        } else {
+          const { cleanTitle, installment } = extractInstallmentInfo(
+            desc,
+            trailing
+          );
+          const formattedDate = normalizeInvoiceDate(date);
+
+          transactions.push({
+            id: `pdf-tx-${Date.now()}-${transactions.length + 1}`,
+            description: cleanTitle,
+            amount: Math.round(amount * 100) / 100,
+            tag: inferCardPurchaseTag(cleanTitle),
+            installment,
+            purchaseDate: formattedDate,
+            notes: `Fatura ${detectedBank} (${fileName})`,
+          });
+        }
+      }
+      i += consumedLines;
+    } else {
+      i += 1;
+    }
+  }
+
+  return {
+    transactions,
+    ignoredPaymentsCount,
+    ignoredPaymentsTotal: Math.round(ignoredPaymentsTotal * 100) / 100,
+  };
+}
+
+/**
+ * Lê uma fatura em PDF (Banco Inter, Nubank, C6, Itaú, etc.)
+ * Aplica estratégias complementares (agrupamento espacial e stream sequencial).
  */
 export async function parsePdfInvoice(
   pdfBuffer: ArrayBuffer,
@@ -195,17 +371,15 @@ export async function parsePdfInvoice(
     });
 
     const pdfDoc = await loadingTask.promise;
-    const transactions: CreditCardTransaction[] = [];
-    let ignoredPaymentsCount = 0;
-    let ignoredPaymentsTotal = 0;
     let detectedBank = 'Banco Inter';
+    const allSpatialLines: string[] = [];
+    const allStreamLines: string[] = [];
 
-    // Varre todas as páginas do PDF
+    // 1. Extração de todas as páginas
     for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
       const page = await pdfDoc.getPage(pageNum);
       const textContent = await page.getTextContent();
 
-      // Agrupa os itens de texto espacialmente por coordenada vertical Y
       interface TextChunk {
         str: string;
         x: number;
@@ -214,7 +388,7 @@ export async function parsePdfInvoice(
       const linesMap: { y: number; items: TextChunk[] }[] = [];
 
       for (const item of textContent.items as any[]) {
-        const str = (item.str || '').trim();
+        const str = (item.str || '').replace(/\s+/g, ' ').trim();
         if (!str) continue;
 
         // Detectar menções a bancos conhecidos
@@ -223,10 +397,13 @@ export async function parsePdfInvoice(
         else if (/c6\s+bank/i.test(str)) detectedBank = 'C6 Bank';
         else if (/ita[úu]/i.test(str)) detectedBank = 'Itaú';
 
+        allStreamLines.push(str);
+
         const x = item.transform ? item.transform[4] : 0;
         const y = item.transform ? item.transform[5] : 0;
 
-        let existingLine = linesMap.find((line) => Math.abs(line.y - y) <= 3.8);
+        // Tolerância vertical aumentada para 5.8pt para englobar variações de fonte na mesma linha
+        let existingLine = linesMap.find((line) => Math.abs(line.y - y) <= 5.8);
         if (!existingLine) {
           existingLine = { y, items: [] };
           linesMap.push(existingLine);
@@ -234,63 +411,58 @@ export async function parsePdfInvoice(
         existingLine.items.push({ str, x, y });
       }
 
-      // Ordenar do topo para a base da página (Y decrescente)
+      // Ordenar do topo para a base (Y decrescente)
       linesMap.sort((a, b) => b.y - a.y);
 
       // Em cada linha, ordenar da esquerda para a direita (X crescente)
       for (const line of linesMap) {
         line.items.sort((a, b) => a.x - b.x);
         const lineText = line.items.map((i) => i.str).join(' ').trim();
-
-        // Verificar se deve ser ignorada (cabeçalho, rodapé ou resumo geral)
-        if (IGNORED_HEADER_FOOTER_PATTERNS.some((p) => p.test(lineText))) {
-          continue;
-        }
-
-        const match = lineText.match(TX_LINE_REGEX);
-        if (match) {
-          const rawDate = match[1];
-          const rawDesc = match[2];
-          const rawVal = match[3];
-
-          const amount = parseBrlAmount(rawVal);
-          if (amount === 0) continue;
-
-          // Se for pagamento da fatura ou crédito de estorno
-          if (isPaymentOrCreditLine(rawDesc, amount)) {
-            ignoredPaymentsCount += 1;
-            ignoredPaymentsTotal += Math.abs(amount);
-            continue;
-          }
-
-          const { cleanTitle, installment } = extractInstallmentInfo(rawDesc);
-          const formattedDate = normalizeInvoiceDate(rawDate);
-
-          transactions.push({
-            id: `pdf-tx-${Date.now()}-${transactions.length + 1}`,
-            description: cleanTitle,
-            amount: Math.round(amount * 100) / 100,
-            tag: inferCardPurchaseTag(cleanTitle),
-            installment,
-            purchaseDate: formattedDate,
-            notes: `Fatura ${detectedBank} (${fileName})`,
-          });
+        if (lineText) {
+          allSpatialLines.push(lineText);
         }
       }
     }
 
+    // Estratégia 1: Parsear a partir das linhas espaciais agrupadas
+    let extraction = extractTransactionsFromLines(
+      allSpatialLines,
+      detectedBank,
+      fileName
+    );
+
+    // Estratégia 2 (Fallback): Se a estratégia espacial retornar 0, tenta a leitura sequencial do stream de texto
+    if (extraction.transactions.length === 0 && allStreamLines.length > 0) {
+      const fallbackExtraction = extractTransactionsFromLines(
+        allStreamLines,
+        detectedBank,
+        fileName
+      );
+      if (fallbackExtraction.transactions.length > 0) {
+        extraction = fallbackExtraction;
+      }
+    }
+
     const totalAmount =
-      Math.round(transactions.reduce((acc, t) => acc + t.amount, 0) * 100) / 100;
+      Math.round(
+        extraction.transactions.reduce((acc, t) => acc + t.amount, 0) * 100
+      ) / 100;
+
+    const previewRawLines = allSpatialLines.length > 0
+      ? allSpatialLines.slice(0, 40)
+      : allStreamLines.slice(0, 40);
 
     return {
       success: true,
+      rawLines: previewRawLines,
       summary: {
         fileName,
-        transactions,
+        transactions: extraction.transactions,
         totalAmount,
-        ignoredPaymentsCount,
-        ignoredPaymentsTotal: Math.round(ignoredPaymentsTotal * 100) / 100,
+        ignoredPaymentsCount: extraction.ignoredPaymentsCount,
+        ignoredPaymentsTotal: extraction.ignoredPaymentsTotal,
         detectedBank,
+        rawLines: previewRawLines,
       },
     };
   } catch (err: any) {
@@ -319,6 +491,33 @@ export async function parsePdfInvoice(
         'Não foi possível extrair as informações da fatura em PDF. Verifique se o arquivo não está corrompido.',
     };
   }
+}
+
+/** Permite processar texto colado diretamente pelo usuário */
+export function parsePastedInvoiceText(
+  pastedText: string,
+  sourceName = 'Texto Colado'
+): InvoiceParseSummary {
+  const lines = pastedText
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  const extraction = extractTransactionsFromLines(lines, 'Fatura', sourceName);
+  const totalAmount =
+    Math.round(
+      extraction.transactions.reduce((acc, t) => acc + t.amount, 0) * 100
+    ) / 100;
+
+  return {
+    fileName: sourceName,
+    transactions: extraction.transactions,
+    totalAmount,
+    ignoredPaymentsCount: extraction.ignoredPaymentsCount,
+    ignoredPaymentsTotal: extraction.ignoredPaymentsTotal,
+    detectedBank: 'Extrato Manual',
+    rawLines: lines.slice(0, 40),
+  };
 }
 
 /** Verifica se um arquivo é PDF pela extensão ou tipo MIME */
