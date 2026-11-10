@@ -1,8 +1,8 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T06:55:50.081Z",
+  "updatedAt": "2026-11-10T07:00:14.669Z",
   "data": {
-    "version": "2.4.0",
+    "version": "2.3.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T06:54:59.619Z",
     "selectedMonthKey": "2026-11",
@@ -161,9 +161,7 @@
             "isCustom": true
           }
         ],
-        "notes": "Compra do primeiro AP",
-        "excludedGoalIds": [],
-        "goalContributionOverrides": {}
+        "notes": "Compra do primeiro AP"
       },
       "2026-10": {
         "monthKey": "2026-10",
@@ -3613,32 +3611,6 @@
         "id": "goal-1794008860404"
       }
     ],
-    "globalCards": [
-      {
-        "id": "exp-1794272287172",
-        "name": "Itau",
-        "cardLimit": 700,
-        "cardDueDay": 2
-      },
-      {
-        "id": "exp-1794272085025",
-        "name": "Nubank Vitoria",
-        "cardLimit": 2500,
-        "cardDueDay": 2
-      },
-      {
-        "id": "exp-1794272073562",
-        "name": "Nubank Marcony",
-        "cardLimit": 1000,
-        "cardDueDay": 2
-      },
-      {
-        "id": "exp-1794272057919",
-        "name": "Inter",
-        "cardLimit": 3000,
-        "cardDueDay": 2
-      }
-    ],
     "history": [
       {
         "id": "snap-1794273445526",
@@ -3814,7 +3786,6 @@
         "excludedGoalIds": [],
         "goalContributionOverrides": {}
       }
-    ],
-    "restoredAt": "2026-11-10T00:49:02.007Z"
+    ]
   }
 }
