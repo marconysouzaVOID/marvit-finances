@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:57:09.037Z",
+  "updatedAt": "2026-11-10T00:57:46.351Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T00:57:08.065Z",
+    "exportedAt": "2026-11-10T00:57:45.215Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T00:57:08.065Z",
+        "updatedAt": "2026-11-10T00:57:45.215Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -22,6 +22,13 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Contas (Luz)",
+            "amount": 1,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794272239955"
+          },
           {
             "name": "Contas (Água)",
             "amount": 1,
@@ -183,6 +190,13 @@
     },
     "expenses": [
       {
+        "name": "Contas (Luz)",
+        "amount": 1,
+        "category": "essencial",
+        "isCustom": true,
+        "id": "exp-1794272239955"
+      },
+      {
         "name": "Contas (Água)",
         "amount": 1,
         "category": "essencial",
@@ -276,9 +290,10 @@
     ],
     "history": [
       {
-        "id": "snap-1794009106533",
+        "id": "snap-1794272265215",
+        "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T00:57:08.065Z",
+        "dateCreated": "2026-11-10T00:57:45.215Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -291,6 +306,13 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Contas (Luz)",
+            "amount": 1,
+            "category": "essencial",
+            "isCustom": true,
+            "id": "exp-1794272239955"
+          },
           {
             "name": "Contas (Água)",
             "amount": 1,
@@ -383,8 +405,7 @@
             "id": "goal-1794008860404"
           }
         ],
-        "notes": "Compra do primeiro AP",
-        "monthKey": "2026-11"
+        "notes": "Compra do primeiro AP"
       },
       {
         "id": "snap-1794009637290",
