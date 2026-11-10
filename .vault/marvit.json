@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T01:04:02.718Z",
+  "updatedAt": "2026-11-10T01:04:19.178Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T01:04:01.744Z",
+    "exportedAt": "2026-11-10T01:04:18.218Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -111,7 +111,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T01:04:01.744Z",
+        "updatedAt": "2026-11-10T01:04:18.218Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -126,10 +126,18 @@
         "expenses": [
           {
             "name": "Itau",
-            "amount": 1269.21,
+            "amount": 1277.38,
             "category": "estilo",
             "subcategory": "cartao",
             "cardTransactions": [
+              {
+                "id": "tx-1794272658218",
+                "description": "Localiza",
+                "amount": 8.17,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "8,17"
+              },
               {
                 "id": "tx-1794272641744",
                 "description": "Localiza",
@@ -235,10 +243,18 @@
     "expenses": [
       {
         "name": "Itau",
-        "amount": 1269.21,
+        "amount": 1277.38,
         "category": "estilo",
         "subcategory": "cartao",
         "cardTransactions": [
+          {
+            "id": "tx-1794272658218",
+            "description": "Localiza",
+            "amount": 8.17,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "8,17"
+          },
           {
             "id": "tx-1794272641744",
             "description": "Localiza",
@@ -346,7 +362,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T01:04:01.744Z",
+        "dateCreated": "2026-11-10T01:04:18.218Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -361,10 +377,18 @@
         "expenses": [
           {
             "name": "Itau",
-            "amount": 1269.21,
+            "amount": 1277.38,
             "category": "estilo",
             "subcategory": "cartao",
             "cardTransactions": [
+              {
+                "id": "tx-1794272658218",
+                "description": "Localiza",
+                "amount": 8.17,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "8,17"
+              },
               {
                 "id": "tx-1794272641744",
                 "description": "Localiza",
