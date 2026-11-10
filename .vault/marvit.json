@@ -1,8 +1,8 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T04:10:26.523Z",
+  "updatedAt": "2026-11-10T04:10:37.429Z",
   "data": {
-    "version": "2.3.0",
+    "version": "2.4.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T01:17:25.526Z",
     "selectedMonthKey": "2026-10",
@@ -590,7 +590,8 @@
             "cardLimit": 2500,
             "cardDueDay": 2,
             "isCustom": true,
-            "id": "exp-1794272744318"
+            "id": "exp-1794272744318",
+            "globalCardId": "exp-1794272744318"
           },
           {
             "name": "Nubank Marcony",
@@ -778,7 +779,8 @@
             "cardLimit": 1000,
             "cardDueDay": 2,
             "isCustom": true,
-            "id": "exp-1794272730708"
+            "id": "exp-1794272730708",
+            "globalCardId": "exp-1794272730708"
           },
           {
             "name": "Inter",
@@ -789,7 +791,8 @@
             "cardLimit": 3000,
             "cardDueDay": 2,
             "isCustom": true,
-            "id": "exp-1794272675694"
+            "id": "exp-1794272675694",
+            "globalCardId": "exp-1794272675694"
           },
           {
             "name": "Itau",
@@ -841,7 +844,8 @@
             "cardLimit": 700,
             "cardDueDay": 2,
             "isCustom": true,
-            "id": "exp-1794272287172"
+            "id": "exp-1794272287172",
+            "globalCardId": "exp-1794272287172"
           },
           {
             "name": "moto eletrica",
@@ -858,7 +862,10 @@
             "isCustom": true,
             "id": "exp-1794006938471",
             "subcategory": "cartao",
-            "cardTransactions": []
+            "cardTransactions": [],
+            "globalCardId": "exp-1794006938471",
+            "cardLimit": 1500,
+            "cardDueDay": 10
           },
           {
             "name": "Financiamento Veículo",
@@ -892,8 +899,58 @@
             "name": "Contas (Internet)",
             "amount": 117.8,
             "category": "essencial"
+          },
+          {
+            "id": "exp-1794272085025",
+            "globalCardId": "exp-1794272085025",
+            "name": "Nubank Vitoria",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardLimit": 2500,
+            "cardDueDay": 2,
+            "cardTransactions": [],
+            "isCustom": true
+          },
+          {
+            "id": "exp-1794272073562",
+            "globalCardId": "exp-1794272073562",
+            "name": "Nubank Marcony",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardLimit": 1000,
+            "cardDueDay": 2,
+            "cardTransactions": [],
+            "isCustom": true
+          },
+          {
+            "id": "exp-1794272057919",
+            "globalCardId": "exp-1794272057919",
+            "name": "Inter",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardLimit": 3000,
+            "cardDueDay": 2,
+            "cardTransactions": [],
+            "isCustom": true
+          },
+          {
+            "id": "exp-1794272047097",
+            "globalCardId": "exp-1794272047097",
+            "name": "Itau",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardLimit": 700,
+            "cardDueDay": 2,
+            "cardTransactions": [],
+            "isCustom": true
           }
-        ]
+        ],
+        "excludedGoalIds": [],
+        "goalContributionOverrides": {}
       }
     },
     "profile": {
@@ -1374,7 +1431,8 @@
         "cardLimit": 2500,
         "cardDueDay": 2,
         "isCustom": true,
-        "id": "exp-1794272744318"
+        "id": "exp-1794272744318",
+        "globalCardId": "exp-1794272744318"
       },
       {
         "name": "Nubank Marcony",
@@ -1562,7 +1620,8 @@
         "cardLimit": 1000,
         "cardDueDay": 2,
         "isCustom": true,
-        "id": "exp-1794272730708"
+        "id": "exp-1794272730708",
+        "globalCardId": "exp-1794272730708"
       },
       {
         "name": "Inter",
@@ -1573,7 +1632,8 @@
         "cardLimit": 3000,
         "cardDueDay": 2,
         "isCustom": true,
-        "id": "exp-1794272675694"
+        "id": "exp-1794272675694",
+        "globalCardId": "exp-1794272675694"
       },
       {
         "name": "Itau",
@@ -1625,7 +1685,8 @@
         "cardLimit": 700,
         "cardDueDay": 2,
         "isCustom": true,
-        "id": "exp-1794272287172"
+        "id": "exp-1794272287172",
+        "globalCardId": "exp-1794272287172"
       },
       {
         "name": "moto eletrica",
@@ -1642,7 +1703,10 @@
         "isCustom": true,
         "id": "exp-1794006938471",
         "subcategory": "cartao",
-        "cardTransactions": []
+        "cardTransactions": [],
+        "globalCardId": "exp-1794006938471",
+        "cardLimit": 1500,
+        "cardDueDay": 10
       },
       {
         "name": "Financiamento Veículo",
@@ -1676,6 +1740,102 @@
         "name": "Contas (Internet)",
         "amount": 117.8,
         "category": "essencial"
+      },
+      {
+        "id": "exp-1794272744318",
+        "globalCardId": "exp-1794272744318",
+        "name": "Nubank Vitoria",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 2500,
+        "cardDueDay": 2,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "exp-1794272730708",
+        "globalCardId": "exp-1794272730708",
+        "name": "Nubank Marcony",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 1000,
+        "cardDueDay": 2,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "exp-1794272675694",
+        "globalCardId": "exp-1794272675694",
+        "name": "Inter",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 3000,
+        "cardDueDay": 2,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "exp-1794272287172",
+        "globalCardId": "exp-1794272287172",
+        "name": "Itau",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 700,
+        "cardDueDay": 2,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "exp-1794272085025",
+        "globalCardId": "exp-1794272085025",
+        "name": "Nubank Vitoria",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 2500,
+        "cardDueDay": 2,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "exp-1794272073562",
+        "globalCardId": "exp-1794272073562",
+        "name": "Nubank Marcony",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 1000,
+        "cardDueDay": 2,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "exp-1794272057919",
+        "globalCardId": "exp-1794272057919",
+        "name": "Inter",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 3000,
+        "cardDueDay": 2,
+        "cardTransactions": [],
+        "isCustom": true
+      },
+      {
+        "id": "exp-1794272047097",
+        "globalCardId": "exp-1794272047097",
+        "name": "Itau",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardLimit": 700,
+        "cardDueDay": 2,
+        "cardTransactions": [],
+        "isCustom": true
       }
     ],
     "customLongTermGoals": [
@@ -1690,6 +1850,62 @@
         "budgetCategory": "estilo",
         "notes": "Amortização",
         "id": "goal-1794008860404"
+      }
+    ],
+    "globalCards": [
+      {
+        "id": "exp-1794272744318",
+        "name": "Nubank Vitoria",
+        "cardLimit": 2500,
+        "cardDueDay": 2
+      },
+      {
+        "id": "exp-1794272730708",
+        "name": "Nubank Marcony",
+        "cardLimit": 1000,
+        "cardDueDay": 2
+      },
+      {
+        "id": "exp-1794272675694",
+        "name": "Inter",
+        "cardLimit": 3000,
+        "cardDueDay": 2
+      },
+      {
+        "id": "exp-1794272287172",
+        "name": "Itau",
+        "cardLimit": 700,
+        "cardDueDay": 2
+      },
+      {
+        "id": "exp-1794006938471",
+        "name": "Cartões (Inter, Nubank, Itau)",
+        "cardLimit": 1500,
+        "cardDueDay": 10
+      },
+      {
+        "id": "exp-1794272085025",
+        "name": "Nubank Vitoria",
+        "cardLimit": 2500,
+        "cardDueDay": 2
+      },
+      {
+        "id": "exp-1794272073562",
+        "name": "Nubank Marcony",
+        "cardLimit": 1000,
+        "cardDueDay": 2
+      },
+      {
+        "id": "exp-1794272057919",
+        "name": "Inter",
+        "cardLimit": 3000,
+        "cardDueDay": 2
+      },
+      {
+        "id": "exp-1794272047097",
+        "name": "Itau",
+        "cardLimit": 700,
+        "cardDueDay": 2
       }
     ],
     "history": [
