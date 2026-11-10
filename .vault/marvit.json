@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T08:03:01.691Z",
+  "updatedAt": "2026-11-10T08:03:04.012Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T07:04:45.484Z",
-    "selectedMonthKey": "2026-12",
+    "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -1808,7 +1808,7 @@
       },
       "2027-01": {
         "monthKey": "2027-01",
-        "updatedAt": "2026-11-10T06:54:59.619Z",
+        "updatedAt": "2026-11-10T07:04:45.484Z",
         "profile": {
           "monthlyIncome": 16800,
           "additionalIncome": 0,
@@ -1977,7 +1977,7 @@
       }
     },
     "profile": {
-      "monthlyIncome": 16800,
+      "monthlyIncome": 23614.09,
       "additionalIncome": 0,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
@@ -1990,15 +1990,65 @@
     "expenses": [
       {
         "name": "Itau",
-        "amount": 0,
+        "amount": 1277.38,
         "category": "estilo",
         "subcategory": "cartao",
-        "cardTransactions": [],
+        "cardTransactions": [
+          {
+            "id": "tx-1794272658218",
+            "description": "Localiza",
+            "amount": 8.17,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "21/10"
+          },
+          {
+            "id": "tx-1794272641744",
+            "description": "Localiza",
+            "amount": 7.94,
+            "tag": "lazer",
+            "installment": "À vista",
+            "purchaseDate": "20/10"
+          },
+          {
+            "id": "tx-1794272625054",
+            "description": "Localiza",
+            "amount": 48.02,
+            "tag": "lazer",
+            "installment": "À vista",
+            "purchaseDate": "20/10"
+          },
+          {
+            "id": "tx-1794272491455",
+            "description": "Moto eletrica",
+            "amount": 647.57,
+            "tag": "outros",
+            "installment": "1/10",
+            "purchaseDate": "16/10"
+          },
+          {
+            "id": "tx-1794272450048",
+            "description": "Localiza",
+            "amount": 565.68,
+            "tag": "lazer",
+            "installment": "1/3",
+            "purchaseDate": "09/10"
+          }
+        ],
         "cardLimit": 700,
         "cardDueDay": 2,
         "isCustom": true,
         "id": "exp-1794272287172",
         "globalCardId": "exp-1794272287172"
+      },
+      {
+        "name": "Moto Eletrica",
+        "amount": 5000,
+        "category": "estilo",
+        "subcategory": "direto",
+        "isCustom": true,
+        "id": "exp-1794271769420",
+        "expenseDate": "19/10"
       },
       {
         "name": "Financiamento Veículo",
@@ -2037,36 +2087,1427 @@
         "id": "exp-1794272085025",
         "globalCardId": "exp-1794272085025",
         "name": "Nubank Vitoria",
-        "amount": 0,
+        "amount": 3752.87,
         "category": "estilo",
         "subcategory": "cartao",
         "cardLimit": 2500,
         "cardDueDay": 2,
-        "cardTransactions": [],
+        "cardTransactions": [
+          {
+            "id": "csv-tx-1794284030595-1",
+            "description": "Hna*Oboticario",
+            "amount": 87.86,
+            "tag": "autocuidado",
+            "installment": "Parcela 1/5",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-2",
+            "description": "Apple.Com/Bill",
+            "amount": 14.99,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-3",
+            "description": "Doceria Fabricia Bolos",
+            "amount": 181,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-4",
+            "description": "Ifd*Novos Habitos",
+            "amount": 38.92,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-5",
+            "description": "Mp *Joseeduardoan",
+            "amount": 16,
+            "tag": "compras",
+            "installment": "À vista",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-6",
+            "description": "Carolyne Melo",
+            "amount": 125,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "22/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-7",
+            "description": "Petrox Comercial",
+            "amount": 4.43,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "22/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-8",
+            "description": "Doceria e Buffet Fabri",
+            "amount": 181,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "22/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-9",
+            "description": "Elisandra de Vargas Sc",
+            "amount": 51.9,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "20/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-10",
+            "description": "Rek Parking Empreend",
+            "amount": 1.8,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "20/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-11",
+            "description": "Ifd*Ifood Club",
+            "amount": 5.95,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "20/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-12",
+            "description": "Esh Comercio de Chocol",
+            "amount": 75,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "19/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-13",
+            "description": "Adegacutelaria",
+            "amount": 35,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "19/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-14",
+            "description": "Florybal",
+            "amount": 46,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "19/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-15",
+            "description": "Supermercado Mombach",
+            "amount": 25.16,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "18/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-16",
+            "description": "Metz Backerei",
+            "amount": 28,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "18/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-17",
+            "description": "Shein *Mariana Caroli",
+            "amount": 119.9,
+            "tag": "compras",
+            "installment": "À vista",
+            "purchaseDate": "16/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-18",
+            "description": "Farmacia Mottin",
+            "amount": 53.84,
+            "tag": "autocuidado",
+            "installment": "À vista",
+            "purchaseDate": "16/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-19",
+            "description": "Dl*Spotify P4804",
+            "amount": 23.9,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "15/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-20",
+            "description": "Dl Pelotas",
+            "amount": 50,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "15/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-21",
+            "description": "Delicatessen Banca",
+            "amount": 253.38,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "15/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-22",
+            "description": "Imperatriz Doces Finos",
+            "amount": 58,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "15/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-23",
+            "description": "IOF de \"Openai *Chatgpt Subscr\"",
+            "amount": 3.63,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "12/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-24",
+            "description": "Openai *Chatgpt Subscr",
+            "amount": 103.9,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "12/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-25",
+            "description": "L A Tomasi e Cia",
+            "amount": 9,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "11/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-26",
+            "description": "Atacadaotimbauva",
+            "amount": 126.43,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "10/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-27",
+            "description": "Salchpao",
+            "amount": 5,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-28",
+            "description": "Ranulfo Laticinios",
+            "amount": 135.62,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-29",
+            "description": "Mulvi I*Rosivaldo Anto",
+            "amount": 25,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-30",
+            "description": "Paulo Jorge da Silva",
+            "amount": 80,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "08/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-31",
+            "description": "Petrox Comercial",
+            "amount": 29.99,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "08/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-32",
+            "description": "Escovarias Life",
+            "amount": 256.2,
+            "tag": "autocuidado",
+            "installment": "À vista",
+            "purchaseDate": "08/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-33",
+            "description": "Ifd*Vs Servicos de Ali",
+            "amount": 63.96,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "07/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-34",
+            "description": "Wellhub Vitoria Cezimb",
+            "amount": 174.1,
+            "tag": "autocuidado",
+            "installment": "À vista",
+            "purchaseDate": "07/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-35",
+            "description": "Petrox Comercial",
+            "amount": 21.53,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "07/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-36",
+            "description": "Casa do Bolo",
+            "amount": 27.9,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "07/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-37",
+            "description": "Petrox Comercial",
+            "amount": 15.97,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "06/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-38",
+            "description": "Point do Sucao",
+            "amount": 24,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "06/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-39",
+            "description": "Mp *Acaiteria",
+            "amount": 37.31,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "05/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-40",
+            "description": "Apple.Com/Bill",
+            "amount": 66.9,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "03/10"
+          },
+          {
+            "id": "csv-tx-1794284030595-41",
+            "description": "Ifd*Novos Habitos",
+            "amount": 32.89,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "29/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-42",
+            "description": "Conta Vivo",
+            "amount": 59,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "29/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-44",
+            "description": "Redemed",
+            "amount": 29.99,
+            "tag": "autocuidado",
+            "installment": "À vista",
+            "purchaseDate": "28/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-45",
+            "description": "Eventoscantoverde",
+            "amount": 10,
+            "tag": "lazer",
+            "installment": "À vista",
+            "purchaseDate": "27/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-46",
+            "description": "111 - Riachuelo - Barr",
+            "amount": 113.66,
+            "tag": "compras",
+            "installment": "Parcela 1/3",
+            "purchaseDate": "27/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-47",
+            "description": "Conta Vivo",
+            "amount": 61.92,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "26/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-48",
+            "description": "Petrox Comercial",
+            "amount": 22.58,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "25/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-49",
+            "description": "Pague Menos",
+            "amount": 177.12,
+            "tag": "autocuidado",
+            "installment": "Parcela 2/2",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-50",
+            "description": "Porto Seguro Cia Seg G",
+            "amount": 25.72,
+            "tag": "compras",
+            "installment": "Parcela 2/10",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-51",
+            "description": "Ajubeautyconcept",
+            "amount": 259.33,
+            "tag": "autocuidado",
+            "installment": "Parcela 3/3",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-52",
+            "description": "Amazon",
+            "amount": 29.46,
+            "tag": "compras",
+            "installment": "Parcela 2/2",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-53",
+            "description": "Dl*Uberrides",
+            "amount": 14.95,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-54",
+            "description": "N S Modas",
+            "amount": 77,
+            "tag": "compras",
+            "installment": "Parcela 3/3",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-55",
+            "description": "Decathlon",
+            "amount": 51.99,
+            "tag": "compras",
+            "installment": "Parcela 3/5",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-56",
+            "description": "Apple.Com/Bill",
+            "amount": 14.99,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-57",
+            "description": "Uber Uber *Trip Help.U",
+            "amount": 16.93,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "24/09"
+          },
+          {
+            "id": "csv-tx-1794284030595-58",
+            "description": "Baga Baga Home Outlet",
+            "amount": 71.87,
+            "tag": "compras",
+            "installment": "Parcela 2/2",
+            "purchaseDate": "24/09"
+          }
+        ],
         "isCustom": true
       },
       {
         "id": "exp-1794272073562",
         "globalCardId": "exp-1794272073562",
         "name": "Nubank Marcony",
-        "amount": 0,
+        "amount": 1126.1,
         "category": "estilo",
         "subcategory": "cartao",
         "cardLimit": 1000,
         "cardDueDay": 2,
-        "cardTransactions": [],
+        "cardTransactions": [
+          {
+            "id": "csv-tx-1794284097091-1",
+            "description": "Recarga de celular",
+            "amount": 60,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "25/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-2",
+            "description": "Dl *Uberrides",
+            "amount": 12.56,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-3",
+            "description": "Dl *Uberrides",
+            "amount": 15.25,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-4",
+            "description": "Dl *Uberrides",
+            "amount": 15.95,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-5",
+            "description": "Dl *Uberrides",
+            "amount": 8.94,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "24/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-6",
+            "description": "Google Cloud Sgdxrw",
+            "amount": 30,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "23/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-7",
+            "description": "Google One",
+            "amount": 23.99,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "23/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-8",
+            "description": "Dl*Uberrides",
+            "amount": 25.93,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "22/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-9",
+            "description": "Yelumseg Parc7",
+            "amount": 262.43,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "13/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-10",
+            "description": "Apple.Com/Bill",
+            "amount": 19.9,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "11/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-11",
+            "description": "Uber Uber *Trip Help.U",
+            "amount": 12.71,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-12",
+            "description": "Dl *Uberrides",
+            "amount": 8.44,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-13",
+            "description": "Dl *Uberrides",
+            "amount": 6.75,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-14",
+            "description": "Dl *Uberrides",
+            "amount": 10.17,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-15",
+            "description": "Dl *Uberrides",
+            "amount": 9.34,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-16",
+            "description": "Dl *Uberrides",
+            "amount": 49.82,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "09/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-17",
+            "description": "Ifd*Ifood Club",
+            "amount": 7.95,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "07/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-19",
+            "description": "Dl*Uberrides",
+            "amount": 8.47,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "27/09"
+          },
+          {
+            "id": "csv-tx-1794284097091-20",
+            "description": "Uber Uber *Trip Help.U",
+            "amount": 10.96,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "26/09"
+          },
+          {
+            "id": "csv-tx-1794284097091-21",
+            "description": "Odonto Riso",
+            "amount": 500,
+            "tag": "outros",
+            "installment": "Parcela 6/8",
+            "purchaseDate": "26/10"
+          },
+          {
+            "id": "csv-tx-1794284097091-22",
+            "description": "Dl*Uberrides",
+            "amount": 7.6,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "26/09"
+          },
+          {
+            "id": "csv-tx-1794284097091-23",
+            "description": "Dl*Uberrides",
+            "amount": 18.94,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "26/09"
+          }
+        ],
         "isCustom": true
       },
       {
         "id": "exp-1794272057919",
         "globalCardId": "exp-1794272057919",
         "name": "Inter",
-        "amount": 0,
+        "amount": 8441.52,
         "category": "estilo",
         "subcategory": "cartao",
         "cardLimit": 3000,
         "cardDueDay": 2,
-        "cardTransactions": [],
+        "cardTransactions": [
+          {
+            "id": "pdf-tx-1794288737984-1",
+            "description": "SEGURO CARTAO CTP",
+            "amount": 5.9,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "27/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-2",
+            "description": "AMAZONMKTPLC*MEGAMAMUT",
+            "amount": 154.9,
+            "tag": "compras",
+            "installment": "Parcela 07/10",
+            "purchaseDate": "30/03",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-3",
+            "description": "AMAZON BR",
+            "amount": 151.86,
+            "tag": "compras",
+            "installment": "Parcela 07/10",
+            "purchaseDate": "30/03",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-4",
+            "description": "AIRBNB * HMQM5S8WHZ",
+            "amount": 166.36,
+            "tag": "lazer",
+            "installment": "Parcela 06/06",
+            "purchaseDate": "10/05",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-5",
+            "description": "MERCADO*MERCADOLIVRE",
+            "amount": 35.82,
+            "tag": "compras",
+            "installment": "Parcela 03/05",
+            "purchaseDate": "08/08",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-6",
+            "description": "MERCADOLIVRE*MERCADOL",
+            "amount": 53.9,
+            "tag": "compras",
+            "installment": "Parcela 03/10",
+            "purchaseDate": "12/08",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-7",
+            "description": "AMAZON BR",
+            "amount": 42.04,
+            "tag": "compras",
+            "installment": "Parcela 02/02",
+            "purchaseDate": "08/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-8",
+            "description": "AIRBNB * HMHAZSHNTD",
+            "amount": 108,
+            "tag": "lazer",
+            "installment": "Parcela 02/06",
+            "purchaseDate": "13/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-9",
+            "description": "MERCADOLIVRE*MERCADOL",
+            "amount": 63.78,
+            "tag": "compras",
+            "installment": "À vista",
+            "purchaseDate": "06/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-10",
+            "description": "Deltaexpresso",
+            "amount": 79,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "09/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-11",
+            "description": "SPOLIER LOGISTICA LTDA",
+            "amount": 152.24,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "12/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-12",
+            "description": "POUSADA VOVO CAROLINA",
+            "amount": 349.92,
+            "tag": "lazer",
+            "installment": "À vista",
+            "purchaseDate": "15/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-13",
+            "description": "ECOP ARQUEECOMMERCE",
+            "amount": 83.5,
+            "tag": "outros",
+            "installment": "Parcela 01/02",
+            "purchaseDate": "16/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-14",
+            "description": "SPOLIER LOGISTICA LTDA",
+            "amount": 123.96,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "18/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-15",
+            "description": "REK P ARKING EMPREEND",
+            "amount": 8.75,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "18/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-16",
+            "description": "CASA DO P AO",
+            "amount": 48.95,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "20/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-17",
+            "description": "ESQUINA EMBALAGENS AJU",
+            "amount": 106.81,
+            "tag": "compras",
+            "installment": "À vista",
+            "purchaseDate": "23/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-18",
+            "description": "PIZZARIA LA MASSA REAL",
+            "amount": 10,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "24/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-19",
+            "description": "PIZZARIA LA MASSA REAL",
+            "amount": 65,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "24/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737984-20",
+            "description": "MINAS PNEUS ARACAJU",
+            "amount": 257.5,
+            "tag": "outros",
+            "installment": "Parcela 04/08",
+            "purchaseDate": "26/06",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-21",
+            "description": "GOL LINHAS A*CHHAJM016",
+            "amount": 637.8,
+            "tag": "lazer",
+            "installment": "Parcela 03/03",
+            "purchaseDate": "25/07",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-22",
+            "description": "CP P ARC DUO GOURMET",
+            "amount": 59,
+            "tag": "assinaturas",
+            "installment": "Parcela 03/12",
+            "purchaseDate": "29/07",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-23",
+            "description": "GOL LINHAS A*FETQSH014",
+            "amount": 316.38,
+            "tag": "lazer",
+            "installment": "Parcela 02/03",
+            "purchaseDate": "09/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-24",
+            "description": "ModernaPastelaria",
+            "amount": 60,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "25/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-25",
+            "description": "POSTO ESTANCIA",
+            "amount": 317.63,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "25/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-26",
+            "description": "UNIMAR SUPERMERCADO",
+            "amount": 43.91,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "25/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-27",
+            "description": "CONCESSIONARIA LITORAL",
+            "amount": 9.8,
+            "tag": "lazer",
+            "installment": "À vista",
+            "purchaseDate": "25/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-28",
+            "description": "RestauranteGenaro",
+            "amount": 290,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "25/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-29",
+            "description": "ZAFFE",
+            "amount": 106,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "26/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-30",
+            "description": "ENAP ARK ESTACIONAMENTO",
+            "amount": 15,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "26/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-31",
+            "description": "JIM.COM* ALMA CAFE LT",
+            "amount": 52.58,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "26/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-32",
+            "description": "IFD*26591455 MARIA AUV",
+            "amount": 33.96,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "26/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-33",
+            "description": "IFD*IGOR NASCIMENTO P A",
+            "amount": 36.89,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "26/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-34",
+            "description": "GBARBOSA",
+            "amount": 408.38,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "27/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-35",
+            "description": "BELA VISTA",
+            "amount": 15,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "27/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-36",
+            "description": "IFD*GRUPO VRND HAMBURG",
+            "amount": 60.61,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "27/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-37",
+            "description": "FOGO E BRASA RESTAURAN",
+            "amount": 71.84,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "28/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-38",
+            "description": "CONCESSIONARIA LITORAL",
+            "amount": 9.8,
+            "tag": "lazer",
+            "installment": "À vista",
+            "purchaseDate": "28/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-39",
+            "description": "POSTO ESTANCIA",
+            "amount": 119.24,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "28/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-40",
+            "description": "POSTO NOTA 10",
+            "amount": 193.01,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "28/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-41",
+            "description": "IFD*XAVIER FABRICA DE",
+            "amount": 23.39,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "28/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-42",
+            "description": "IFD*55465825 CARLOS HE",
+            "amount": 45.98,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "28/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-43",
+            "description": "IFD*57737305 WESLEY SI",
+            "amount": 45.99,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "29/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-44",
+            "description": "SAMS CLUB ARACAJU 4676",
+            "amount": 133.42,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "30/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-45",
+            "description": "IFD*PRADO ALMEIDA EMPR",
+            "amount": 37.89,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "30/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-46",
+            "description": "DROGASIL 4598",
+            "amount": 143.77,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "30/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-47",
+            "description": "ATALAIA RACOES",
+            "amount": 29,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "30/09",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-48",
+            "description": "PETROX COMERCIAL",
+            "amount": 14.38,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "01/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-49",
+            "description": "G BARBOSA 20",
+            "amount": 32.98,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "01/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-50",
+            "description": "AbrazoDrinkBar",
+            "amount": 68.2,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "01/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-51",
+            "description": "ADM ARACAJU DRIVE BEIR",
+            "amount": 48.9,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "02/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-52",
+            "description": "DCS",
+            "amount": 150,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "02/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-53",
+            "description": "PETROX COMERCIAL",
+            "amount": 61.27,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "02/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-54",
+            "description": "POSTO ESTANCIA",
+            "amount": 194.31,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "03/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-55",
+            "description": "POINT DO SUCAO",
+            "amount": 18,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "03/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-56",
+            "description": "DIAS SUPERMERCADOS",
+            "amount": 39.39,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "03/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-57",
+            "description": "MP *ACAITERIA",
+            "amount": 25.29,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "04/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-58",
+            "description": "POSTO ESTANCIA",
+            "amount": 132.25,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "05/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-59",
+            "description": "IFD*55465825 CARLOS HE",
+            "amount": 46.36,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "06/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-60",
+            "description": "IFD*ACAI AJU COMERCIO",
+            "amount": 64.47,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "07/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-61",
+            "description": "O QUINTAL",
+            "amount": 41.8,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "08/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-62",
+            "description": "SUPERMERCADO MOMBACH",
+            "amount": 21.48,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "11/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-63",
+            "description": "AUTO POSTO ESQUINA",
+            "amount": 108.96,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "14/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-64",
+            "description": "SIM CAMAQUA NORTE",
+            "amount": 100,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "15/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-65",
+            "description": "MONTENEGRO SAO JOAO",
+            "amount": 129.71,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "16/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-66",
+            "description": "PG *PL VERSOI FONDUE",
+            "amount": 299.8,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "17/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-67",
+            "description": "NOVO CITRUS",
+            "amount": 42,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "17/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-68",
+            "description": "CASA DO P AO",
+            "amount": 85.85,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "17/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-69",
+            "description": "LIDOMAR ROMAN",
+            "amount": 15,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "17/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-70",
+            "description": "RAFAELA ALBUQUERQUE JA",
+            "amount": 15,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "17/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-71",
+            "description": "RESTAURANTE NOVA ERA D",
+            "amount": 269.5,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "18/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-72",
+            "description": "CAP ANNOLI",
+            "amount": 46,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "18/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-73",
+            "description": "XimenesStoreLtda",
+            "amount": 29.9,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "18/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-74",
+            "description": "AmorEternoStudio",
+            "amount": 80,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "18/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-75",
+            "description": "OLIVAS DE GRAMADO",
+            "amount": 108.9,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "18/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-76",
+            "description": "SIM PORTAO HOFF",
+            "amount": 13.98,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "19/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-77",
+            "description": "MERCEARIA DE MARCO",
+            "amount": 5,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "19/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-78",
+            "description": "COMERCIAL DE COMBUSTIV",
+            "amount": 163.09,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "20/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-79",
+            "description": "REAL-DEBRID*18303102",
+            "amount": 96.65,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "21/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-80",
+            "description": "PETROX COMERCIAL",
+            "amount": 7.99,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "21/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-81",
+            "description": "IOF INTERNACIONAL",
+            "amount": 3.38,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "22/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-82",
+            "description": "CENTRO ADMINISTRATIVO",
+            "amount": 57.75,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "23/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-83",
+            "description": "MI PIACE PIZZERIA",
+            "amount": 160.5,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "23/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          },
+          {
+            "id": "pdf-tx-1794288737985-84",
+            "description": "POSTO ESTANCIA",
+            "amount": 259.02,
+            "tag": "mobilidade",
+            "installment": "À vista",
+            "purchaseDate": "24/10",
+            "notes": "Fatura Banco Inter (Fatura.pdf)"
+          }
+        ],
         "isCustom": true
       }
     ],
