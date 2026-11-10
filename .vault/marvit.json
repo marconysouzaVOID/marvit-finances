@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T04:30:19.761Z",
+  "updatedAt": "2026-11-10T04:30:26.315Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T04:30:18.607Z",
+    "exportedAt": "2026-11-10T04:30:25.176Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -129,7 +129,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T04:30:18.607Z",
+        "updatedAt": "2026-11-10T04:30:25.176Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -893,7 +893,7 @@
                 "amount": 7.6,
                 "tag": "mobilidade",
                 "installment": "À vista",
-                "purchaseDate": "26/10"
+                "purchaseDate": "26/09"
               },
               {
                 "id": "csv-tx-1794284097091-23",
@@ -1686,7 +1686,7 @@
             "amount": 7.6,
             "tag": "mobilidade",
             "installment": "À vista",
-            "purchaseDate": "26/10"
+            "purchaseDate": "26/09"
           },
           {
             "id": "csv-tx-1794284097091-23",
@@ -1762,7 +1762,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T04:30:18.607Z",
+        "dateCreated": "2026-11-10T04:30:25.176Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -2526,7 +2526,7 @@
                 "amount": 7.6,
                 "tag": "mobilidade",
                 "installment": "À vista",
-                "purchaseDate": "26/10"
+                "purchaseDate": "26/09"
               },
               {
                 "id": "csv-tx-1794284097091-23",
