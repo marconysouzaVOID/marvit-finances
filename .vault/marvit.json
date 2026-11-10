@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:46:20.960Z",
+  "updatedAt": "2026-11-10T00:46:23.263Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T00:46:20.017Z",
-    "selectedMonthKey": "2026-10",
+    "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T00:45:38.288Z",
+        "updatedAt": "2026-11-10T00:46:20.017Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -144,28 +144,27 @@
       }
     },
     "profile": {
-      "monthlyIncome": 23614.09,
+      "monthlyIncome": 22000,
       "additionalIncome": 0,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
     },
     "customGoals": {
-      "essencial": 50,
-      "estilo": 30,
-      "investimento": 20
+      "essencial": 40,
+      "estilo": 35,
+      "investimento": 25
     },
     "expenses": [
       {
-        "name": "Moto eletrica",
-        "amount": 5000,
-        "category": "estilo",
-        "subcategory": "direto",
+        "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
+        "amount": 8791.22,
+        "category": "investimento",
         "isCustom": true,
-        "id": "exp-1794271538289"
+        "id": "exp-1794007990084"
       },
       {
         "name": "Cartões (Inter, Nubank, Itau)",
-        "amount": 15288.95,
+        "amount": 8000,
         "category": "estilo",
         "isCustom": true,
         "id": "exp-1794006938471",
@@ -282,7 +281,7 @@
       {
         "id": "snap-1794009106533",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T00:45:38.288Z",
+        "dateCreated": "2026-11-10T00:46:20.017Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -345,20 +344,7 @@
             "category": "essencial"
           }
         ],
-        "customLongTermGoals": [
-          {
-            "title": "Carro Tiggo",
-            "icon": "directions_car",
-            "targetAmount": 48032.08,
-            "currentAmount": 18744.160000000003,
-            "monthlyContribution": 601.08,
-            "annualInterestRate": 0,
-            "syncWithBudget": false,
-            "budgetCategory": "estilo",
-            "notes": "Amortização",
-            "id": "goal-1794008860404"
-          }
-        ],
+        "customLongTermGoals": [],
         "notes": "Compra do primeiro AP",
         "monthKey": "2026-11"
       }
