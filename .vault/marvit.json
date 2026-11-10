@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:44:39.949Z",
+  "updatedAt": "2026-11-10T00:45:21.237Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T00:44:37.978Z",
+    "exportedAt": "2026-11-10T00:45:20.290Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -76,7 +76,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T00:44:37.978Z",
+        "updatedAt": "2026-11-10T00:45:20.290Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -197,7 +197,7 @@
         "currentAmount": 18744.160000000003,
         "monthlyContribution": 601.08,
         "annualInterestRate": 0,
-        "syncWithBudget": true,
+        "syncWithBudget": false,
         "budgetCategory": "estilo",
         "notes": "Amortização",
         "id": "goal-1794008860404"
@@ -207,7 +207,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T00:44:37.978Z",
+        "dateCreated": "2026-11-10T00:45:20.290Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -271,7 +271,7 @@
             "currentAmount": 18744.160000000003,
             "monthlyContribution": 601.08,
             "annualInterestRate": 0,
-            "syncWithBudget": true,
+            "syncWithBudget": false,
             "budgetCategory": "estilo",
             "notes": "Amortização",
             "id": "goal-1794008860404"
