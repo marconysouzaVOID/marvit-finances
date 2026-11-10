@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:32:22.431Z",
+  "updatedAt": "2026-11-10T05:32:34.348Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:32:20.973Z",
+    "exportedAt": "2026-11-10T05:32:33.080Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -109,18 +109,6 @@
             "cardDueDay": 2,
             "cardTransactions": [],
             "isCustom": true
-          },
-          {
-            "id": "exp-1794006938471",
-            "globalCardId": "exp-1794006938471",
-            "name": "Cartões (Inter, Nubank, Itau)",
-            "amount": 0,
-            "category": "estilo",
-            "subcategory": "cartao",
-            "cardLimit": 1500,
-            "cardDueDay": 10,
-            "cardTransactions": [],
-            "isCustom": true
           }
         ],
         "notes": "Compra do primeiro AP",
@@ -129,7 +117,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T05:32:20.973Z",
+        "updatedAt": "2026-11-10T05:32:33.080Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -202,18 +190,6 @@
             "subcategory": "direto",
             "isCustom": true,
             "id": "exp-1794271769420"
-          },
-          {
-            "name": "Cartões (Inter, Nubank, Itau)",
-            "amount": 15288.95,
-            "category": "estilo",
-            "isCustom": true,
-            "id": "exp-1794006938471",
-            "subcategory": "cartao",
-            "cardTransactions": [],
-            "globalCardId": "exp-1794006938471",
-            "cardLimit": 1500,
-            "cardDueDay": 10
           },
           {
             "name": "Financiamento Veículo",
@@ -1754,18 +1730,6 @@
         "id": "exp-1794271769420"
       },
       {
-        "name": "Cartões (Inter, Nubank, Itau)",
-        "amount": 15288.95,
-        "category": "estilo",
-        "isCustom": true,
-        "id": "exp-1794006938471",
-        "subcategory": "cartao",
-        "cardTransactions": [],
-        "globalCardId": "exp-1794006938471",
-        "cardLimit": 1500,
-        "cardDueDay": 10
-      },
-      {
         "name": "Financiamento Veículo",
         "amount": 1253,
         "category": "essencial",
@@ -3248,12 +3212,6 @@
         "cardDueDay": 2
       },
       {
-        "id": "exp-1794006938471",
-        "name": "Cartões (Inter, Nubank, Itau)",
-        "cardLimit": 1500,
-        "cardDueDay": 10
-      },
-      {
         "id": "exp-1794272085025",
         "name": "Nubank Vitoria",
         "cardLimit": 2500,
@@ -3276,7 +3234,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T05:32:20.973Z",
+        "dateCreated": "2026-11-10T05:32:33.080Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -3349,18 +3307,6 @@
             "subcategory": "direto",
             "isCustom": true,
             "id": "exp-1794271769420"
-          },
-          {
-            "name": "Cartões (Inter, Nubank, Itau)",
-            "amount": 15288.95,
-            "category": "estilo",
-            "isCustom": true,
-            "id": "exp-1794006938471",
-            "subcategory": "cartao",
-            "cardTransactions": [],
-            "globalCardId": "exp-1794006938471",
-            "cardLimit": 1500,
-            "cardDueDay": 10
           },
           {
             "name": "Financiamento Veículo",
