@@ -8,5 +8,9 @@ dist-ssr
 .vercel
 .DS_Store
 assets-raw/
+*.pdf
+verify_*.py
+test_*.pdf
+
 
 

@@ -164,7 +164,7 @@ export function generateReportImageSync(data: ExportReportData): GeneratedReport
 
   const pillars = [
     {
-      name: 'Custos Essenciais & Despensa',
+      name: 'Custos Essenciais & Emergência',
       cat: 'essencial' as ExpenseCategory,
       target: data.customGoals.essencial,
       spent: data.categoryTotals.essencial,

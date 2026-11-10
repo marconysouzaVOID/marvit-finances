@@ -11,6 +11,29 @@ export function formatPercent(value: number): string {
   return `${(value || 0).toFixed(1)}%`;
 }
 
+/** Formata uma chave "YYYY-MM" (ex: "2026-11") para "Novembro / 2026" */
+export function formatMonthKeyLabel(monthKey?: string): string {
+  if (!monthKey) return '';
+  const [yearStr, monthStr] = monthKey.split('-');
+  const monthNum = parseInt(monthStr, 10);
+  const months = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
+  const name = months[monthNum - 1] || monthKey;
+  return `${name} / ${yearStr}`;
+}
+
 /** Calcula o patrimônio necessário para viver de renda passiva (Regra dos 4% / 6% a.a.) */
 export function calculateFireTarget(monthlyCost: number, realYieldAnnual = 0.06): number {
   const annualCost = monthlyCost * 12;
@@ -170,4 +193,49 @@ export function calculateGoalProjection(
     isAlreadyReached: false,
   };
 }
+
+/** Detecta automaticamente a tag da compra pelo nome do estabelecimento (otimizado p/ faturas de bancos brasileiros) */
+export function inferCardPurchaseTag(title: string): import('../types').CardPurchaseTag {
+  const lower = title.toLowerCase();
+  if (
+    /ifd|ifood|doceria|bolo|buffet|chocol|adega|florybal|supermercado|backerei|padaria|delicatessen|doce|laticinio|salchpao|sucao|acaiteria|restaurante|cafe|lanch|bar\b|pizza|burger|sushi|atacadao/i.test(
+      lower
+    )
+  ) {
+    return 'gastronomia';
+  }
+  if (
+    /apple\.com|spotify|openai|chatgpt|iof de|netflix|prime|disney|hbo|youtube|conta vivo|claro|tim\b|assinatura/i.test(
+      lower
+    )
+  ) {
+    return 'assinaturas';
+  }
+  if (
+    /uber|99app|99\*|parking|estacionamento|petrox|posto|combustivel|pedagio/i.test(
+      lower
+    )
+  ) {
+    return 'mobilidade';
+  }
+  if (
+    /boticario|farmacia|escovaria|wellhub|gympass|pague menos|redemed|beauty|estetica|salao|academia|drogaria/i.test(
+      lower
+    )
+  ) {
+    return 'autocuidado';
+  }
+  if (
+    /shein|riachuelo|modas|decathlon|amazon|outlet|baga|shopee|mercado livre|mp \*|porto seguro|loja|roupa|calcado/i.test(
+      lower
+    )
+  ) {
+    return 'compras';
+  }
+  if (/evento|cantoverde|cinema|ingresso|viagem|hotel|passeio|turismo/i.test(lower)) {
+    return 'lazer';
+  }
+  return 'outros';
+}
+
 

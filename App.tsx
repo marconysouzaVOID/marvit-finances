@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   AUVP_GOALS,
   INITIAL_EXPENSES,
+  INITIAL_GLOBAL_CARDS,
   INITIAL_LONG_TERM_GOALS,
 } from './constants';
 import {
@@ -10,6 +11,7 @@ import {
   ExpenseCategory,
   ExpenseItem,
   FinancialProfile,
+  GlobalCreditCard,
   MarvitBackupData,
   MonthDataRecord,
   MonthSnapshot,
@@ -24,6 +26,9 @@ import { GoalsManager } from './components/GoalsManager';
 import { HistoryManager } from './components/HistoryManager';
 import { IncomeCard } from './components/IncomeCard';
 import { InteractiveAsset } from './components/InteractiveAsset';
+import { FinancialCharts } from './components/FinancialCharts';
+import { CompoundInterestCalculator } from './components/CompoundInterestCalculator';
+import { SingleMonthImportModal } from './components/SingleMonthImportModal';
 import {
   formatMonthKeyLabel,
   formatMonthKeySlashLabel,
@@ -58,7 +63,7 @@ import {
   unlockWithBiometrics,
 } from './utils/biometricAuth';
 
-type ActiveTab =
+export type ActiveTab =
   | 'budget'
   | 'cards'
   | 'goals'
@@ -150,9 +155,118 @@ interface HydratedAppState {
   expenses: ExpenseItem[];
   currentMonthNotes: string;
   longTermGoals: CustomGoalItem[];
+  globalCards: GlobalCreditCard[];
   history: MonthSnapshot[];
   exportedAt: string;
   restoredAt?: string;
+  excludedGoalIds?: string[];
+  goalContributionOverrides?: Record<string, number>;
+}
+
+function extractGlobalCards(
+  rawGlobalCards?: GlobalCreditCard[],
+  monthsMap?: Record<string, MonthDataRecord>,
+  expensesList?: ExpenseItem[]
+): GlobalCreditCard[] {
+  if (rawGlobalCards && rawGlobalCards.length > 0) {
+    return rawGlobalCards;
+  }
+
+  const cardMap = new Map<string, GlobalCreditCard>();
+
+  const scanItems = (items?: ExpenseItem[]) => {
+    if (!items) return;
+    for (const item of items) {
+      if (
+        item.category === 'estilo' &&
+        item.subcategory === 'cartao' &&
+        !item.linkedGoalId
+      ) {
+        const id = item.globalCardId || item.id;
+        if (!cardMap.has(id)) {
+          cardMap.set(id, {
+            id,
+            name: item.name,
+            cardLimit: item.cardLimit || 1500,
+            cardDueDay: item.cardDueDay || 10,
+          });
+        }
+      }
+    }
+  };
+
+  scanItems(expensesList);
+  if (monthsMap) {
+    for (const rec of Object.values(monthsMap)) {
+      scanItems(rec.expenses);
+    }
+  }
+
+  if (cardMap.size > 0) {
+    return Array.from(cardMap.values());
+  }
+
+  return INITIAL_GLOBAL_CARDS;
+}
+
+function normalizeExpensesWithGlobalCards(
+  items: ExpenseItem[],
+  globalCards: GlobalCreditCard[]
+): ExpenseItem[] {
+  const normalized = normalizeLifestyleExpenses(items);
+  const activeGlobalCards = (globalCards || []).filter((g) => !g.isArchived);
+
+  const result: ExpenseItem[] = [];
+  const matchedGlobalCardIds = new Set<string>();
+
+  for (const item of normalized) {
+    if (
+      item.category === 'estilo' &&
+      item.subcategory === 'cartao' &&
+      !item.linkedGoalId
+    ) {
+      const matchingGlobalCard = activeGlobalCards.find(
+        (g) =>
+          g.id === item.globalCardId ||
+          g.id === item.id ||
+          g.name.toLowerCase() === item.name.toLowerCase()
+      );
+
+      if (matchingGlobalCard) {
+        matchedGlobalCardIds.add(matchingGlobalCard.id);
+        result.push({
+          ...item,
+          id: matchingGlobalCard.id,
+          globalCardId: matchingGlobalCard.id,
+          name: matchingGlobalCard.name,
+          cardLimit: matchingGlobalCard.cardLimit ?? item.cardLimit,
+          cardDueDay: matchingGlobalCard.cardDueDay ?? item.cardDueDay,
+        });
+        continue;
+      }
+    }
+    result.push(item);
+  }
+
+  // Injetar cartões globais ativos que ainda não foram lançados neste mês
+  for (const gCard of activeGlobalCards) {
+    if (!matchedGlobalCardIds.has(gCard.id)) {
+      result.push({
+        id: gCard.id,
+        globalCardId: gCard.id,
+        name: gCard.name,
+        amount: 0,
+        category: 'estilo',
+        subcategory: 'cartao',
+        cardLimit: gCard.cardLimit,
+        cardDueDay: gCard.cardDueDay,
+        cardTransactions: [],
+        isCustom: true,
+      });
+    }
+  }
+
+  return result;
 }
 
 function hydratePayloadState(
@@ -247,7 +361,7 @@ function hydratePayloadState(
   }
 
   // Se o mês inicial selecionado ainda estiver com o template padrão intocado, mas o usuário já tiver
-  // fechamentos reais no Histórico, usa o fechamento mais recente para não perder o cálculo na tela!
+  // fechamentos reais no Histórico, seleciona o mês do fechamento mais recente sem contaminar outros meses!
   let finalSelectedKey = candidateSelectedKey;
   if (
     (!monthsMap[finalSelectedKey] ||
@@ -262,21 +376,6 @@ function hydratePayloadState(
 
     if (!preferredMonthKey && !raw?.selectedMonthKey && monthsMap[latestSnapKey]) {
       finalSelectedKey = latestSnapKey;
-    } else if (
-      !monthsMap[finalSelectedKey] ||
-      isUntouchedDefaultMonth(monthsMap[finalSelectedKey])
-    ) {
-      monthsMap[finalSelectedKey] = {
-        monthKey: finalSelectedKey,
-        updatedAt:
-          latestSnap.dateCreated || raw?.exportedAt || new Date().toISOString(),
-        profile: { ...latestSnap.profile },
-        customGoals: { ...(latestSnap.customGoals || DEFAULT_CUSTOM_GOALS) },
-        expenses: normalizeLifestyleExpenses(
-          latestSnap.expenses.filter((e) => !e.linkedGoalId)
-        ),
-        notes: latestSnap.notes,
-      };
     }
   }
 
@@ -293,17 +392,26 @@ function hydratePayloadState(
 
   monthsMap[finalSelectedKey] = activeRecord;
 
+  const resolvedGlobalCards = extractGlobalCards(
+    raw?.globalCards,
+    monthsMap,
+    raw?.expenses
+  );
+
   return {
     selectedMonthKey: finalSelectedKey,
     monthsData: monthsMap,
     profile: activeRecord.profile,
     customGoals: activeRecord.customGoals,
-    expenses: activeRecord.expenses,
+    expenses: normalizeExpensesWithGlobalCards(activeRecord.expenses, resolvedGlobalCards),
     currentMonthNotes: activeRecord.notes || '',
     longTermGoals: raw?.customLongTermGoals || INITIAL_LONG_TERM_GOALS,
+    globalCards: resolvedGlobalCards,
     history: normalizedHistory,
     exportedAt: raw?.exportedAt || new Date().toISOString(),
     restoredAt: raw?.restoredAt,
+    excludedGoalIds: activeRecord.excludedGoalIds || [],
+    goalContributionOverrides: activeRecord.goalContributionOverrides || {},
   };
 }
 
@@ -384,6 +492,10 @@ function mergeHydratedStates(
       cloudExportTime > localExportTime
         ? cloudState.longTermGoals
         : localState.longTermGoals,
+    globalCards:
+      cloudExportTime > localExportTime
+        ? cloudState.globalCards
+        : localState.globalCards,
     history: mergedHistory,
     exportedAt:
       localExportTime >= cloudExportTime
@@ -393,6 +505,8 @@ function mergeHydratedStates(
       getTimeMs(localState.restoredAt) >= getTimeMs(cloudState.restoredAt)
         ? localState.restoredAt
         : cloudState.restoredAt,
+    excludedGoalIds: activeRec.excludedGoalIds || [],
+    goalContributionOverrides: activeRec.goalContributionOverrides || {},
   };
 }
 
@@ -444,6 +558,9 @@ export const App: React.FC = () => {
   const [longTermGoals, setLongTermGoals] = useState<CustomGoalItem[]>(
     () => initialHydrated.longTermGoals
   );
+  const [globalCards, setGlobalCards] = useState<GlobalCreditCard[]>(
+    () => initialHydrated.globalCards || INITIAL_GLOBAL_CARDS
+  );
   const [history, setHistory] = useState<MonthSnapshot[]>(
     () => initialHydrated.history
   );
@@ -453,10 +570,18 @@ export const App: React.FC = () => {
   const [restoredAt, setRestoredAt] = useState<string | undefined>(
     () => initialHydrated.restoredAt
   );
+  const [excludedGoalIds, setExcludedGoalIds] = useState<string[]>(
+    () => initialHydrated.excludedGoalIds || []
+  );
+  const [goalContributionOverrides, setGoalContributionOverrides] = useState<Record<string, number>>(
+    () => initialHydrated.goalContributionOverrides || {}
+  );
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('budget');
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isBentoMode, setIsBentoMode] = useState(false);
+  const [budgetSubView, setBudgetSubView] = useState<'sheet' | 'charts'>('sheet');
+  const [freedomSubView, setFreedomSubView] = useState<'fire' | 'compound'>('fire');
   const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [pendingExportFile, setPendingExportFile] =
@@ -498,10 +623,14 @@ export const App: React.FC = () => {
 
   const [toast, setToast] = useState<string | null>(null);
   const [deferredPwaPrompt, setDeferredPwaPrompt] = useState<any>(null);
+  const [singleMonthModalPayload, setSingleMonthModalPayload] = useState<MarvitBackupData | null>(null);
+  const [isSingleMonthModalOpen, setIsSingleMonthModalOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const lastLocalEditTimestampRef = useRef<number>(0);
   const isPushingCloudRef = useRef<boolean>(false);
+  // Trava para evitar que estados transitórios de um mês sobreponham outro durante transição ou importação
+  const isSwitchingMonthRef = useRef<boolean>(false);
   // Enquanto um backup recém-importado estiver sendo gravado na nuvem, nenhum pull pode sobrescrevê-lo
   const importGuardUntilRef = useRef<number>(0);
   // Só envia dados para a nuvem depois de ter lido a nuvem ao menos 1x nesta sessão
@@ -574,6 +703,12 @@ export const App: React.FC = () => {
   // Sempre que os dados do mês atual mudarem (profile, customGoals, expenses, currentMonthNotes),
   // persiste automaticamente no estado monthsData[selectedMonthKey] e sincroniza eventual fechamento desse mês no Histórico!
   useEffect(() => {
+    // Se estivermos em transição de mês ou importação isolada, não grava dados transitórios no mês selecionado
+    if (isSwitchingMonthRef.current) {
+      isSwitchingMonthRef.current = false;
+      return;
+    }
+
     const manualOnly = normalizeLifestyleExpenses(
       expenses.filter((e) => !e.linkedGoalId)
     );
@@ -590,6 +725,8 @@ export const App: React.FC = () => {
         customGoals,
         expenses: manualOnly,
         notes: currentMonthNotes.trim() || undefined,
+        excludedGoalIds,
+        goalContributionOverrides,
       };
       return {
         ...prev,
@@ -616,6 +753,8 @@ export const App: React.FC = () => {
           expenses: manualOnly.map((e) => ({ ...e })),
           customLongTermGoals: longTermGoals.map((g) => ({ ...g })),
           notes: currentMonthNotes.trim() || targetSnap.notes,
+          excludedGoalIds: [...excludedGoalIds],
+          goalContributionOverrides: { ...goalContributionOverrides },
         };
         const nextHistory = [...prevHistory];
         nextHistory[idx] = updatedSnap;
@@ -630,6 +769,8 @@ export const App: React.FC = () => {
     currentMonthNotes,
     lastModifiedAt,
     longTermGoals,
+    excludedGoalIds,
+    goalContributionOverrides,
   ]);
 
   const syncedMonthsData = useMemo<Record<string, MonthDataRecord>>(() => {
@@ -648,6 +789,8 @@ export const App: React.FC = () => {
         customGoals,
         expenses: manualOnly,
         notes: currentMonthNotes.trim() || undefined,
+        excludedGoalIds,
+        goalContributionOverrides,
       },
     };
   }, [
@@ -658,11 +801,14 @@ export const App: React.FC = () => {
     expenses,
     currentMonthNotes,
     lastModifiedAt,
+    excludedGoalIds,
+    goalContributionOverrides,
   ]);
 
   // Transitar entre os meses do calendário persistindo automaticamente o mês anterior e carregando o destino
   const handleSelectMonth = (nextMonthKey: string) => {
     if (nextMonthKey === selectedMonthKey) return;
+    isSwitchingMonthRef.current = true;
 
     const nowIso = new Date().toISOString();
     const currentManualOnly = normalizeLifestyleExpenses(
@@ -677,6 +823,8 @@ export const App: React.FC = () => {
         customGoals,
         expenses: currentManualOnly,
         notes: currentMonthNotes.trim() || undefined,
+        excludedGoalIds,
+        goalContributionOverrides,
       },
     };
 
@@ -699,6 +847,8 @@ export const App: React.FC = () => {
             matchingSnapshot.expenses.filter((e) => !e.linkedGoalId)
           ),
           notes: matchingSnapshot.notes,
+          excludedGoalIds: matchingSnapshot.excludedGoalIds,
+          goalContributionOverrides: matchingSnapshot.goalContributionOverrides,
         };
         updatedMap[nextMonthKey] = existingTarget;
       }
@@ -709,12 +859,19 @@ export const App: React.FC = () => {
       setSelectedMonthKey(nextMonthKey);
       setProfile(existingTarget.profile);
       setCustomGoals(existingTarget.customGoals);
-      setExpenses(normalizeLifestyleExpenses(existingTarget.expenses));
+      setExpenses(
+        normalizeExpensesWithGlobalCards(existingTarget.expenses, globalCards)
+      );
       setCurrentMonthNotes(existingTarget.notes || '');
+      setExcludedGoalIds(existingTarget.excludedGoalIds || []);
+      setGoalContributionOverrides(existingTarget.goalContributionOverrides || {});
       showToast(`Editando ${formatMonthKeyLabel(nextMonthKey)}`);
     } else {
-      // Novo mês ainda não preenchido: cria e persiste imediatamente o registro do novo mês
-      const cleanManual = currentManualOnly.map((e) => ({ ...e }));
+      // Novo mês ainda não preenchido: cria e persiste imediatamente o registro do novo mês com os cartões globais prontos
+      const cleanManual = normalizeExpensesWithGlobalCards(
+        currentManualOnly.map((e) => ({ ...e })),
+        globalCards
+      );
       const newMonthRecord: MonthDataRecord = {
         monthKey: nextMonthKey,
         updatedAt: nowIso,
@@ -722,12 +879,16 @@ export const App: React.FC = () => {
         customGoals: { ...customGoals },
         expenses: cleanManual,
         notes: undefined,
+        excludedGoalIds: [],
+        goalContributionOverrides: {},
       };
       updatedMap[nextMonthKey] = newMonthRecord;
       setMonthsData(updatedMap);
       setSelectedMonthKey(nextMonthKey);
       setExpenses(cleanManual);
       setCurrentMonthNotes('');
+      setExcludedGoalIds([]);
+      setGoalContributionOverrides({});
       markUserEdit();
       showToast(
         `${formatMonthKeyLabel(nextMonthKey)} aberto para preenchimento!`
@@ -761,39 +922,77 @@ export const App: React.FC = () => {
   // Combinar despesas manuais do mês selecionado + aportes vinculados das Metas Personalizadas
   const combinedExpenses = useMemo<ExpenseItem[]>(() => {
     const manualOnly = expenses.filter((e) => !e.linkedGoalId);
+    const withCards = normalizeExpensesWithGlobalCards(manualOnly, globalCards);
     const linkedFromGoals: ExpenseItem[] = longTermGoals
-      .filter((g) => g.syncWithBudget && g.monthlyContribution > 0)
+      .filter(
+        (g) =>
+          g.syncWithBudget &&
+          g.monthlyContribution > 0 &&
+          !excludedGoalIds.includes(g.id)
+      )
       .map((g) => ({
         id: `goal-exp-${g.id}`,
         name: `🎯 Pote: ${g.title}`,
-        amount: g.monthlyContribution,
+        amount:
+          typeof goalContributionOverrides[g.id] === 'number'
+            ? goalContributionOverrides[g.id]
+            : g.monthlyContribution,
         category: g.budgetCategory,
         linkedGoalId: g.id,
       }));
-    return [...manualOnly, ...linkedFromGoals];
-  }, [expenses, longTermGoals]);
+    return [...withCards, ...linkedFromGoals];
+  }, [expenses, globalCards, longTermGoals, excludedGoalIds, goalContributionOverrides]);
 
   const linkedGoalsMonthlyTotal = useMemo(
     () =>
       longTermGoals
-        .filter((g) => g.syncWithBudget && g.monthlyContribution > 0)
-        .reduce((acc, g) => acc + g.monthlyContribution, 0),
-    [longTermGoals]
+        .filter(
+          (g) =>
+            g.syncWithBudget &&
+            g.monthlyContribution > 0 &&
+            !excludedGoalIds.includes(g.id)
+        )
+        .reduce((acc, g) => {
+          const amt =
+            typeof goalContributionOverrides[g.id] === 'number'
+              ? goalContributionOverrides[g.id]
+              : g.monthlyContribution;
+          return acc + amt;
+        }, 0),
+    [longTermGoals, excludedGoalIds, goalContributionOverrides]
   );
+
+  const excludedGoalsForCurrentMonth = useMemo(() => {
+    return longTermGoals
+      .filter(
+        (g) =>
+          g.syncWithBudget &&
+          g.monthlyContribution > 0 &&
+          excludedGoalIds.includes(g.id)
+      )
+      .map((g) => ({
+        id: g.id,
+        title: g.title,
+        monthlyContribution: g.monthlyContribution,
+        budgetCategory: g.budgetCategory,
+      }));
+  }, [longTermGoals, excludedGoalIds]);
 
   const currentBackupPayload = useMemo<MarvitBackupData>(
     () => ({
-      version: '2.3.0',
+      version: '2.4.0',
       appName: 'Marvit&Finances',
       exportedAt: lastModifiedAt,
       selectedMonthKey,
       monthsData: syncedMonthsData,
       profile,
       customGoals,
-      expenses: normalizeLifestyleExpenses(
-        expenses.filter((e) => !e.linkedGoalId)
+      expenses: normalizeExpensesWithGlobalCards(
+        expenses.filter((e) => !e.linkedGoalId),
+        globalCards
       ),
       customLongTermGoals: longTermGoals,
+      globalCards,
       history,
       ...(restoredAt ? { restoredAt } : {}),
     }),
@@ -805,6 +1004,7 @@ export const App: React.FC = () => {
       customGoals,
       expenses,
       longTermGoals,
+      globalCards,
       history,
       restoredAt,
     ]
@@ -973,12 +1173,148 @@ export const App: React.FC = () => {
   const handleAddExpense = (newItem: Omit<ExpenseItem, 'id'>) => {
     markUserEdit();
     const newId = `exp-${Date.now()}`;
-    setExpenses((prev) => [{ ...newItem, id: newId }, ...prev]);
-    if (newItem.category === 'estilo' && newItem.subcategory === 'cartao') {
+    const isCard = newItem.category === 'estilo' && newItem.subcategory === 'cartao';
+
+    if (isCard) {
+      const newGlobalCard: GlobalCreditCard = {
+        id: newId,
+        name: newItem.name,
+        cardLimit: newItem.cardLimit || 1500,
+        cardDueDay: newItem.cardDueDay || 10,
+        createdAt: new Date().toISOString(),
+      };
+      setGlobalCards((prev) => [...prev, newGlobalCard]);
       setSelectedCardId(newId);
-      showToast('Cartão de Crédito adicionado ao Estilo de Vida!');
+      showToast(`Cartão "${newItem.name}" cadastrado globalmente para todos os meses!`);
     } else {
       showToast('Item adicionado ao mês!');
+    }
+
+    setExpenses((prev) => [
+      { ...newItem, id: newId, ...(isCard ? { globalCardId: newId } : {}) },
+      ...prev,
+    ]);
+  };
+
+  // Handlers de Cartões de Crédito Globais (persistentes e sincronizados em todos os meses)
+  const handleAddGlobalCard = (card: Omit<GlobalCreditCard, 'id'>) => {
+    markUserEdit();
+    const newId = `card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const newGlobalCard: GlobalCreditCard = {
+      ...card,
+      id: newId,
+      createdAt: new Date().toISOString(),
+    };
+
+    setGlobalCards((prev) => [...prev, newGlobalCard]);
+
+    const newExpenseCard: ExpenseItem = {
+      id: newId,
+      globalCardId: newId,
+      name: newGlobalCard.name,
+      amount: 0,
+      category: 'estilo',
+      subcategory: 'cartao',
+      cardLimit: newGlobalCard.cardLimit,
+      cardDueDay: newGlobalCard.cardDueDay,
+      cardTransactions: [],
+      isCustom: true,
+    };
+
+    setExpenses((prev) => [...prev, newExpenseCard]);
+    setSelectedCardId(newId);
+    showToast(`Cartão "${newGlobalCard.name}" cadastrado globalmente para todos os meses!`);
+  };
+
+  const handleUpdateGlobalCard = (
+    id: string,
+    updated: Partial<GlobalCreditCard>
+  ) => {
+    markUserEdit();
+    setGlobalCards((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, ...updated } : c))
+    );
+
+    setExpenses((prev) =>
+      prev.map((e) =>
+        e.id === id || e.globalCardId === id
+          ? {
+              ...e,
+              ...(updated.name ? { name: updated.name } : {}),
+              ...(typeof updated.cardLimit !== 'undefined'
+                ? { cardLimit: updated.cardLimit }
+                : {}),
+              ...(typeof updated.cardDueDay !== 'undefined'
+                ? { cardDueDay: updated.cardDueDay }
+                : {}),
+            }
+          : e
+      )
+    );
+
+    setMonthsData((prev) => {
+      const nextMap = { ...prev };
+      for (const [mKey, rec] of Object.entries(nextMap)) {
+        if (!rec.expenses) continue;
+        nextMap[mKey] = {
+          ...rec,
+          expenses: rec.expenses.map((e) =>
+            e.id === id || e.globalCardId === id
+              ? {
+                  ...e,
+                  ...(updated.name ? { name: updated.name } : {}),
+                  ...(typeof updated.cardLimit !== 'undefined'
+                    ? { cardLimit: updated.cardLimit }
+                    : {}),
+                  ...(typeof updated.cardDueDay !== 'undefined'
+                    ? { cardDueDay: updated.cardDueDay }
+                    : {}),
+                }
+              : e
+          ),
+        };
+      }
+      return nextMap;
+    });
+
+    showToast('Configurações do cartão atualizadas em todos os meses!');
+  };
+
+  const handleDeleteGlobalCard = (
+    id: string,
+    scope: 'global' | 'current_month'
+  ) => {
+    markUserEdit();
+    if (scope === 'global') {
+      setGlobalCards((prev) => prev.filter((c) => c.id !== id));
+      setExpenses((prev) =>
+        prev.filter((e) => e.id !== id && e.globalCardId !== id)
+      );
+
+      setMonthsData((prev) => {
+        const nextMap = { ...prev };
+        for (const [mKey, rec] of Object.entries(nextMap)) {
+          if (!rec.expenses) continue;
+          nextMap[mKey] = {
+            ...rec,
+            expenses: rec.expenses.filter(
+              (e) => e.id !== id && e.globalCardId !== id
+            ),
+          };
+        }
+        return nextMap;
+      });
+
+      showToast('Cartão excluído globalmente de todos os meses.');
+    } else {
+      setExpenses((prev) =>
+        prev.map((e) =>
+          e.id === id || e.globalCardId === id
+            ? { ...e, amount: 0, cardTransactions: [] }
+            : e
+        )
+      );
+      showToast('Fatura do cartão zerada no mês atual.');
     }
   };
 
@@ -991,11 +1327,157 @@ export const App: React.FC = () => {
 
   const handleDeleteExpense = (id: string) => {
     markUserEdit();
+    if (id.startsWith('goal-exp-') || id.startsWith('goal-contrib-')) {
+      const goalId = id.replace(/^(goal-exp-|goal-contrib-)/, '');
+      setExcludedGoalIds((prev) => Array.from(new Set([...prev, goalId])));
+      showToast('Aporte do Pote dos Sonhos removido do orçamento deste mês!');
+      return;
+    }
     setExpenses((prev) => prev.filter((e) => e.id !== id));
   };
 
+  const handleRestoreGoalContribution = (goalId: string) => {
+    markUserEdit();
+    setExcludedGoalIds((prev) => prev.filter((id) => id !== goalId));
+    showToast('Aporte do Pote dos Sonhos reativado para este mês!');
+  };
+
+  const handleToggleGoalMonthExclusion = (goalId: string) => {
+    markUserEdit();
+    setExcludedGoalIds((prev) => {
+      const isAlreadyExcluded = prev.includes(goalId);
+      if (isAlreadyExcluded) {
+        showToast('Aporte do Pote dos Sonhos reativado para este mês!');
+        return prev.filter((id) => id !== goalId);
+      } else {
+        showToast('Aporte do Pote dos Sonhos removido/pausado deste mês!');
+        return [...prev, goalId];
+      }
+    });
+  };
+
+  const handleCloneBudgetFromMonth = (sourceMonthKey: string) => {
+    const sourceRecord = syncedMonthsData[sourceMonthKey];
+    if (!sourceRecord) {
+      showToast('O mês selecionado ainda não possui dados salvos.');
+      return;
+    }
+    markUserEdit();
+    setProfile({ ...sourceRecord.profile });
+    setCustomGoals({ ...sourceRecord.customGoals });
+    setExpenses(
+      normalizeLifestyleExpenses(sourceRecord.expenses.map((e) => ({ ...e })))
+    );
+    if (sourceRecord.notes) {
+      setCurrentMonthNotes(sourceRecord.notes);
+    }
+    setExcludedGoalIds(
+      sourceRecord.excludedGoalIds ? [...sourceRecord.excludedGoalIds] : []
+    );
+    setGoalContributionOverrides(
+      sourceRecord.goalContributionOverrides
+        ? { ...sourceRecord.goalContributionOverrides }
+        : {}
+    );
+    showToast(
+      `Orçamento clonado de ${formatMonthKeyLabel(sourceMonthKey)} para ${formatMonthKeyLabel(selectedMonthKey)}!`
+    );
+  };
+
+  const handleApplyBudgetPreset = (presetId: string) => {
+    markUserEdit();
+    if (presetId === 'auvp-50-30-20') {
+      setExpenses([
+        { id: `exp-${Date.now()}-1`, name: 'Aluguel / Parcela Imóvel', amount: 1800, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-2`, name: 'Supermercado & Feira', amount: 950, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-3`, name: 'Contas (Água, Luz, Internet)', amount: 420, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-4`, name: 'Plano de Saúde & Farmácia', amount: 380, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-5`, name: 'Transporte / Combustível', amount: 450, category: 'essencial', isCustom: true },
+        {
+          id: `exp-${Date.now()}-6`,
+          name: 'Cartão Nubank / Ultravioleta',
+          amount: 760,
+          category: 'estilo',
+          subcategory: 'cartao',
+          cardDueDay: 10,
+          cardLimit: 1500,
+          cardTransactions: [
+            { id: `tx-${Date.now()}-1`, description: 'Jantar Especial & Cafeterias', amount: 340, tag: 'gastronomia', installment: 'À vista', purchaseDate: '08/11' },
+            { id: `tx-${Date.now()}-2`, description: 'Streaming (Netflix, Spotify, Apple)', amount: 110, tag: 'assinaturas', installment: 'Recorrente', purchaseDate: '12/11' },
+            { id: `tx-${Date.now()}-3`, description: 'Compras Online & Livros', amount: 310, tag: 'compras', installment: 'À vista', purchaseDate: '19/11' },
+          ],
+          isCustom: true,
+        },
+        { id: `exp-${Date.now()}-7`, name: 'Aportes em Renda Variável (Ações/FIIs)', amount: 1000, category: 'investimento', isCustom: true },
+        { id: `exp-${Date.now()}-8`, name: 'Reserva de Emergência / Tesouro Selic', amount: 500, category: 'investimento', isCustom: true },
+      ]);
+      setCustomGoals({ essencial: 50, estilo: 30, investimento: 20 });
+      showToast('Modelo "Padrão AUVP (50/30/20)" aplicado ao mês!');
+    } else if (presetId === 'investidor-40-30-30') {
+      setExpenses([
+        { id: `exp-${Date.now()}-1`, name: 'Moradia & Condomínio', amount: 1600, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-2`, name: 'Mercado & Alimentação', amount: 800, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-3`, name: 'Contas Essenciais', amount: 350, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-4`, name: 'Transporte & Seguro', amount: 400, category: 'essencial', isCustom: true },
+        {
+          id: `exp-${Date.now()}-5`,
+          name: 'Cartão de Estilo de Vida',
+          amount: 900,
+          category: 'estilo',
+          subcategory: 'cartao',
+          cardTransactions: [
+            { id: `tx-${Date.now()}-1`, description: 'Restaurantes & Lazer', amount: 550, tag: 'gastronomia', installment: 'À vista', purchaseDate: '10/11' },
+            { id: `tx-${Date.now()}-2`, description: 'Assinaturas & Bem-Estar', amount: 350, tag: 'assinaturas', installment: 'Recorrente', purchaseDate: '15/11' },
+          ],
+          isCustom: true,
+        },
+        { id: `exp-${Date.now()}-6`, name: 'Aportes Ações Globais & ETFs', amount: 1500, category: 'investimento', isCustom: true },
+        { id: `exp-${Date.now()}-7`, name: 'Reserva de Emergência / Tesouro', amount: 700, category: 'investimento', isCustom: true },
+      ]);
+      setCustomGoals({ essencial: 40, estilo: 30, investimento: 30 });
+      showToast('Modelo "Foco em Investimentos (40/30/30)" aplicado ao mês!');
+    } else if (presetId === 'enxuto-minimalista') {
+      setExpenses([
+        { id: `exp-${Date.now()}-1`, name: 'Moradia Essencial', amount: 1300, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-2`, name: 'Alimentação Básica & Feira', amount: 650, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-3`, name: 'Contas Básicas', amount: 280, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-4`, name: 'Transporte Público / Básico', amount: 220, category: 'essencial', isCustom: true },
+        { id: `exp-${Date.now()}-5`, name: 'Lazer Consciente & Cartão', amount: 450, category: 'estilo', subcategory: 'cartao', isCustom: true },
+        { id: `exp-${Date.now()}-6`, name: 'Aportes para Independência Financeira', amount: 1800, category: 'investimento', isCustom: true },
+      ]);
+      setCustomGoals({ essencial: 45, estilo: 15, investimento: 40 });
+      showToast('Modelo "Enxuto & Aportes Rápidos" aplicado ao mês!');
+    }
+  };
+
+  const availableMonthsToClone = useMemo(() => {
+    return Object.keys(syncedMonthsData)
+      .filter(
+        (k) =>
+          k !== selectedMonthKey &&
+          syncedMonthsData[k]?.expenses &&
+          syncedMonthsData[k].expenses.length > 0
+      )
+      .map((k) => ({
+        monthKey: k,
+        monthLabel: formatMonthKeyLabel(k),
+        itemCount: syncedMonthsData[k].expenses.length,
+      }));
+  }, [syncedMonthsData, selectedMonthKey]);
+
   const handleUpdateExpense = (id: string, updated: Partial<ExpenseItem>) => {
     markUserEdit();
+    if (id.startsWith('goal-exp-') || id.startsWith('goal-contrib-')) {
+      const goalId = id.replace(/^(goal-exp-|goal-contrib-)/, '');
+      if (typeof updated.amount === 'number') {
+        setGoalContributionOverrides((prev) => ({
+          ...prev,
+          [goalId]: updated.amount as number,
+        }));
+        showToast('Valor de aporte atualizado para este mês!');
+      }
+      return;
+    }
     setExpenses((prev) =>
       prev.map((e) => (e.id === id ? { ...e, ...updated } : e))
     );
@@ -1054,6 +1536,8 @@ export const App: React.FC = () => {
       expenses: combinedExpenses.map((e) => ({ ...e })),
       customLongTermGoals: longTermGoals.map((g) => ({ ...g })),
       notes: resolvedNotes,
+      excludedGoalIds: [...excludedGoalIds],
+      goalContributionOverrides: { ...goalContributionOverrides },
     };
 
     markUserEdit();
@@ -1066,6 +1550,8 @@ export const App: React.FC = () => {
         customGoals: { ...customGoals },
         expenses: cleanManualExpenses,
         notes: resolvedNotes,
+        excludedGoalIds: [...excludedGoalIds],
+        goalContributionOverrides: { ...goalContributionOverrides },
       },
     }));
     if (resolvedMonthKey !== selectedMonthKey) {
@@ -1106,34 +1592,47 @@ export const App: React.FC = () => {
     const restoredGoals = { ...snapshot.customGoals };
     const restoredNotes = snapshot.notes || '';
 
+    isSwitchingMonthRef.current = true;
     markUserEdit();
-    setMonthsData((prev) => ({
-      ...prev,
-      [selectedMonthKey]: {
-        monthKey: selectedMonthKey,
-        updatedAt: lastModifiedAt || nowIso,
-        profile,
-        customGoals,
-        expenses: normalizeLifestyleExpenses(
-          expenses.filter((e) => !e.linkedGoalId)
-        ),
-        notes: currentMonthNotes.trim() || undefined,
-      },
-      [targetMonthKey]: {
+
+    const currentManual = normalizeLifestyleExpenses(
+      expenses.filter((e) => !e.linkedGoalId)
+    );
+
+    setMonthsData((prev) => {
+      const nextMap = { ...prev };
+      if (selectedMonthKey !== targetMonthKey) {
+        nextMap[selectedMonthKey] = {
+          monthKey: selectedMonthKey,
+          updatedAt: lastModifiedAt || nowIso,
+          profile,
+          customGoals,
+          expenses: currentManual,
+          notes: currentMonthNotes.trim() || undefined,
+          excludedGoalIds,
+          goalContributionOverrides,
+        };
+      }
+      nextMap[targetMonthKey] = {
         monthKey: targetMonthKey,
         updatedAt: nowIso,
         profile: restoredProfile,
         customGoals: restoredGoals,
         expenses: restoredExpenses,
         notes: restoredNotes.trim() || undefined,
-      },
-    }));
+        excludedGoalIds: snapshot.excludedGoalIds || [],
+        goalContributionOverrides: snapshot.goalContributionOverrides || {},
+      };
+      return nextMap;
+    });
 
     setSelectedMonthKey(targetMonthKey);
     setProfile(restoredProfile);
     setCustomGoals(restoredGoals);
     setExpenses(restoredExpenses);
     setCurrentMonthNotes(restoredNotes);
+    setExcludedGoalIds(snapshot.excludedGoalIds || []);
+    setGoalContributionOverrides(snapshot.goalContributionOverrides || {});
 
     if (snapshot.customLongTermGoals) {
       setLongTermGoals(snapshot.customLongTermGoals.map((g) => ({ ...g })));
@@ -1236,12 +1735,17 @@ export const App: React.FC = () => {
     setMonthsData(state.monthsData);
     setProfile(state.profile);
     setCustomGoals(state.customGoals);
+    if (state.globalCards && state.globalCards.length > 0) {
+      setGlobalCards(state.globalCards);
+    }
     setExpenses(state.expenses);
     setCurrentMonthNotes(state.currentMonthNotes);
     setLongTermGoals(state.longTermGoals);
     setHistory(state.history);
     setLastModifiedAt(state.exportedAt);
     setRestoredAt(state.restoredAt);
+    setExcludedGoalIds(state.excludedGoalIds || []);
+    setGoalContributionOverrides(state.goalContributionOverrides || {});
   };
 
   const pushPayloadNow = (payload: MarvitBackupData) => {
@@ -1357,6 +1861,129 @@ export const App: React.FC = () => {
     );
   };
 
+  // Importação isolada de apenas um mês específico do arquivo de backup (garante que nenhum outro mês seja alterado)
+  const handleImportSingleMonth = (
+    targetMonthKey: string,
+    importedRecord: MonthDataRecord,
+    importedSnapshot?: MonthSnapshot
+  ) => {
+    const nowIso = new Date().toISOString();
+    isSwitchingMonthRef.current = true;
+    importGuardUntilRef.current = Date.now() + 20000;
+    hasPulledCloudRef.current = true;
+    markUserEdit();
+
+    const cleanExpenses = normalizeLifestyleExpenses(
+      (importedRecord.expenses || []).filter((e) => !e.linkedGoalId).map((e) => ({ ...e }))
+    );
+    const cleanProfile = { ...(importedRecord.profile || DEFAULT_PROFILE) };
+    const cleanGoals = { ...(importedRecord.customGoals || DEFAULT_CUSTOM_GOALS) };
+    const cleanNotes = (importedRecord.notes || importedSnapshot?.notes || '').trim();
+    const importedExcluded = importedRecord.excludedGoalIds || importedSnapshot?.excludedGoalIds || [];
+    const importedOverrides = importedRecord.goalContributionOverrides || importedSnapshot?.goalContributionOverrides || {};
+
+    const updatedMonthRecord: MonthDataRecord = {
+      monthKey: targetMonthKey,
+      updatedAt: nowIso,
+      profile: cleanProfile,
+      customGoals: cleanGoals,
+      expenses: cleanExpenses,
+      notes: cleanNotes || undefined,
+      excludedGoalIds: importedExcluded,
+      goalContributionOverrides: importedOverrides,
+    };
+
+    // Salva o mês atual se for diferente do mês importado
+    const currentManualOnly = normalizeLifestyleExpenses(
+      expenses.filter((e) => !e.linkedGoalId)
+    );
+
+    const nextMonthsData: Record<string, MonthDataRecord> = {
+      ...syncedMonthsData,
+      ...(selectedMonthKey !== targetMonthKey
+        ? {
+            [selectedMonthKey]: {
+              monthKey: selectedMonthKey,
+              updatedAt: lastModifiedAt || nowIso,
+              profile,
+              customGoals,
+              expenses: currentManualOnly,
+              notes: currentMonthNotes.trim() || undefined,
+              excludedGoalIds,
+              goalContributionOverrides,
+            },
+          }
+        : {}),
+      [targetMonthKey]: updatedMonthRecord,
+    };
+
+    // Atualiza histórico mantendo todos os outros meses
+    const nextHistory = [...history];
+    const snapIdx = nextHistory.findIndex(
+      (h) => (h.monthKey || inferMonthKeyFromLabel(h.monthLabel, h.dateCreated)) === targetMonthKey
+    );
+    const snapToStore: MonthSnapshot = importedSnapshot || {
+      id: `snap-import-${targetMonthKey}-${Date.now()}`,
+      monthKey: targetMonthKey,
+      monthLabel: formatMonthKeySlashLabel(targetMonthKey),
+      dateCreated: nowIso,
+      profile: cleanProfile,
+      customGoals: cleanGoals,
+      expenses: cleanExpenses,
+      notes: cleanNotes || undefined,
+      excludedGoalIds: importedExcluded,
+      goalContributionOverrides: importedOverrides,
+    };
+
+    if (snapIdx >= 0) {
+      nextHistory[snapIdx] = snapToStore;
+    } else {
+      nextHistory.unshift(snapToStore);
+    }
+
+    setMonthsData(nextMonthsData);
+    setHistory(nextHistory);
+    setSelectedMonthKey(targetMonthKey);
+    setProfile(cleanProfile);
+    setCustomGoals(cleanGoals);
+    setExpenses(cleanExpenses);
+    setCurrentMonthNotes(cleanNotes);
+    setExcludedGoalIds(importedExcluded);
+    setGoalContributionOverrides(importedOverrides);
+    setRestoredAt(nowIso);
+    setActiveTab('budget');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const payloadToPush: MarvitBackupData = {
+      version: '2.3.0',
+      appName: 'Marvit&Finances',
+      exportedAt: nowIso,
+      selectedMonthKey: targetMonthKey,
+      monthsData: nextMonthsData,
+      profile: cleanProfile,
+      customGoals: cleanGoals,
+      expenses: cleanExpenses,
+      customLongTermGoals: longTermGoals,
+      history: nextHistory,
+      restoredAt: nowIso,
+    };
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payloadToPush));
+      if (vault?.pinHash) saveLocalMirrorVault(vault.pinHash, payloadToPush);
+    } catch {
+      // ignore
+    }
+
+    pushPayloadNow(payloadToPush).finally(() => {
+      importGuardUntilRef.current = Date.now() + 6000;
+    });
+
+    showToast(
+      `Mês "${formatMonthKeySlashLabel(targetMonthKey)}" importado com sucesso! Os outros meses continuam intactos.`
+    );
+  };
+
   const handleImportJsonFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1369,7 +1996,9 @@ export const App: React.FC = () => {
         if (!parsed || typeof parsed !== 'object' || (!parsed.monthsData && !parsed.profile)) {
           throw new Error('invalid');
         }
-        handleImportBackupPayload(parsed);
+        // Abre o modal inteligente para escolher importar apenas um mês ou todos os meses
+        setSingleMonthModalPayload(parsed);
+        setIsSingleMonthModalOpen(true);
       } catch {
         importGuardUntilRef.current = 0;
         showToast('Arquivo JSON inválido.');
@@ -1592,7 +2221,7 @@ export const App: React.FC = () => {
   }[] = [
     {
       id: 'budget',
-      label: 'Orçamento & Planilha',
+      label: 'Orçamento & Gráficos',
       shortLabel: 'Orçamento',
       icon: 'pie_chart',
     },
@@ -1612,7 +2241,7 @@ export const App: React.FC = () => {
     },
     {
       id: 'freedom',
-      label: 'Simulador FIRE',
+      label: 'Liberdade & Juros',
       shortLabel: 'Liberdade',
       icon: 'sailing',
     },
@@ -2089,23 +2718,37 @@ export const App: React.FC = () => {
             />
             <ExpenseManager
               expenses={combinedExpenses}
+              selectedMonthKey={selectedMonthKey}
+              availableMonthsToClone={availableMonthsToClone}
               onAddExpense={handleAddExpense}
               onDeleteExpense={handleDeleteExpense}
               onUpdateExpense={handleUpdateExpense}
               onOpenCardsTab={handleOpenCardsTab}
+              excludedGoals={excludedGoalsForCurrentMonth}
+              onRestoreGoalContribution={handleRestoreGoalContribution}
+              onCloneFromMonth={handleCloneBudgetFromMonth}
+              onApplyPreset={handleApplyBudgetPreset}
             />
             <CreditCardsManager
               expenses={combinedExpenses}
+              globalCards={globalCards}
               lifestyleIdealAmount={lifestyleIdealAmount}
               lifestyleTotalSpent={categoryTotals.estilo}
               selectedCardId={selectedCardId}
+              selectedMonthKey={selectedMonthKey}
               onSelectCardId={setSelectedCardId}
+              onAddGlobalCard={handleAddGlobalCard}
+              onUpdateGlobalCard={handleUpdateGlobalCard}
+              onDeleteGlobalCard={handleDeleteGlobalCard}
               onAddCardExpense={handleAddExpense}
               onUpdateExpense={handleUpdateExpense}
               onDeleteExpense={handleDeleteExpense}
             />
             <GoalsManager
               goals={longTermGoals}
+              selectedMonthKey={selectedMonthKey}
+              excludedGoalIds={excludedGoalIds}
+              onToggleMonthExclusion={handleToggleGoalMonthExclusion}
               onAddGoal={handleAddLongTermGoal}
               onUpdateGoal={handleUpdateLongTermGoal}
               onDeleteGoal={handleDeleteLongTermGoal}
@@ -2125,6 +2768,20 @@ export const App: React.FC = () => {
                 balance={balance}
               />
             </div>
+            <FinancialCharts
+              monthsData={syncedMonthsData}
+              history={history}
+              selectedMonthKey={selectedMonthKey}
+              onSelectMonth={handleSelectMonth}
+              currentMonthExpenses={combinedExpenses}
+              profile={profile}
+              customGoals={customGoals}
+            />
+            <CompoundInterestCalculator
+              profile={profile}
+              monthlyInvestmentAmount={categoryTotals.investimento}
+              longTermGoals={longTermGoals}
+            />
             <HistoryManager
               history={history}
               selectedMonthKey={selectedMonthKey}
@@ -2145,7 +2802,7 @@ export const App: React.FC = () => {
               className="space-y-6"
             >
               {activeTab === 'budget' && (
-                <>
+                <div className="space-y-6">
                   <FinancialOverview
                     totalIncome={totalIncome}
                     categoryTotals={categoryTotals}
@@ -2163,23 +2820,88 @@ export const App: React.FC = () => {
                       });
                     }}
                   />
-                  <ExpenseManager
-                    expenses={combinedExpenses}
-                    onAddExpense={handleAddExpense}
-                    onDeleteExpense={handleDeleteExpense}
-                    onUpdateExpense={handleUpdateExpense}
-                    onOpenCardsTab={handleOpenCardsTab}
-                  />
-                </>
+
+                  {/* Sub-navegador da aba Orçamento: Planilha vs Gráficos */}
+                  <div className="flex items-center justify-between gap-3 bg-oat-100/80 dark:bg-espresso-800/80 border border-oat-300 dark:border-espresso-700 p-1.5 rounded-2xl shadow-xs">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setBudgetSubView('sheet')}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                          budgetSubView === 'sheet'
+                            ? 'bg-maldives-500 text-white shadow-xs'
+                            : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[17px]">
+                          table_chart
+                        </span>
+                        <span>Planilha de Gastos & Aportes</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setBudgetSubView('charts')}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                          budgetSubView === 'charts'
+                            ? 'bg-maldives-500 text-white shadow-xs'
+                            : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[17px]">
+                          bar_chart
+                        </span>
+                        <span>Gráficos & Análises</span>
+                      </button>
+                    </div>
+
+                    <span className="text-[11px] font-mono text-espresso-500 hidden sm:inline pr-2">
+                      {budgetSubView === 'sheet'
+                        ? `${combinedExpenses.length} lançamentos no mês`
+                        : 'Média de gastos e comparativos'}
+                    </span>
+                  </div>
+
+                  {budgetSubView === 'sheet' ? (
+                    <ExpenseManager
+                      expenses={combinedExpenses}
+                      selectedMonthKey={selectedMonthKey}
+                      availableMonthsToClone={availableMonthsToClone}
+                      onAddExpense={handleAddExpense}
+                      onDeleteExpense={handleDeleteExpense}
+                      onUpdateExpense={handleUpdateExpense}
+                      onOpenCardsTab={handleOpenCardsTab}
+                      excludedGoals={excludedGoalsForCurrentMonth}
+                      onRestoreGoalContribution={handleRestoreGoalContribution}
+                      onCloneFromMonth={handleCloneBudgetFromMonth}
+                      onApplyPreset={handleApplyBudgetPreset}
+                    />
+                  ) : (
+                    <FinancialCharts
+                      monthsData={syncedMonthsData}
+                      history={history}
+                      selectedMonthKey={selectedMonthKey}
+                      onSelectMonth={handleSelectMonth}
+                      currentMonthExpenses={combinedExpenses}
+                      profile={profile}
+                      customGoals={customGoals}
+                    />
+                  )}
+                </div>
               )}
 
               {activeTab === 'cards' && (
                 <CreditCardsManager
                   expenses={combinedExpenses}
+                  globalCards={globalCards}
                   lifestyleIdealAmount={lifestyleIdealAmount}
                   lifestyleTotalSpent={categoryTotals.estilo}
                   selectedCardId={selectedCardId}
+                  selectedMonthKey={selectedMonthKey}
                   onSelectCardId={setSelectedCardId}
+                  onAddGlobalCard={handleAddGlobalCard}
+                  onUpdateGlobalCard={handleUpdateGlobalCard}
+                  onDeleteGlobalCard={handleDeleteGlobalCard}
                   onAddCardExpense={handleAddExpense}
                   onUpdateExpense={handleUpdateExpense}
                   onDeleteExpense={handleDeleteExpense}
@@ -2189,6 +2911,9 @@ export const App: React.FC = () => {
               {activeTab === 'goals' && (
                 <GoalsManager
                   goals={longTermGoals}
+                  selectedMonthKey={selectedMonthKey}
+                  excludedGoalIds={excludedGoalIds}
+                  onToggleMonthExclusion={handleToggleGoalMonthExclusion}
                   onAddGoal={handleAddLongTermGoal}
                   onUpdateGoal={handleUpdateLongTermGoal}
                   onDeleteGoal={handleDeleteLongTermGoal}
@@ -2196,14 +2921,65 @@ export const App: React.FC = () => {
               )}
 
               {activeTab === 'freedom' && (
-                <FreedomSimulator
-                  monthlyEssentialCost={categoryTotals.essencial}
-                  monthlyTotalCost={
-                    categoryTotals.essencial + categoryTotals.estilo
-                  }
-                  monthlyInvestment={categoryTotals.investimento}
-                  profile={profile}
-                />
+                <div className="space-y-6">
+                  {/* Sub-navegador da aba Liberdade: Simulador FIRE vs Calculadora de Juros */}
+                  <div className="flex items-center justify-between gap-3 bg-oat-100/80 dark:bg-espresso-800/80 border border-oat-300 dark:border-espresso-700 p-1.5 rounded-2xl shadow-xs">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setFreedomSubView('fire')}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                          freedomSubView === 'fire'
+                            ? 'bg-maldives-500 text-white shadow-xs'
+                            : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[17px]">
+                          sailing
+                        </span>
+                        <span>Simulador FIRE (Independência)</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setFreedomSubView('compound')}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                          freedomSubView === 'compound'
+                            ? 'bg-maldives-500 text-white shadow-xs'
+                            : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[17px]">
+                          calculate
+                        </span>
+                        <span>Calculadora de Juros Compostos</span>
+                      </button>
+                    </div>
+
+                    <span className="text-[11px] font-mono text-espresso-500 hidden sm:inline pr-2">
+                      {freedomSubView === 'fire'
+                        ? 'Regra dos 4% & Ponto de Equilíbrio'
+                        : 'Previsão de Aportes & Simulador'}
+                    </span>
+                  </div>
+
+                  {freedomSubView === 'fire' ? (
+                    <FreedomSimulator
+                      monthlyEssentialCost={categoryTotals.essencial}
+                      monthlyTotalCost={
+                        categoryTotals.essencial + categoryTotals.estilo
+                      }
+                      monthlyInvestment={categoryTotals.investimento}
+                      profile={profile}
+                    />
+                  ) : (
+                    <CompoundInterestCalculator
+                      profile={profile}
+                      monthlyInvestmentAmount={categoryTotals.investimento}
+                      longTermGoals={longTermGoals}
+                    />
+                  )}
+                </div>
               )}
 
               {activeTab === 'advice' && (
@@ -2230,8 +3006,8 @@ export const App: React.FC = () => {
       </main>
 
       {/* Bottom Navigation Bar Responsiva para Mobile & PWA (iOS e Android) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-oat-50/95 backdrop-blur-lg border-t border-oat-300 pb-safe shadow-cozy-lg">
-        <div className="grid grid-cols-6 px-1 pt-1.5">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-oat-50/95 dark:bg-espresso-900/95 backdrop-blur-lg border-t border-oat-300 dark:border-espresso-700 pb-safe shadow-cozy-lg">
+        <div className="grid grid-cols-6 px-1 pt-1.5 pb-1">
           {navItems.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -2243,15 +3019,17 @@ export const App: React.FC = () => {
                   setActiveTab(tab.id);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`relative flex flex-col items-center justify-center py-1.5 px-0.5 rounded-2xl transition cursor-pointer min-w-0 ${
-                  isActive ? 'text-maldives-700 font-extrabold' : 'text-espresso-500'
+                className={`relative flex flex-col items-center justify-center py-1 px-1 rounded-2xl transition cursor-pointer min-w-0 ${
+                  isActive
+                    ? 'text-maldives-700 dark:text-maldives-400 font-extrabold'
+                    : 'text-espresso-500 dark:text-espresso-400'
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="mobileActiveTab"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    className="absolute inset-x-1 top-0.5 h-8 bg-maldives-100/90 rounded-xl -z-10"
+                    className="absolute inset-0 bg-maldives-100/90 dark:bg-maldives-950/70 rounded-xl -z-10"
                   />
                 )}
                 <span className="material-symbols-outlined text-[19px]">
@@ -2392,6 +3170,19 @@ export const App: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Modal de Importação Inteligente (Mês Isolado vs Todos os Meses) */}
+      <SingleMonthImportModal
+        isOpen={isSingleMonthModalOpen}
+        onClose={() => {
+          setIsSingleMonthModalOpen(false);
+          setSingleMonthModalPayload(null);
+          importGuardUntilRef.current = 0;
+        }}
+        backupPayload={singleMonthModalPayload}
+        onImportSingleMonth={handleImportSingleMonth}
+        onImportFullBackup={handleImportBackupPayload}
+      />
 
       {/* Modal de Cofre na Nuvem, Troca de PIN & Biometria */}
       <VaultAuthModal

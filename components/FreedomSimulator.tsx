@@ -79,7 +79,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <span className="text-xs font-bold uppercase text-sage-600 tracking-wider block">
-                  1. Reserva da Despensa
+                  1. Reserva de Emergência
                 </span>
                 <div className="text-xl sm:text-2xl font-mono font-extrabold text-espresso-900 mt-1.5 truncate">
                   {formatCurrency(emergencyFundTarget)}
@@ -143,7 +143,7 @@ export const FreedomSimulator: React.FC<FreedomSimulatorProps> = ({
               <strong className="text-espresso-900">
                 {formatCurrency(monthlyEssentialCost)}/mês
               </strong>{' '}
-              em renda passiva vitalícia, garantindo casa e despensa cheias para sempre.
+              em renda passiva vitalícia, garantindo segurança e tranquilidade financeira para sempre.
             </p>
           </div>
 

@@ -40,7 +40,7 @@ export const AdvicePanel: React.FC<AdvicePanelProps> = ({
     });
   } else {
     insights.push({
-      title: 'Despensa & Essenciais Equilibrados',
+      title: 'Custos Essenciais Equilibrados',
       desc: `Muito bom! Seus custos essenciais estão em ${formatPercent(
         percEssencial
       )}, mantendo uma margem confortável de segurança para imprevistos.`,
@@ -134,22 +134,20 @@ export const AdvicePanel: React.FC<AdvicePanelProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.06 }}
-            className={`p-4 rounded-2xl border-2 flex items-start gap-3.5 ${
-              item.tone === 'danger'
+            className={`p-4 rounded-2xl border-2 flex items-start gap-3.5 ${item.tone === 'danger'
                 ? 'bg-terracotta-50 border-terracotta-300 text-espresso-900'
                 : item.tone === 'warning'
-                ? 'bg-oat-100 border-terracotta-200 text-espresso-900'
-                : 'bg-maldives-50/70 border-maldives-200 text-espresso-900'
-            }`}
+                  ? 'bg-oat-100 border-terracotta-200 text-espresso-900'
+                  : 'bg-maldives-50/70 border-maldives-200 text-espresso-900'
+              }`}
           >
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                item.tone === 'danger'
+              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${item.tone === 'danger'
                   ? 'bg-terracotta-200 text-terracotta-700'
                   : item.tone === 'warning'
-                  ? 'bg-terracotta-100 text-terracotta-600'
-                  : 'bg-maldives-100 text-maldives-700'
-              }`}
+                    ? 'bg-terracotta-100 text-terracotta-600'
+                    : 'bg-maldives-100 text-maldives-700'
+                }`}
             >
               <span className="material-symbols-outlined text-[20px]">
                 {item.icon}

@@ -12,6 +12,9 @@ import { InteractiveAsset } from './InteractiveAsset';
 
 interface GoalsManagerProps {
   goals: CustomGoalItem[];
+  selectedMonthKey?: string;
+  excludedGoalIds?: string[];
+  onToggleMonthExclusion?: (goalId: string) => void;
   onAddGoal: (goal: Omit<CustomGoalItem, 'id'>) => void;
   onUpdateGoal: (id: string, updated: Partial<CustomGoalItem>) => void;
   onDeleteGoal: (id: string) => void;
@@ -19,6 +22,9 @@ interface GoalsManagerProps {
 
 export const GoalsManager: React.FC<GoalsManagerProps> = ({
   goals,
+  selectedMonthKey,
+  excludedGoalIds,
+  onToggleMonthExclusion,
   onAddGoal,
   onUpdateGoal,
   onDeleteGoal,
@@ -749,25 +755,55 @@ export const GoalsManager: React.FC<GoalsManagerProps> = ({
                 </div>
               </div>
 
-              {/* Rodapé do Card: Toggle de Vínculo com Orçamento + Botão de Depósito Rápido */}
+              {/* Rodapé do Card: Toggle de Vínculo com Orçamento + Exclusão do Mês + Botão de Depósito Rápido */}
               <div className="mt-4 pt-3 border-t border-oat-200 flex flex-wrap items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateGoal(goal.id, { syncWithBudget: !goal.syncWithBudget })
-                  }
-                  className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border transition flex items-center gap-1 cursor-pointer ${
-                    goal.syncWithBudget
-                      ? 'bg-sage-100 text-sage-600 border-sage-300'
-                      : 'bg-oat-100 text-espresso-500 border-oat-300 hover:text-espresso-800'
-                  }`}
-                  title="Incluir ou remover aporte automaticamente da Planilha Mensal"
-                >
-                  <span className="material-symbols-outlined text-[15px]">
-                    {goal.syncWithBudget ? 'check_circle' : 'radio_button_unchecked'}
-                  </span>
-                  <span>{goal.syncWithBudget ? 'Na Planilha' : 'Simulação'}</span>
-                </button>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onUpdateGoal(goal.id, { syncWithBudget: !goal.syncWithBudget })
+                    }
+                    className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border transition flex items-center gap-1 cursor-pointer ${
+                      goal.syncWithBudget
+                        ? 'bg-sage-100 text-sage-600 border-sage-300'
+                        : 'bg-oat-100 text-espresso-500 border-oat-300 hover:text-espresso-800'
+                    }`}
+                    title="Vínculo geral: Contabilizar ou não este pote no orçamento"
+                  >
+                    <span className="material-symbols-outlined text-[15px]">
+                      {goal.syncWithBudget ? 'check_circle' : 'radio_button_unchecked'}
+                    </span>
+                    <span>{goal.syncWithBudget ? 'Na Planilha' : 'Simulação'}</span>
+                  </button>
+
+                  {goal.syncWithBudget && onToggleMonthExclusion && (
+                    <button
+                      type="button"
+                      onClick={() => onToggleMonthExclusion(goal.id)}
+                      className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold border transition flex items-center gap-1 cursor-pointer ${
+                        (excludedGoalIds || []).includes(goal.id)
+                          ? 'bg-terracotta-100 text-terracotta-700 border-terracotta-300 hover:bg-terracotta-200'
+                          : 'bg-maldives-50 text-maldives-800 border-maldives-300 hover:bg-maldives-100'
+                      }`}
+                      title={
+                        (excludedGoalIds || []).includes(goal.id)
+                          ? 'Aporte pausado neste mês. Clique para reativar o aporte no orçamento deste mês!'
+                          : 'Aporte ativo neste mês. Clique para pausar/excluir o aporte apenas deste mês!'
+                      }
+                    >
+                      <span className="material-symbols-outlined text-[15px]">
+                        {(excludedGoalIds || []).includes(goal.id)
+                          ? 'pause_circle'
+                          : 'task_alt'}
+                      </span>
+                      <span>
+                        {(excludedGoalIds || []).includes(goal.id)
+                          ? 'Pausado no Mês'
+                          : 'Aportando no Mês'}
+                      </span>
+                    </button>
+                  )}
+                </div>
 
                 <button
                   type="button"

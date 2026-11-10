@@ -24,6 +24,18 @@ export interface CreditCardTransaction {
   notes?: string;
 }
 
+/** Cadastro de Cartão de Crédito Global reutilizável em todos os meses */
+export interface GlobalCreditCard {
+  id: string; // Ex: "card-nubank" ou "card-inter"
+  name: string; // Ex: "Cartão Nubank / Ultravioleta"
+  cardLimit?: number; // Limite global do cartão
+  cardDueDay?: number; // Dia de vencimento (1 a 31)
+  color?: string; // Cor visual / tema
+  brand?: string; // Banco / bandeira (ex: 'nubank', 'inter', 'c6', 'xp', 'itau')
+  isArchived?: boolean; // Se arquivado, não aparece nos meses ativos
+  createdAt?: string;
+}
+
 export interface ExpenseItem {
   id: string;
   name: string;
@@ -31,6 +43,8 @@ export interface ExpenseItem {
   category: ExpenseCategory;
   isCustom?: boolean;
   linkedGoalId?: string;
+  /** Link direto com o Cartão Global cadastrado */
+  globalCardId?: string;
   /** Subcategoria para itens do pilar 'estilo': 'cartao' (Cartão de Crédito) ou 'direto' (Gasto Direto/Pix) */
   subcategory?: LifestyleSubcategory;
   /** Lista de gastos individualizados quando subcategory === 'cartao' */
@@ -39,6 +53,8 @@ export interface ExpenseItem {
   cardDueDay?: number;
   /** Limite ou teto planejado para este cartão no mês */
   cardLimit?: number;
+  /** Data do gasto direto quando subcategory === 'direto' (Ex: "12/11" ou "2026-11-12") */
+  expenseDate?: string;
 }
 
 export interface BudgetGoal {
@@ -82,6 +98,10 @@ export interface MonthDataRecord {
   customGoals: Record<ExpenseCategory, number>;
   expenses: ExpenseItem[];
   notes?: string;
+  /** IDs dos Potes dos Sonhos cujos aportes foram excluídos deste mês específico */
+  excludedGoalIds?: string[];
+  /** Valores personalizados de aporte para potes neste mês específico */
+  goalContributionOverrides?: Record<string, number>;
 }
 
 export interface MonthSnapshot {
@@ -94,6 +114,10 @@ export interface MonthSnapshot {
   expenses: ExpenseItem[];
   customLongTermGoals?: CustomGoalItem[];
   notes?: string;
+  /** IDs dos Potes dos Sonhos cujos aportes foram excluídos deste fechamento */
+  excludedGoalIds?: string[];
+  /** Valores personalizados de aporte para potes neste fechamento */
+  goalContributionOverrides?: Record<string, number>;
 }
 
 /** Formato do arquivo JSON de exportação, restauração e sincronização em nuvem */
@@ -107,6 +131,8 @@ export interface MarvitBackupData {
   customGoals: Record<ExpenseCategory, number>;
   expenses: ExpenseItem[];
   customLongTermGoals: CustomGoalItem[];
+  /** Cadastro de Cartões de Crédito Globais disponíveis em todos os meses */
+  globalCards?: GlobalCreditCard[];
   history: MonthSnapshot[];
   /**
    * Marca de quando um backup .JSON foi restaurado (importado) explicitamente pelo usuário.

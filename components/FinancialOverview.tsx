@@ -48,7 +48,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
               Pilares Orçamentários da Casa
             </h2>
             <p className="text-xs text-espresso-600">
-              Equilíbrio proporcional entre Despensa Essencial, Estilo de Vida e Futuro.
+              Equilíbrio proporcional entre Custos Essenciais, Estilo de Vida e Futuro.
             </p>
           </div>
         </div>

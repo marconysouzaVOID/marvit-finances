@@ -3,6 +3,7 @@ import {
   CardPurchaseTag,
   CustomGoalItem,
   ExpenseItem,
+  GlobalCreditCard,
 } from './types';
 
 export const CARD_PURCHASE_TAGS: Record<
@@ -59,7 +60,7 @@ export const AUVP_GOALS: Record<string, BudgetGoal> = {
     badgeBg: 'bg-sage-200/70 text-sage-600 border-sage-300',
     assetPath: '/assets/marvit-essencial.png',
     description:
-      'Moradia, despensa & mercado, saúde, contas de consumo e transporte essencial.',
+      'Moradia, alimentação & mercado, saúde, contas de consumo e transporte essencial.',
   },
   estilo: {
     name: 'Estilo de Vida (30%)',
@@ -91,10 +92,29 @@ export const AUVP_GOALS: Record<string, BudgetGoal> = {
   },
 };
 
+export const INITIAL_GLOBAL_CARDS: GlobalCreditCard[] = [
+  {
+    id: '6',
+    name: 'Cartão Nubank / Ultravioleta',
+    cardLimit: 1500,
+    cardDueDay: 10,
+    color: '#820ad1',
+    brand: 'nubank',
+  },
+  {
+    id: '7',
+    name: 'Cartão Inter / Pontos',
+    cardLimit: 1000,
+    cardDueDay: 15,
+    color: '#ff7a00',
+    brand: 'inter',
+  },
+];
+
 export const INITIAL_EXPENSES: ExpenseItem[] = [
   // Essenciais
   { id: '1', name: 'Aluguel / Parcela Imóvel', amount: 1800, category: 'essencial' },
-  { id: '2', name: 'Supermercado, Feira & Despensa', amount: 950, category: 'essencial' },
+  { id: '2', name: 'Supermercado, Feira & Alimentação', amount: 950, category: 'essencial' },
   { id: '3', name: 'Contas (Água, Luz, Internet)', amount: 420, category: 'essencial' },
   { id: '4', name: 'Plano de Saúde & Farmácia', amount: 380, category: 'essencial' },
   { id: '5', name: 'Transporte / Combustível', amount: 450, category: 'essencial' },
@@ -102,6 +122,7 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
   // Estilo de Vida
   {
     id: '6',
+    globalCardId: '6',
     name: 'Cartão Nubank / Ultravioleta',
     amount: 760,
     category: 'estilo',
@@ -115,6 +136,7 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
         amount: 340,
         tag: 'gastronomia',
         installment: 'À vista',
+        purchaseDate: '08/11',
       },
       {
         id: 'tx-2',
@@ -122,6 +144,7 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
         amount: 110,
         tag: 'assinaturas',
         installment: 'Recorrente',
+        purchaseDate: '12/11',
       },
       {
         id: 'tx-3',
@@ -129,11 +152,13 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
         amount: 310,
         tag: 'compras',
         installment: '1/2',
+        purchaseDate: '19/11',
       },
     ],
   },
   {
     id: '7',
+    globalCardId: '7',
     name: 'Cartão Inter / Pontos',
     amount: 480,
     category: 'estilo',
@@ -147,6 +172,7 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
         amount: 260,
         tag: 'gastronomia',
         installment: 'À vista',
+        purchaseDate: '14/11',
       },
       {
         id: 'tx-5',
@@ -154,6 +180,7 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
         amount: 220,
         tag: 'lazer',
         installment: 'À vista',
+        purchaseDate: '22/11',
       },
     ],
   },
@@ -163,6 +190,7 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
     amount: 160,
     category: 'estilo',
     subcategory: 'direto',
+    expenseDate: '05/11',
   },
 
   // Investimentos

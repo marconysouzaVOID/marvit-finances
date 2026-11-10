@@ -5,20 +5,89 @@ import {
   CardPurchaseTag,
   CreditCardTransaction,
   ExpenseItem,
+  GlobalCreditCard,
 } from '../types';
-import { formatCurrency, formatPercent } from '../utils/formatters';
+import { formatCurrency, formatMonthKeyLabel, formatPercent, inferCardPurchaseTag } from '../utils/formatters';
+import { parsePdfInvoice, isPdfFile } from '../utils/pdfInvoiceParser';
 import { InteractiveAsset } from './InteractiveAsset';
+import { LifestyleDailyCalendar } from './LifestyleDailyCalendar';
 
 interface CreditCardsManagerProps {
   expenses: ExpenseItem[];
+  globalCards?: GlobalCreditCard[];
   lifestyleIdealAmount: number;
   lifestyleTotalSpent: number;
   selectedCardId?: string | null;
+  selectedMonthKey?: string;
+  initialSubView?: 'invoices' | 'calendar';
   onSelectCardId?: (id: string | null) => void;
+  onAddGlobalCard?: (card: Omit<GlobalCreditCard, 'id'>) => void;
+  onUpdateGlobalCard?: (id: string, updated: Partial<GlobalCreditCard>) => void;
+  onDeleteGlobalCard?: (id: string, scope: 'global' | 'current_month') => void;
   onAddCardExpense: (card: Omit<ExpenseItem, 'id'>) => void;
   onUpdateExpense: (id: string, updated: Partial<ExpenseItem>) => void;
   onDeleteExpense: (id: string) => void;
 }
+
+export interface BankPreset {
+  name: string;
+  label: string;
+  brand: string;
+  dueDay: number;
+  limit: number;
+  badgeClass: string;
+}
+
+export const BANK_PRESETS: BankPreset[] = [
+  {
+    name: 'Cartão Nubank / Ultravioleta',
+    label: '💜 Nubank',
+    brand: 'nubank',
+    dueDay: 10,
+    limit: 2500,
+    badgeClass: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100',
+  },
+  {
+    name: 'Cartão Inter / Black',
+    label: '🧡 Inter',
+    brand: 'inter',
+    dueDay: 15,
+    limit: 2000,
+    badgeClass: 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100',
+  },
+  {
+    name: 'Cartão Itaú Personnalité',
+    label: '💙 Itaú',
+    brand: 'itau',
+    dueDay: 20,
+    limit: 5000,
+    badgeClass: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100',
+  },
+  {
+    name: 'Cartão C6 Carbon Black',
+    label: '🖤 C6 Bank',
+    brand: 'c6',
+    dueDay: 25,
+    limit: 6000,
+    badgeClass: 'bg-zinc-100 text-zinc-800 border-zinc-300 hover:bg-zinc-200',
+  },
+  {
+    name: 'Cartão XP Visa Infinite',
+    label: '💛 XP',
+    brand: 'xp',
+    dueDay: 22,
+    limit: 10000,
+    badgeClass: 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100',
+  },
+  {
+    name: 'Cartão Santander Unlimited',
+    label: '🔴 Santander',
+    brand: 'santander',
+    dueDay: 12,
+    limit: 4000,
+    badgeClass: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100',
+  },
+];
 
 export interface CsvParseSummary {
   fileName: string;
@@ -26,51 +95,10 @@ export interface CsvParseSummary {
   totalAmount: number;
   ignoredPaymentsCount: number;
   ignoredPaymentsTotal: number;
+  detectedBank?: string;
 }
 
-/** Detecta automaticamente a tag da compra pelo nome do estabelecimento (otimizado p/ faturas Nubank e bancos BR) */
-export function inferCardPurchaseTag(title: string): CardPurchaseTag {
-  const lower = title.toLowerCase();
-  if (
-    /ifd|ifood|doceria|bolo|buffet|chocol|adega|florybal|supermercado|backerei|padaria|delicatessen|doce|laticinio|salchpao|sucao|acaiteria|restaurante|cafe|lanch|bar\b|pizza|burger|sushi|atacadao/i.test(
-      lower
-    )
-  ) {
-    return 'gastronomia';
-  }
-  if (
-    /apple\.com|spotify|openai|chatgpt|iof de|netflix|prime|disney|hbo|youtube|conta vivo|claro|tim\b|assinatura/i.test(
-      lower
-    )
-  ) {
-    return 'assinaturas';
-  }
-  if (
-    /uber|99app|99\*|parking|estacionamento|petrox|posto|combustivel|pedagio/i.test(
-      lower
-    )
-  ) {
-    return 'mobilidade';
-  }
-  if (
-    /boticario|farmacia|escovaria|wellhub|gympass|pague menos|redemed|beauty|estetica|salao|academia|drogaria/i.test(
-      lower
-    )
-  ) {
-    return 'autocuidado';
-  }
-  if (
-    /shein|riachuelo|modas|decathlon|amazon|outlet|baga|shopee|mercado livre|mp \*|porto seguro|loja|roupa|calcado/i.test(
-      lower
-    )
-  ) {
-    return 'compras';
-  }
-  if (/evento|cantoverde|cinema|ingresso|viagem|hotel|passeio|turismo/i.test(lower)) {
-    return 'lazer';
-  }
-  return 'outros';
-}
+export { inferCardPurchaseTag };
 
 /**
  * Faz o parse completo de um arquivo CSV de fatura de cartão (ex: Nubank_2026-11-01.csv `date,title,amount` ou `;`)
@@ -190,15 +218,25 @@ export function parseCreditCardCsvDetailed(
 
 export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   expenses,
+  globalCards,
   lifestyleIdealAmount,
   lifestyleTotalSpent,
   selectedCardId,
+  selectedMonthKey,
+  initialSubView = 'invoices',
   onSelectCardId,
+  onAddGlobalCard,
+  onUpdateGlobalCard,
+  onDeleteGlobalCard,
   onAddCardExpense,
   onUpdateExpense,
   onDeleteExpense,
 }) => {
+  const [cardsSubView, setCardsSubView] = useState<'invoices' | 'calendar'>(
+    initialSubView
+  );
   const csvFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isDeleteCardModalOpen, setIsDeleteCardModalOpen] = useState(false);
 
   // Todos os itens do pilar Estilo de Vida que pertencem à subcategoria 'cartao'
   const creditCards = useMemo(
@@ -258,11 +296,19 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   const [editCardLimit, setEditCardLimit] = useState<number | ''>('');
   const [editCardDueDay, setEditCardDueDay] = useState<number | ''>('');
 
-  // Estado do Importador de Fatura CSV (Pré-visualização e modo Substituir vs Somar)
+  // Estado do Importador de Fatura CSV / PDF (Pré-visualização e modo Substituir vs Somar)
   const [csvPreview, setCsvPreview] = useState<CsvParseSummary | null>(null);
   const [csvImportMode, setCsvImportMode] = useState<'replace' | 'append'>(
     'replace'
   );
+
+  // Estados para importação de fatura em PDF (Banco Inter com suporte a senha, etc.)
+  const [pdfPasswordModalOpen, setPdfPasswordModalOpen] = useState(false);
+  const [pdfPasswordInput, setPdfPasswordInput] = useState('');
+  const [showPdfPassword, setShowPdfPassword] = useState(false);
+  const [pdfPasswordError, setPdfPasswordError] = useState<string | null>(null);
+  const [pendingPdfFile, setPendingPdfFile] = useState<File | null>(null);
+  const [isParsingPdf, setIsParsingPdf] = useState(false);
 
   // Estado para adicionar gasto individualizado na fatura do cartão selecionado
   const [txDesc, setTxDesc] = useState('');
@@ -305,19 +351,30 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     e.preventDefault();
     if (!newCardName.trim()) return;
 
-    onAddCardExpense({
-      name: newCardName.trim(),
-      amount: 0,
-      category: 'estilo',
-      subcategory: 'cartao',
-      cardTransactions: [],
-      cardLimit: Number(newCardLimit) > 0 ? Number(newCardLimit) : undefined,
-      cardDueDay:
-        Number(newCardDueDay) >= 1 && Number(newCardDueDay) <= 31
-          ? Number(newCardDueDay)
-          : undefined,
-      isCustom: true,
-    });
+    if (onAddGlobalCard) {
+      onAddGlobalCard({
+        name: newCardName.trim(),
+        cardLimit: Number(newCardLimit) > 0 ? Number(newCardLimit) : undefined,
+        cardDueDay:
+          Number(newCardDueDay) >= 1 && Number(newCardDueDay) <= 31
+            ? Number(newCardDueDay)
+            : undefined,
+      });
+    } else {
+      onAddCardExpense({
+        name: newCardName.trim(),
+        amount: 0,
+        category: 'estilo',
+        subcategory: 'cartao',
+        cardTransactions: [],
+        cardLimit: Number(newCardLimit) > 0 ? Number(newCardLimit) : undefined,
+        cardDueDay:
+          Number(newCardDueDay) >= 1 && Number(newCardDueDay) <= 31
+            ? Number(newCardDueDay)
+            : undefined,
+        isCustom: true,
+      });
+    }
 
     setNewCardName('');
     setIsCreatingCard(false);
@@ -334,15 +391,42 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
   const handleSaveCardMeta = (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeCard || !editCardName.trim()) return;
-    onUpdateExpense(activeCard.id, {
-      name: editCardName.trim(),
-      cardLimit: Number(editCardLimit) > 0 ? Number(editCardLimit) : undefined,
-      cardDueDay:
-        Number(editCardDueDay) >= 1 && Number(editCardDueDay) <= 31
-          ? Number(editCardDueDay)
-          : undefined,
-    });
+
+    if (onUpdateGlobalCard) {
+      onUpdateGlobalCard(activeCard.globalCardId || activeCard.id, {
+        name: editCardName.trim(),
+        cardLimit: Number(editCardLimit) > 0 ? Number(editCardLimit) : undefined,
+        cardDueDay:
+          Number(editCardDueDay) >= 1 && Number(editCardDueDay) <= 31
+            ? Number(editCardDueDay)
+            : undefined,
+      });
+    } else {
+      onUpdateExpense(activeCard.id, {
+        name: editCardName.trim(),
+        cardLimit: Number(editCardLimit) > 0 ? Number(editCardLimit) : undefined,
+        cardDueDay:
+          Number(editCardDueDay) >= 1 && Number(editCardDueDay) <= 31
+            ? Number(editCardDueDay)
+            : undefined,
+      });
+    }
     setIsEditingCardMeta(false);
+  };
+
+  const handleDeleteCardChoice = (scope: 'global' | 'current_month') => {
+    if (!activeCard) return;
+    if (onDeleteGlobalCard) {
+      onDeleteGlobalCard(activeCard.globalCardId || activeCard.id, scope);
+    } else if (scope === 'global') {
+      onDeleteExpense(activeCard.id);
+    } else {
+      onUpdateExpense(activeCard.id, {
+        amount: 0,
+        cardTransactions: [],
+      });
+    }
+    setIsDeleteCardModalOpen(false);
   };
 
   // Adicionar compra individualizada ao cartão ativo e sincronizar o total da fatura no pilar Estilo de Vida
@@ -412,22 +496,141 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
     });
   };
 
-  // Ler arquivo CSV selecionado pelo usuário e abrir o painel de confirmação da fatura
-  const handleImportCsvFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Clonar/duplicar um lançamento da fatura com 1 clique
+  const handleCloneTransaction = (tx: CreditCardTransaction) => {
+    if (!activeCard) return;
+    const currentList = activeCard.cardTransactions || [];
+    const clonedTx: CreditCardTransaction = {
+      id: `tx-clone-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      description: `${tx.description} (Cópia)`,
+      amount: tx.amount,
+      tag: tx.tag,
+      installment: tx.installment || 'À vista',
+      purchaseDate: tx.purchaseDate,
+      notes: tx.notes,
+    };
+    const nextTransactions = [clonedTx, ...currentList];
+    const nextTotal =
+      Math.round(
+        nextTransactions.reduce((acc, t) => acc + t.amount, 0) * 100
+      ) / 100;
+
+    onUpdateExpense(activeCard.id, {
+      cardTransactions: nextTransactions,
+      amount: nextTotal,
+    });
+  };
+
+  // Ler arquivo CSV ou PDF selecionado pelo usuário e abrir o painel de confirmação da fatura
+  const handleImportInvoiceFile = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file || !activeCard) return;
 
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const content = String(ev.target?.result || '');
-      const summary = parseCreditCardCsvDetailed(content, file.name);
-      if (summary.transactions.length > 0) {
-        setCsvImportMode('replace');
-        setCsvPreview(summary);
+    if (isPdfFile(file)) {
+      setIsParsingPdf(true);
+      setPdfPasswordError(null);
+      setPendingPdfFile(file);
+
+      try {
+        const buffer = await file.arrayBuffer();
+        const res = await parsePdfInvoice(buffer, file.name);
+        if (res.success && res.summary) {
+          if (res.summary.transactions.length === 0) {
+            alert(
+              'Fatura em PDF processada com sucesso, mas nenhuma compra foi identificada no padrão tabular de faturas bancárias.'
+            );
+            setPendingPdfFile(null);
+          } else {
+            setCsvImportMode('replace');
+            setCsvPreview(res.summary);
+            setPendingPdfFile(null);
+          }
+        } else if (res.needsPassword) {
+          // Fatura criptografada (padrão Banco Inter com CPF)
+          setPdfPasswordModalOpen(true);
+          setPdfPasswordInput('');
+          setPdfPasswordError(null);
+        } else {
+          alert(
+            res.error ||
+              'Não foi possível extrair as informações da fatura em PDF.'
+          );
+          setPendingPdfFile(null);
+        }
+      } catch (err: any) {
+        alert('Erro ao carregar o arquivo PDF da fatura.');
+        setPendingPdfFile(null);
+      } finally {
+        setIsParsingPdf(false);
       }
-    };
-    reader.readAsText(file);
+    } else {
+      // Processamento CSV padrão
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const content = String(ev.target?.result || '');
+        const summary = parseCreditCardCsvDetailed(content, file.name);
+        if (summary.transactions.length > 0) {
+          setCsvImportMode('replace');
+          setCsvPreview(summary);
+        }
+      };
+      reader.readAsText(file);
+    }
     e.target.value = '';
+  };
+
+  // Desbloquear fatura PDF protegida com a senha fornecida pelo usuário
+  const handleUnlockPdfWithPassword = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!pendingPdfFile || !pdfPasswordInput.trim()) return;
+
+    setIsParsingPdf(true);
+    setPdfPasswordError(null);
+
+    try {
+      const buffer = await pendingPdfFile.arrayBuffer();
+      const res = await parsePdfInvoice(
+        buffer,
+        pendingPdfFile.name,
+        pdfPasswordInput.trim()
+      );
+      if (res.success && res.summary) {
+        if (res.summary.transactions.length === 0) {
+          setPdfPasswordError(
+            'Fatura descriptografada com sucesso, mas nenhuma compra foi identificada no padrão esperado.'
+          );
+        } else {
+          setCsvImportMode('replace');
+          setCsvPreview(res.summary);
+          setPdfPasswordModalOpen(false);
+          setPendingPdfFile(null);
+          setPdfPasswordInput('');
+        }
+      } else if (res.isWrongPassword || res.needsPassword) {
+        setPdfPasswordError(
+          res.error ||
+            'Senha incorreta. No Banco Inter, tente os 5 ou 6 primeiros dígitos do seu CPF.'
+        );
+      } else {
+        setPdfPasswordError(
+          res.error || 'Erro ao descriptografar fatura em PDF.'
+        );
+      }
+    } catch (err: any) {
+      setPdfPasswordError('Falha ao processar a fatura com a senha informada.');
+    } finally {
+      setIsParsingPdf(false);
+    }
+  };
+
+  const handleCancelPdfPassword = () => {
+    setPdfPasswordModalOpen(false);
+    setPendingPdfFile(null);
+    setPdfPasswordInput('');
+    setPdfPasswordError(null);
+    setIsParsingPdf(false);
   };
 
   // Carregar a fatura exemplo Nubank_2026-11-01.csv diretamente no preview do cartão selecionado
@@ -517,54 +720,118 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
   return (
     <div className="space-y-5">
-      {/* Input oculto para importar CSV de fatura (ex: Nubank_2026-11-01.csv) */}
+      {/* Input oculto para importar PDF ou CSV de fatura (ex: Banco Inter, Nubank) */}
       <input
         ref={csvFileInputRef}
         type="file"
-        accept=".csv,text/csv"
-        onChange={handleImportCsvFile}
+        accept=".pdf,.csv,text/csv,application/pdf"
+        onChange={handleImportInvoiceFile}
         className="hidden"
       />
 
-      {/* Cabeçalho Principal da Aba de Cartões de Estilo de Vida */}
-      <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <InteractiveAsset
-              src="/assets/marvit-estilo.png"
-              alt="Cartões de Crédito • Estilo de Vida"
-              size="md"
-              tone="terracotta"
-              badgeIcon="credit_card"
-            />
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg sm:text-2xl font-display font-bold text-espresso-900">
-                  Cartões de Crédito • Estilo de Vida
-                </h2>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-terracotta-100 text-terracotta-700 border border-terracotta-200">
-                  Subcategoria & Fatura CSV
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-espresso-600 mt-1">
-                Gerencie os gastos individualizados ou importe o arquivo <strong>.CSV</strong> da fatura do cartão selecionado. O total atualiza automaticamente o pilar <strong>Estilo de Vida</strong>!
-              </p>
-            </div>
-          </div>
+      {/* Sub-navegador da aba Cartões & Estilo: Faturas vs Calendário Diário */}
+      <div className="flex items-center justify-between gap-3 bg-oat-100/80 dark:bg-espresso-800/80 border border-oat-300 dark:border-espresso-700 p-1.5 rounded-2xl shadow-xs">
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setCardsSubView('invoices')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              cardsSubView === 'invoices'
+                ? 'bg-terracotta-500 text-white shadow-xs'
+                : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[17px]">credit_card</span>
+            <span>Faturas & Lançamentos</span>
+          </button>
 
           <button
             type="button"
-            onClick={() => setIsCreatingCard(!isCreatingCard)}
-            className="px-4 py-2.5 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer shrink-0"
+            onClick={() => setCardsSubView('calendar')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              cardsSubView === 'calendar'
+                ? 'bg-terracotta-500 text-white shadow-xs'
+                : 'text-espresso-700 dark:text-espresso-300 hover:text-espresso-900 hover:bg-oat-200/70'
+            }`}
           >
-            <span className="material-symbols-outlined text-[20px]">
-              {isCreatingCard ? 'close' : 'add_card'}
-            </span>
-            <span>
-              {isCreatingCard ? 'Fechar Formulário' : 'Novo Cartão em Estilo de Vida'}
-            </span>
+            <span className="material-symbols-outlined text-[17px]">calendar_month</span>
+            <span>Calendário Diário de Gastos</span>
           </button>
         </div>
+
+        <span className="text-[11px] font-mono text-espresso-500 hidden sm:inline pr-2">
+          {cardsSubView === 'invoices'
+            ? `${totalIndividualTransactions} compras em ${creditCards.length} cartões`
+            : 'Gastos dia a dia • Estilo de Vida'}
+        </span>
+      </div>
+
+      {cardsSubView === 'calendar' ? (
+        <LifestyleDailyCalendar
+          expenses={expenses}
+          selectedMonthKey={selectedMonthKey || ''}
+          lifestyleIdealAmount={lifestyleIdealAmount}
+          onUpdateExpense={onUpdateExpense}
+          onOpenCardInvoices={(cardId) => {
+            if (cardId) setActiveCardId(cardId);
+            setCardsSubView('invoices');
+          }}
+        />
+      ) : (
+        <div className="space-y-5">
+          {/* Cabeçalho Principal da Aba de Cartões de Estilo de Vida */}
+          <div className="bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-oat-200">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <InteractiveAsset
+                  src="/assets/marvit-estilo.png"
+                  alt="Cartões de Crédito • Estilo de Vida"
+                  size="md"
+                  tone="terracotta"
+                  badgeIcon="credit_card"
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="text-lg sm:text-2xl font-display font-bold text-espresso-900">
+                      Cartões de Crédito • Estilo de Vida
+                    </h2>
+                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-terracotta-100 text-terracotta-700 border border-terracotta-200">
+                      Subcategoria & Fatura CSV
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-espresso-600 mt-1">
+                    Gerencie os gastos individualizados ou importe o arquivo <strong>.CSV</strong> da fatura do cartão selecionado. O total atualiza automaticamente o pilar <strong>Estilo de Vida</strong>!
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setCardsSubView('calendar')}
+                  className="px-3.5 py-2.5 rounded-2xl bg-oat-100 hover:bg-oat-200 text-espresso-800 font-bold text-xs sm:text-sm border border-oat-300 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  title="Visualizar gastos de cada dia no calendário"
+                >
+                  <span className="material-symbols-outlined text-[18px] text-terracotta-500">
+                    calendar_month
+                  </span>
+                  <span>Ver Calendário Diário</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsCreatingCard(!isCreatingCard)}
+                  className="px-4 py-2.5 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    {isCreatingCard ? 'close' : 'add_card'}
+                  </span>
+                  <span>
+                    {isCreatingCard ? 'Fechar Formulário' : '+ Novo Cartão Global'}
+                  </span>
+                </button>
+              </div>
+            </div>
 
         {/* Resumo Consolidado dos Cartões no Pilar Estilo de Vida */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
@@ -623,7 +890,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           </div>
         </div>
 
-        {/* Formulário de Criação de Novo Cartão de Crédito */}
+        {/* Formulário de Criação de Novo Cartão de Crédito Global */}
         <AnimatePresence>
           {isCreatingCard && (
             <motion.div
@@ -634,13 +901,47 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
             >
               <form
                 onSubmit={handleCreateCard}
-                className="mt-5 p-4 sm:p-5 rounded-2xl bg-oat-100 border-2 border-terracotta-300 space-y-4"
+                className="mt-5 p-4 sm:p-5 rounded-2xl bg-oat-100 border-2 border-terracotta-300 space-y-4 shadow-sm"
               >
-                <div className="text-sm font-display font-bold text-espresso-900 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-terracotta-600 text-lg">
-                    add_card
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-oat-200 pb-3">
+                  <div className="text-sm font-display font-bold text-espresso-900 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-terracotta-600 text-lg">
+                      language
+                    </span>
+                    <span>Cadastrar Cartão de Crédito Global</span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-espresso-600 bg-terracotta-100/70 text-terracotta-800 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[13px]">all_inclusive</span>
+                    Disponível em todos os meses
                   </span>
-                  <span>Adicionar Cartão de Crédito ao Pilar Estilo de Vida</span>
+                </div>
+
+                <p className="text-xs text-espresso-600 leading-relaxed">
+                  Ao cadastrar este cartão, ele estará pronto para uso em <strong>todos os meses</strong> (passados e futuros). As faturas, compras e pagamentos de cada mês são estritamente isolados e independentes.
+                </p>
+
+                {/* Atalhos Rápidos de Bancos Brasileiros */}
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-espresso-500 block mb-1.5">
+                    Modelos Rápidos de Bancos:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {BANK_PRESETS.map((p) => (
+                      <button
+                        key={p.brand}
+                        type="button"
+                        onClick={() => {
+                          setNewCardName(p.name);
+                          setNewCardLimit(p.limit);
+                          setNewCardDueDay(p.dueDay);
+                        }}
+                        className={`text-xs px-2.5 py-1 rounded-xl font-bold border transition cursor-pointer ${p.badgeClass} shadow-2xs`}
+                        title={`Preencher dados com ${p.name}`}
+                      >
+                        {p.label} (Venc. {p.dueDay})
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -659,7 +960,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                   <div>
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Meta / Teto deste Cartão (R$)
+                      Meta / Limite Global deste Cartão (R$)
                     </label>
                     <input
                       type="number"
@@ -678,7 +979,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                   <div>
                     <label className="text-xs font-semibold text-espresso-700 mb-1 block">
-                      Dia do Vencimento (Opcional)
+                      Dia do Vencimento Global (1 a 31)
                     </label>
                     <input
                       type="number"
@@ -696,7 +997,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2 pt-2">
                   <button
                     type="button"
                     onClick={() => setIsCreatingCard(false)}
@@ -707,9 +1008,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   <button
                     type="submit"
                     disabled={!newCardName.trim()}
-                    className="px-5 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-40 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+                    className="px-5 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-40 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
                   >
-                    Criar Cartão de Crédito
+                    <span className="material-symbols-outlined text-[16px]">save</span>
+                    <span>Salvar Cartão Global</span>
                   </button>
                 </div>
               </form>
@@ -770,11 +1072,17 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
           {/* Coluna Esquerda (4 cols no desktop): Cartões de Crédito Disponíveis */}
           <div className="lg:col-span-4 space-y-3">
             <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-espresso-600">
-                Cartões em Estilo de Vida ({creditCards.length})
-              </span>
-              <span className="text-[11px] text-espresso-500">
-                Selecione para detalhar
+              <div className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm text-terracotta-500">
+                  language
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wider text-espresso-700">
+                  Cartões Globais ({creditCards.length})
+                </span>
+              </div>
+              <span className="text-[10px] font-semibold text-espresso-600 bg-oat-200/80 px-2 py-0.5 rounded-full inline-flex items-center gap-0.5">
+                <span className="material-symbols-outlined text-[11px]">all_inclusive</span>
+                Em todos os meses
               </span>
             </div>
 
@@ -828,9 +1136,14 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         </div>
                       </div>
 
-                      {isSelected && (
+                      {isSelected ? (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-terracotta-500 text-white shrink-0">
                           Selecionado
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-600 border border-oat-300 shrink-0 flex items-center gap-0.5">
+                          <span className="material-symbols-outlined text-[11px]">language</span>
+                          Global
                         </span>
                       )}
                     </div>
@@ -841,7 +1154,13 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           Total na Planilha
                         </span>
                         <span className="text-lg font-mono font-extrabold text-espresso-900">
-                          {formatCurrency(card.amount)}
+                          {card.amount > 0 ? (
+                            formatCurrency(card.amount)
+                          ) : (
+                            <span className="text-xs font-sans font-bold text-sage-600 flex items-center gap-1">
+                              <span>🍃 Fatura Zerada</span>
+                            </span>
+                          )}
                         </span>
                       </div>
 
@@ -879,36 +1198,51 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                 );
               })}
             </div>
+
+            <button
+              type="button"
+              onClick={() => setIsCreatingCard(true)}
+              className="w-full p-3 rounded-2xl border-2 border-dashed border-oat-300 hover:border-terracotta-400 bg-oat-100/60 hover:bg-terracotta-50/50 text-espresso-700 hover:text-terracotta-700 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+            >
+              <span className="material-symbols-outlined text-[18px]">add_card</span>
+              <span>+ Cadastrar Outro Cartão Global</span>
+            </button>
           </div>
 
           {/* Coluna Direita (8 cols no desktop): Detalhamento e Lançamento de Gastos Individualizados do Cartão Ativo */}
           {activeCard && (
             <div className="lg:col-span-8 bg-oat-50/95 border border-oat-300/90 rounded-3xl p-4 sm:p-6 shadow-cozy overflow-hidden space-y-5">
               {/* Cabeçalho do Cartão Selecionado */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-oat-200">
+              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-4 border-b border-oat-200">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-11 h-11 rounded-2xl bg-terracotta-50 border border-terracotta-200 flex items-center justify-center shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-terracotta-50 border border-terracotta-200 flex items-center justify-center shrink-0 shadow-2xs">
                     <span className="material-symbols-outlined text-terracotta-600 text-2xl">
                       receipt_long
                     </span>
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-base sm:text-xl font-display font-bold text-espresso-900 truncate">
+                      <h3 className="text-base sm:text-lg font-display font-bold text-espresso-900 truncate">
                         {activeCard.name}
                       </h3>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 flex items-center gap-1 shrink-0">
+                        <span className="material-symbols-outlined text-[12px] text-terracotta-500">
+                          language
+                        </span>
+                        <span>Cartão Global</span>
+                      </span>
                       {activeCard.cardDueDay && (
-                        <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300">
+                        <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300 shrink-0">
                           Venc. dia {activeCard.cardDueDay}
                         </span>
                       )}
                     </div>
                     <p className="text-xs text-espresso-600 mt-0.5">
-                      Fatura em Estilo de Vida:{' '}
+                      Fatura de {selectedMonthKey ? formatMonthKeyLabel(selectedMonthKey) : 'deste mês'}:{' '}
                       <strong className="font-mono text-terracotta-600">
                         {formatCurrency(activeCard.amount)}
                       </strong>{' '}
-                      • Soma dos itens:{' '}
+                      • Soma dos lançamentos:{' '}
                       <strong className="font-mono text-maldives-700">
                         {formatCurrency(sumOfActiveCardItems)}
                       </strong>
@@ -916,17 +1250,34 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() => csvFileInputRef.current?.click()}
-                    className="px-3 py-1.5 rounded-xl bg-maldives-500 hover:bg-maldives-600 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-xs cursor-pointer"
-                    title="Selecionar arquivo .CSV da fatura deste cartão (ex: Nubank)"
+                    disabled={isParsingPdf}
+                    className="px-3 py-1.5 rounded-xl bg-maldives-500 hover:bg-maldives-600 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-xs cursor-pointer"
+                    title="Selecionar arquivo da fatura (PDF do Banco Inter/outros ou CSV do Nubank)"
                   >
                     <span className="material-symbols-outlined text-[16px]">
-                      upload_file
+                      {isParsingPdf ? 'progress_activity' : 'upload_file'}
                     </span>
-                    <span>Importar Fatura (.CSV)</span>
+                    <span>
+                      {isParsingPdf
+                        ? 'Lendo Fatura...'
+                        : 'Importar Fatura (PDF / CSV)'}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => csvFileInputRef.current?.click()}
+                    className="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    title="Importar fatura em PDF do Banco Inter (suporte a senha com CPF)"
+                  >
+                    <span className="material-symbols-outlined text-[16px] text-orange-600">
+                      picture_as_pdf
+                    </span>
+                    <span>Fatura Inter (PDF)</span>
                   </button>
 
                   <button
@@ -938,7 +1289,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                     <span className="material-symbols-outlined text-[16px] text-maldives-600">
                       description
                     </span>
-                    <span>Exemplo Nubank.csv</span>
+                    <span>Exemplo Nubank (.csv)</span>
                   </button>
 
                   <button
@@ -969,9 +1320,9 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => onDeleteExpense(activeCard.id)}
+                    onClick={() => setIsDeleteCardModalOpen(true)}
                     className="p-1.5 rounded-xl bg-oat-100 hover:bg-terracotta-50 text-espresso-500 hover:text-terracotta-600 border border-oat-300 transition flex items-center justify-center cursor-pointer"
-                    title="Excluir este cartão de crédito do mês"
+                    title="Gerenciar exclusão deste cartão (global ou deste mês)"
                   >
                     <span className="material-symbols-outlined text-[18px]">
                       delete
@@ -997,7 +1348,8 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                           </span>
                           <div className="min-w-0">
                             <h4 className="text-xs sm:text-sm font-display font-bold text-espresso-900 truncate">
-                              Fatura CSV Lida: {csvPreview.fileName}
+                              Fatura {csvPreview.fileName.toLowerCase().endsWith('.pdf') ? 'PDF' : 'CSV'} Lida: {csvPreview.fileName}{' '}
+                              {csvPreview.detectedBank ? `(${csvPreview.detectedBank})` : ''}
                             </h4>
                             <p className="text-[11px] text-espresso-600">
                               Pronta para aplicar como fatura do cartão{' '}
@@ -1008,7 +1360,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                         <div className="text-left sm:text-right shrink-0">
                           <span className="text-[10px] font-bold uppercase text-maldives-800 block">
-                            Valor Total da Fatura CSV
+                            Valor Total da Fatura ({csvPreview.fileName.toLowerCase().endsWith('.pdf') ? 'PDF' : 'CSV'})
                           </span>
                           <span className="text-base sm:text-lg font-mono font-extrabold text-maldives-700">
                             {formatCurrency(csvPreview.totalAmount)} (
@@ -1059,7 +1411,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                   : 'text-espresso-500'
                               }`}
                             >
-                              O arquivo CSV será o equivalente exato à fatura de{' '}
+                              O arquivo importado será o equivalente exato à fatura de{' '}
                               {activeCard.name} ({formatCurrency(csvPreview.totalAmount)})
                             </span>
                           </div>
@@ -1090,7 +1442,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                   : 'text-espresso-500'
                               }`}
                             >
-                              Adiciona os {csvPreview.transactions.length} itens do CSV aos{' '}
+                              Adiciona os {csvPreview.transactions.length} itens do arquivo aos{' '}
                               {activeCardTransactions.length} itens já lançados
                             </span>
                           </div>
@@ -1166,9 +1518,18 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       onSubmit={handleSaveCardMeta}
                       className="p-4 rounded-2xl bg-oat-100 border-2 border-terracotta-300 space-y-3"
                     >
-                      <div className="text-xs font-bold uppercase text-terracotta-700 tracking-wider">
-                        Configurações do Cartão
+                      <div className="flex items-center justify-between gap-2 border-b border-oat-200 pb-2">
+                        <div className="text-xs font-bold uppercase text-terracotta-700 tracking-wider flex items-center gap-1.5">
+                          <span className="material-symbols-outlined text-[16px]">language</span>
+                          <span>Configurações Globais do Cartão</span>
+                        </div>
+                        <span className="text-[10px] font-semibold text-espresso-600 bg-terracotta-100/70 text-terracotta-800 px-2 py-0.5 rounded-full">
+                          Aplica em todos os meses
+                        </span>
                       </div>
+                      <p className="text-[11px] text-espresso-600">
+                        Alterações no nome, teto de gastos ou dia de vencimento serão sincronizadas em <strong>todos os meses</strong> do sistema.
+                      </p>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                           <label className="text-[11px] font-semibold text-espresso-700 block mb-1">
@@ -1183,7 +1544,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         </div>
                         <div>
                           <label className="text-[11px] font-semibold text-espresso-700 block mb-1">
-                            Teto Mensal Planejado (R$)
+                            Teto Global Planejado (R$)
                           </label>
                           <input
                             type="number"
@@ -1203,7 +1564,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         </div>
                         <div>
                           <label className="text-[11px] font-semibold text-espresso-700 block mb-1">
-                            Dia de Vencimento
+                            Dia de Vencimento Global
                           </label>
                           <input
                             type="number"
@@ -1232,9 +1593,10 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                         </button>
                         <button
                           type="submit"
-                          className="px-4 py-1.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold cursor-pointer"
+                          className="px-4 py-1.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
                         >
-                          Salvar Cartão
+                          <span className="material-symbols-outlined text-[16px]">save</span>
+                          <span>Salvar Alterações Globais</span>
                         </button>
                       </div>
                     </form>
@@ -1433,7 +1795,7 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                       </p>
                       <p>
                         Adicione manualmente acima ou clique em{' '}
-                        <strong>“Importar Fatura (.CSV)”</strong> para carregar o arquivo equivalente à fatura deste cartão.
+                        <strong>“Importar Fatura (PDF / CSV)”</strong> para carregar o arquivo da fatura deste cartão (ex: Banco Inter ou Nubank).
                       </p>
                     </div>
                   ) : (
@@ -1488,17 +1850,47 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
                                   ))}
                                 </select>
 
-                                {tx.installment && (
-                                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-oat-200 text-espresso-700 border border-oat-300">
-                                    {tx.installment}
+                                {/* Parcela Editável */}
+                                <div
+                                  className="flex items-center gap-1 bg-oat-200/90 dark:bg-espresso-800/90 rounded-lg px-2 py-0.5 border border-oat-300 dark:border-espresso-700"
+                                  title="Editar parcela (ex: À vista, 1/3, 2/6, Recorrente)"
+                                >
+                                  <span className="material-symbols-outlined text-[13px] text-espresso-500">
+                                    layers
                                   </span>
-                                )}
+                                  <input
+                                    type="text"
+                                    value={tx.installment || ''}
+                                    placeholder="À vista"
+                                    onChange={(e) =>
+                                      handleUpdateTransaction(tx.id, {
+                                        installment: e.target.value,
+                                      })
+                                    }
+                                    className="w-16 sm:w-20 bg-transparent text-[10px] font-mono font-bold text-espresso-800 dark:text-oat-100 focus:outline-none focus:border-b focus:border-terracotta-500 placeholder:text-espresso-400"
+                                  />
+                                </div>
 
-                                {tx.purchaseDate && (
-                                  <span className="text-[10px] font-mono text-espresso-500">
-                                    • {tx.purchaseDate}
+                                {/* Dia / Data Editável */}
+                                <div
+                                  className="flex items-center gap-1 bg-oat-200/90 dark:bg-espresso-800/90 rounded-lg px-2 py-0.5 border border-oat-300 dark:border-espresso-700"
+                                  title="Editar dia ou data da compra (ex: 12/11, 2026-11-12 ou dia 12)"
+                                >
+                                  <span className="material-symbols-outlined text-[13px] text-espresso-500">
+                                    calendar_today
                                   </span>
-                                )}
+                                  <input
+                                    type="text"
+                                    value={tx.purchaseDate || ''}
+                                    placeholder="DD/MM"
+                                    onChange={(e) =>
+                                      handleUpdateTransaction(tx.id, {
+                                        purchaseDate: e.target.value,
+                                      })
+                                    }
+                                    className="w-14 sm:w-16 bg-transparent text-[10px] font-mono text-espresso-700 dark:text-oat-200 focus:outline-none focus:border-b focus:border-terracotta-500 text-center placeholder:text-espresso-400"
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1527,6 +1919,17 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
 
                             <button
                               type="button"
+                              onClick={() => handleCloneTransaction(tx)}
+                              className="text-espresso-400 hover:text-maldives-600 p-1.5 rounded-xl hover:bg-maldives-50 dark:hover:bg-maldives-950/40 transition cursor-pointer"
+                              title="Clonar esta compra na fatura (duplicar)"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">
+                                content_copy
+                              </span>
+                            </button>
+
+                            <button
+                              type="button"
                               onClick={() => handleDeleteTransaction(tx.id)}
                               className="text-espresso-400 hover:text-terracotta-600 p-1.5 rounded-xl hover:bg-terracotta-50 transition cursor-pointer"
                               title="Remover compra da fatura"
@@ -1544,6 +1947,234 @@ export const CreditCardsManager: React.FC<CreditCardsManagerProps> = ({
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Modal de Confirmação e Escopo de Exclusão do Cartão */}
+      <AnimatePresence>
+        {isDeleteCardModalOpen && activeCard && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-espresso-950/50 backdrop-blur-xs flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-oat-50 border border-oat-300 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4"
+            >
+              <div className="flex items-center gap-3 pb-3 border-b border-oat-200">
+                <div className="w-10 h-10 rounded-2xl bg-terracotta-100 text-terracotta-600 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-2xl">delete</span>
+                </div>
+                <div>
+                  <h3 className="text-base font-display font-bold text-espresso-900">
+                    Gerenciar Cartão
+                  </h3>
+                  <p className="text-xs text-espresso-600 font-semibold truncate">
+                    {activeCard.name}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs text-espresso-700 leading-relaxed">
+                Como este é um <strong>Cartão Global</strong>, escolha como deseja proceder:
+              </p>
+
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteCardChoice('current_month')}
+                  className="w-full text-left p-3.5 rounded-2xl bg-oat-100 hover:bg-oat-200 border border-oat-300 transition flex items-start gap-3 cursor-pointer group"
+                >
+                  <span className="material-symbols-outlined text-maldives-600 text-xl mt-0.5 shrink-0">
+                    restart_alt
+                  </span>
+                  <div>
+                    <span className="text-xs font-bold text-espresso-900 block group-hover:text-maldives-700">
+                      Zerar Fatura Apenas Deste Mês
+                    </span>
+                    <span className="text-[11px] text-espresso-500 block mt-0.5">
+                      Apaga as compras e zera a fatura de {selectedMonthKey ? formatMonthKeyLabel(selectedMonthKey) : 'deste mês'}, mantendo o cartão salvo para os outros meses.
+                    </span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleDeleteCardChoice('global')}
+                  className="w-full text-left p-3.5 rounded-2xl bg-terracotta-50 hover:bg-terracotta-100 border border-terracotta-300 transition flex items-start gap-3 cursor-pointer group"
+                >
+                  <span className="material-symbols-outlined text-terracotta-600 text-xl mt-0.5 shrink-0">
+                    delete_forever
+                  </span>
+                  <div>
+                    <span className="text-xs font-bold text-terracotta-800 block group-hover:text-terracotta-600">
+                      Excluir Cartão Globalmente (Todos os Meses)
+                    </span>
+                    <span className="text-[11px] text-terracotta-600/90 block mt-0.5">
+                      Remove completamente o cartão do seu cadastro global e de todos os meses do sistema.
+                    </span>
+                  </div>
+                </button>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteCardModalOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal de Senha para Fatura PDF Protegida (Banco Inter, etc.) */}
+      <AnimatePresence>
+        {pdfPasswordModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-espresso-950/60 backdrop-blur-xs flex items-center justify-center p-4"
+            onClick={handleCancelPdfPassword}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-oat-50 dark:bg-espresso-900 border border-oat-300 dark:border-espresso-700 rounded-3xl p-6 shadow-2xl space-y-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center shadow-2xs">
+                    <span className="material-symbols-outlined text-2xl">
+                      lock
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-display font-bold text-espresso-900 dark:text-oat-100">
+                      Fatura Protegida por Senha
+                    </h3>
+                    <p className="text-xs text-espresso-600 dark:text-espresso-400 truncate max-w-[220px]">
+                      {pendingPdfFile?.name || 'Fatura em PDF'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCancelPdfPassword}
+                  className="p-1 rounded-full text-espresso-400 hover:text-espresso-700 hover:bg-oat-200 transition cursor-pointer"
+                  title="Fechar"
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    close
+                  </span>
+                </button>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/90 dark:border-amber-800/50 text-xs text-amber-950 dark:text-amber-200 space-y-1.5">
+                <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
+                  <span className="material-symbols-outlined text-[17px] text-amber-600">
+                    lightbulb
+                  </span>
+                  <span>Dica de Desbloqueio (Banco Inter):</span>
+                </div>
+                <p className="leading-relaxed">
+                  As faturas do <strong>Banco Inter</strong> geralmente vêm protegidas com os <strong>primeiros 5 ou 6 dígitos do seu CPF</strong> (apenas números).
+                </p>
+                <div className="flex items-center gap-1 text-[11px] text-amber-800/80 dark:text-amber-400/80 pt-0.5">
+                  <span className="material-symbols-outlined text-[14px] text-sage-600">
+                    verified_user
+                  </span>
+                  <span>
+                    100% seguro: a descriptografia é processada no seu navegador e sua senha nunca é gravada ou transmitida.
+                  </span>
+                </div>
+              </div>
+
+              <form onSubmit={handleUnlockPdfWithPassword} className="space-y-3.5">
+                <div>
+                  <label className="block text-xs font-bold text-espresso-800 dark:text-espresso-200 mb-1">
+                    Digite a Senha da Fatura
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPdfPassword ? 'text' : 'password'}
+                      value={pdfPasswordInput}
+                      onChange={(e) => {
+                        setPdfPasswordInput(e.target.value);
+                        if (pdfPasswordError) setPdfPasswordError(null);
+                      }}
+                      placeholder="Ex: 123456 (dígitos do CPF)"
+                      autoFocus
+                      className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-white dark:bg-espresso-800 border border-oat-300 dark:border-espresso-700 text-sm font-mono text-espresso-900 dark:text-oat-100 placeholder:text-espresso-400 focus:outline-hidden focus:ring-2 focus:ring-terracotta-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPdfPassword(!showPdfPassword)}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-espresso-400 hover:text-espresso-700 transition"
+                      tabIndex={-1}
+                      title={showPdfPassword ? 'Ocultar senha' : 'Exibir senha'}
+                    >
+                      <span className="material-symbols-outlined text-lg">
+                        {showPdfPassword ? 'visibility_off' : 'visibility'}
+                      </span>
+                    </button>
+                  </div>
+                  {pdfPasswordError && (
+                    <p className="text-xs text-terracotta-600 font-semibold mt-1.5 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">
+                        error
+                      </span>
+                      {pdfPasswordError}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleCancelPdfPassword}
+                    disabled={isParsingPdf}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-espresso-600 hover:bg-oat-200 transition cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isParsingPdf || !pdfPasswordInput.trim()}
+                    className="px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
+                  >
+                    {isParsingPdf ? (
+                      <>
+                        <span className="animate-spin material-symbols-outlined text-base">
+                          progress_activity
+                        </span>
+                        <span>Descriptografando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined text-base">
+                          lock_open
+                        </span>
+                        <span>Desbloquear e Importar</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
         </div>
       )}
     </div>

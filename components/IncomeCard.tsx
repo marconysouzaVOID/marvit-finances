@@ -143,7 +143,7 @@ export const IncomeCard: React.FC<IncomeCardProps> = ({
 
         <div className="bg-oat-100/70 p-3.5 rounded-2xl border border-oat-200 sm:col-span-2 lg:col-span-1">
           <label className="text-xs font-semibold text-espresso-700 mb-2 flex items-center justify-between gap-2">
-            <span className="truncate">Meta de Reserva da Despensa</span>
+            <span className="truncate">Meta de Reserva de Emergência</span>
             <span className="text-[11px] text-maldives-700 font-mono font-bold shrink-0">
               {profile.desiredEmergencyMonths} meses de custo
             </span>
