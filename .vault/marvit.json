@@ -1,11 +1,11 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T07:03:16.034Z",
+  "updatedAt": "2026-11-10T07:03:22.913Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
     "exportedAt": "2026-11-10T07:03:07.958Z",
-    "selectedMonthKey": "2026-12",
+    "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
@@ -1957,123 +1957,132 @@
       }
     },
     "profile": {
-      "monthlyIncome": 16800,
-      "additionalIncome": 0,
+      "monthlyIncome": 7500,
+      "additionalIncome": 500,
       "desiredEmergencyMonths": 6,
       "expectedAnnualReturnRate": 10.5
     },
     "customGoals": {
-      "essencial": 40,
-      "estilo": 35,
-      "investimento": 25
+      "essencial": 50,
+      "estilo": 30,
+      "investimento": 20
     },
     "expenses": [
       {
-        "name": "Itau",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardTransactions": [],
-        "cardLimit": 700,
-        "cardDueDay": 2,
-        "isCustom": true,
-        "id": "exp-1794272287172",
-        "globalCardId": "exp-1794272287172"
-      },
-      {
-        "name": "Financiamento Veículo",
-        "amount": 1253,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006429901"
-      },
-      {
-        "name": "Contas (Luz)",
-        "amount": 144.12,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006373678"
-      },
-      {
-        "name": "Contas (Água)",
-        "amount": 106.35,
-        "category": "essencial",
-        "isCustom": true,
-        "id": "exp-1794006363575"
-      },
-      {
         "id": "1",
         "name": "Aluguel / Parcela Imóvel",
-        "amount": 2986.43,
+        "amount": 1800,
+        "category": "essencial"
+      },
+      {
+        "id": "2",
+        "name": "Supermercado, Feira & Alimentação",
+        "amount": 950,
         "category": "essencial"
       },
       {
         "id": "3",
-        "name": "Contas (Internet)",
-        "amount": 117.8,
+        "name": "Contas (Água, Luz, Internet)",
+        "amount": 420,
         "category": "essencial"
       },
       {
-        "id": "exp-1794272085025",
-        "globalCardId": "exp-1794272085025",
-        "name": "Nubank Vitoria",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardLimit": 2500,
-        "cardDueDay": 2,
-        "cardTransactions": [],
-        "isCustom": true
+        "id": "4",
+        "name": "Plano de Saúde & Farmácia",
+        "amount": 380,
+        "category": "essencial"
       },
       {
-        "id": "exp-1794272073562",
-        "globalCardId": "exp-1794272073562",
-        "name": "Nubank Marcony",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardLimit": 1000,
-        "cardDueDay": 2,
-        "cardTransactions": [],
-        "isCustom": true
-      },
-      {
-        "id": "exp-1794272057919",
-        "globalCardId": "exp-1794272057919",
-        "name": "Inter",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardLimit": 3000,
-        "cardDueDay": 2,
-        "cardTransactions": [],
-        "isCustom": true
+        "id": "5",
+        "name": "Transporte / Combustível",
+        "amount": 450,
+        "category": "essencial"
       },
       {
         "id": "6",
         "globalCardId": "6",
         "name": "Cartão Nubank / Ultravioleta",
-        "amount": 0,
+        "amount": 760,
         "category": "estilo",
         "subcategory": "cartao",
-        "cardLimit": 1500,
         "cardDueDay": 10,
         "cardClosingDay": 25,
-        "cardTransactions": [],
-        "isCustom": true
+        "cardLimit": 1500,
+        "cardTransactions": [
+          {
+            "id": "tx-1",
+            "description": "Jantar Especial & Cafeterias",
+            "amount": 340,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "08/11"
+          },
+          {
+            "id": "tx-2",
+            "description": "Streaming (Netflix, Spotify, Apple)",
+            "amount": 110,
+            "tag": "assinaturas",
+            "installment": "Recorrente",
+            "purchaseDate": "12/11"
+          },
+          {
+            "id": "tx-3",
+            "description": "Compras Online & Livros",
+            "amount": 310,
+            "tag": "compras",
+            "installment": "1/2",
+            "purchaseDate": "19/11"
+          }
+        ]
       },
       {
         "id": "7",
         "globalCardId": "7",
         "name": "Cartão Inter / Pontos",
-        "amount": 0,
+        "amount": 480,
         "category": "estilo",
         "subcategory": "cartao",
-        "cardLimit": 1000,
         "cardDueDay": 15,
         "cardClosingDay": 5,
-        "cardTransactions": [],
-        "isCustom": true
+        "cardLimit": 1000,
+        "cardTransactions": [
+          {
+            "id": "tx-4",
+            "description": "iFood & Delivery Fim de Semana",
+            "amount": 260,
+            "tag": "gastronomia",
+            "installment": "À vista",
+            "purchaseDate": "14/11"
+          },
+          {
+            "id": "tx-5",
+            "description": "Passeios, Cinema & Lazer",
+            "amount": 220,
+            "tag": "lazer",
+            "installment": "À vista",
+            "purchaseDate": "22/11"
+          }
+        ]
+      },
+      {
+        "id": "8",
+        "name": "Academia & Autocuidado (Pix/Direto)",
+        "amount": 160,
+        "category": "estilo",
+        "subcategory": "direto",
+        "expenseDate": "05/11"
+      },
+      {
+        "id": "10",
+        "name": "Aportes em Renda Variável (Ações/FIIs)",
+        "amount": 1000,
+        "category": "investimento"
+      },
+      {
+        "id": "11",
+        "name": "Reserva de Emergência / Tesouro Selic",
+        "amount": 500,
+        "category": "investimento"
       }
     ],
     "customLongTermGoals": [
