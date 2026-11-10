@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:35:53.446Z",
+  "updatedAt": "2026-11-10T05:36:33.155Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:35:52.220Z",
+    "exportedAt": "2026-11-10T05:36:31.885Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -117,7 +117,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T05:35:52.220Z",
+        "updatedAt": "2026-11-10T05:36:31.885Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -1202,7 +1202,7 @@
                 "id": "pdf-tx-1794288737985-35",
                 "description": "BELA VISTA",
                 "amount": 15,
-                "tag": "outros",
+                "tag": "mobilidade",
                 "installment": "À vista",
                 "purchaseDate": "27/09",
                 "notes": "Fatura Banco Inter (Fatura.pdf)"
@@ -2740,7 +2740,7 @@
             "id": "pdf-tx-1794288737985-35",
             "description": "BELA VISTA",
             "amount": 15,
-            "tag": "outros",
+            "tag": "mobilidade",
             "installment": "À vista",
             "purchaseDate": "27/09",
             "notes": "Fatura Banco Inter (Fatura.pdf)"
@@ -3234,7 +3234,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T05:35:52.220Z",
+        "dateCreated": "2026-11-10T05:36:31.885Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -4319,7 +4319,7 @@
                 "id": "pdf-tx-1794288737985-35",
                 "description": "BELA VISTA",
                 "amount": 15,
-                "tag": "outros",
+                "tag": "mobilidade",
                 "installment": "À vista",
                 "purchaseDate": "27/09",
                 "notes": "Fatura Banco Inter (Fatura.pdf)"
