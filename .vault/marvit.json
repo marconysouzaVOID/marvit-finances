@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:45:45.880Z",
+  "updatedAt": "2026-11-10T00:46:02.370Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T00:45:38.288Z",
+    "exportedAt": "2026-11-10T00:46:01.296Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -76,7 +76,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T00:45:38.288Z",
+        "updatedAt": "2026-11-10T00:46:01.296Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -205,25 +205,12 @@
         "category": "essencial"
       }
     ],
-    "customLongTermGoals": [
-      {
-        "title": "Carro Tiggo",
-        "icon": "directions_car",
-        "targetAmount": 48032.08,
-        "currentAmount": 18744.160000000003,
-        "monthlyContribution": 601.08,
-        "annualInterestRate": 0,
-        "syncWithBudget": false,
-        "budgetCategory": "estilo",
-        "notes": "Amortização",
-        "id": "goal-1794008860404"
-      }
-    ],
+    "customLongTermGoals": [],
     "history": [
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T00:45:38.288Z",
+        "dateCreated": "2026-11-10T00:46:01.296Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -287,20 +274,7 @@
             "category": "essencial"
           }
         ],
-        "customLongTermGoals": [
-          {
-            "title": "Carro Tiggo",
-            "icon": "directions_car",
-            "targetAmount": 48032.08,
-            "currentAmount": 18744.160000000003,
-            "monthlyContribution": 601.08,
-            "annualInterestRate": 0,
-            "syncWithBudget": false,
-            "budgetCategory": "estilo",
-            "notes": "Amortização",
-            "id": "goal-1794008860404"
-          }
-        ],
+        "customLongTermGoals": [],
         "monthKey": "2026-10"
       },
       {
