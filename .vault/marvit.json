@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:44:02.786Z",
+  "updatedAt": "2026-11-10T05:44:28.499Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:44:01.491Z",
+    "exportedAt": "2026-11-10T05:44:27.275Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T05:44:01.491Z",
+        "updatedAt": "2026-11-10T05:44:27.275Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -102,12 +102,20 @@
             "id": "exp-1794272287172",
             "globalCardId": "exp-1794272287172",
             "name": "Itau",
-            "amount": 565.67,
+            "amount": 1213.18,
             "category": "estilo",
             "subcategory": "cartao",
             "cardLimit": 700,
             "cardDueDay": 2,
             "cardTransactions": [
+              {
+                "id": "tx-1794289467275",
+                "description": "Moto Eletrica",
+                "amount": 647.51,
+                "tag": "compras",
+                "installment": "Parcela 2/10",
+                "purchaseDate": "16/10"
+              },
               {
                 "id": "tx-1794289441491",
                 "description": "Localiza",
@@ -1758,12 +1766,20 @@
         "id": "exp-1794272287172",
         "globalCardId": "exp-1794272287172",
         "name": "Itau",
-        "amount": 565.67,
+        "amount": 1213.18,
         "category": "estilo",
         "subcategory": "cartao",
         "cardLimit": 700,
         "cardDueDay": 2,
         "cardTransactions": [
+          {
+            "id": "tx-1794289467275",
+            "description": "Moto Eletrica",
+            "amount": 647.51,
+            "tag": "compras",
+            "installment": "Parcela 2/10",
+            "purchaseDate": "16/10"
+          },
           {
             "id": "tx-1794289441491",
             "description": "Localiza",
@@ -1821,7 +1837,7 @@
         "id": "snap-1794273445526",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T05:44:01.491Z",
+        "dateCreated": "2026-11-10T05:44:27.275Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -1914,12 +1930,20 @@
             "id": "exp-1794272287172",
             "globalCardId": "exp-1794272287172",
             "name": "Itau",
-            "amount": 565.67,
+            "amount": 1213.18,
             "category": "estilo",
             "subcategory": "cartao",
             "cardLimit": 700,
             "cardDueDay": 2,
             "cardTransactions": [
+              {
+                "id": "tx-1794289467275",
+                "description": "Moto Eletrica",
+                "amount": 647.51,
+                "tag": "compras",
+                "installment": "Parcela 2/10",
+                "purchaseDate": "16/10"
+              },
               {
                 "id": "tx-1794289441491",
                 "description": "Localiza",
