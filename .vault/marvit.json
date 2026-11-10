@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:54:18.874Z",
+  "updatedAt": "2026-11-10T00:54:34.535Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T00:54:17.919Z",
+    "exportedAt": "2026-11-10T00:54:33.562Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T00:54:17.919Z",
+        "updatedAt": "2026-11-10T00:54:33.562Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -22,6 +22,17 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Nubank Marcony",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardTransactions": [],
+            "cardLimit": 1000,
+            "cardDueDay": 2,
+            "isCustom": true,
+            "id": "exp-1794272073562"
+          },
           {
             "name": "Inter",
             "amount": 0,
@@ -176,6 +187,17 @@
       "investimento": 25
     },
     "expenses": [
+      {
+        "name": "Nubank Marcony",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardTransactions": [],
+        "cardLimit": 1000,
+        "cardDueDay": 2,
+        "isCustom": true,
+        "id": "exp-1794272073562"
+      },
       {
         "name": "Inter",
         "amount": 0,
@@ -349,7 +371,7 @@
       {
         "id": "snap-1794009106533",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T00:54:17.919Z",
+        "dateCreated": "2026-11-10T00:54:33.562Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -362,6 +384,17 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Nubank Marcony",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardTransactions": [],
+            "cardLimit": 1000,
+            "cardDueDay": 2,
+            "isCustom": true,
+            "id": "exp-1794272073562"
+          },
           {
             "name": "Inter",
             "amount": 0,
