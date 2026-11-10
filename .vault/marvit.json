@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T05:35:28.600Z",
+  "updatedAt": "2026-11-10T05:35:33.963Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T05:35:27.235Z",
+    "exportedAt": "2026-11-10T05:35:32.619Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -117,7 +117,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T05:35:27.235Z",
+        "updatedAt": "2026-11-10T05:35:32.619Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -1085,7 +1085,7 @@
                 "id": "pdf-tx-1794288737985-22",
                 "description": "CP P ARC DUO GOURMET",
                 "amount": 59,
-                "tag": "outros",
+                "tag": "assinaturas",
                 "installment": "Parcela 03/12",
                 "purchaseDate": "29/07",
                 "notes": "Fatura Banco Inter (Fatura.pdf)"
@@ -2623,7 +2623,7 @@
             "id": "pdf-tx-1794288737985-22",
             "description": "CP P ARC DUO GOURMET",
             "amount": 59,
-            "tag": "outros",
+            "tag": "assinaturas",
             "installment": "Parcela 03/12",
             "purchaseDate": "29/07",
             "notes": "Fatura Banco Inter (Fatura.pdf)"
@@ -3234,7 +3234,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T05:35:27.235Z",
+        "dateCreated": "2026-11-10T05:35:32.619Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -4202,7 +4202,7 @@
                 "id": "pdf-tx-1794288737985-22",
                 "description": "CP P ARC DUO GOURMET",
                 "amount": 59,
-                "tag": "outros",
+                "tag": "assinaturas",
                 "installment": "Parcela 03/12",
                 "purchaseDate": "29/07",
                 "notes": "Fatura Banco Inter (Fatura.pdf)"
