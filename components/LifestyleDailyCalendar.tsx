@@ -7,6 +7,7 @@ import {
   ExpenseItem,
 } from '../types';
 import { formatCurrency, formatMonthKeyLabel } from '../utils/formatters';
+import { normalizeInvoiceDate } from '../utils/pdfInvoiceParser';
 
 interface DailyCalendarPurchase {
   id: string;
@@ -57,7 +58,12 @@ export function resolveCalendarDay(
   _cardClosingDay?: number
 ): CalendarDayResolution | null {
   if (!dateStr || !dateStr.trim()) return null;
-  const trimmed = dateStr.trim();
+  let trimmed = dateStr.trim();
+
+  // Se o texto contiver mês por extenso ou preposição "de", normaliza primeiro (ex: "27 de set. 2026" -> "27/09")
+  if (/\b(?:de|jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)\b/i.test(trimmed)) {
+    trimmed = normalizeInvoiceDate(trimmed);
+  }
 
   const prevMonthIndex = targetMonthIndex === 0 ? 11 : targetMonthIndex - 1;
   const prevYear = targetMonthIndex === 0 ? targetYear - 1 : targetYear;
@@ -106,6 +112,15 @@ export function resolveCalendarDay(
           originalDateStr: trimmed,
         };
       }
+
+      // Compra de meses anteriores parcelada (faturada no mês selecionado)
+      return {
+        day: safeDay,
+        isPreviousMonthCycle: false,
+        isNextMonthCycle: false,
+        badgeLabel: `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')} • Parcela`,
+        originalDateStr: trimmed,
+      };
     }
     return null;
   }
@@ -160,6 +175,15 @@ export function resolveCalendarDay(
           originalDateStr: trimmed,
         };
       }
+
+      // Compra de meses anteriores parcelada (faturada no mês selecionado)
+      return {
+        day: safeDay,
+        isPreviousMonthCycle: false,
+        isNextMonthCycle: false,
+        badgeLabel: `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')} • Parcela`,
+        originalDateStr: trimmed,
+      };
     }
     return null;
   }

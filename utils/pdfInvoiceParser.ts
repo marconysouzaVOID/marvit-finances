@@ -76,6 +76,17 @@ const PT_MONTHS: Record<string, string> = {
 export function normalizeInvoiceDate(rawDate: string): string {
   const trimmed = rawDate.trim().toLowerCase();
 
+  // Ex: "27 de set. 2026" ou "27 de set 2026" ou "27 set." ou "27 set"
+  const ptExtMatch = trimmed.match(
+    /^(\d{1,2})\s+(?:de\s+)?([a-z]{3,4})\.?(?:\s+(?:de\s+)?\d{2,4})?$/i
+  );
+  if (ptExtMatch) {
+    const day = ptExtMatch[1].padStart(2, '0');
+    const monthCode = ptExtMatch[2].substring(0, 3);
+    const month = PT_MONTHS[monthCode] || '01';
+    return `${day}/${month}`;
+  }
+
   // Ex: "15/10/2026", "15.10.2026", "15-10-2026", "15/10"
   const dmyMatch = trimmed.match(/^(\d{1,2})[\/\.-](\d{1,2})(?:[\/\.-]\d{2,4})?$/);
   if (dmyMatch) {
@@ -86,7 +97,7 @@ export function normalizeInvoiceDate(rawDate: string): string {
 
   // Ex: "15/out", "15/out/2026", "15-out-2026"
   const slashMonthMatch = trimmed.match(
-    /^(\d{1,2})[\/\.-](jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*(?:[\/\.-]\d{2,4})?$/i
+    /^(\d{1,2})[\/\.-](jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*\.?(?:[\/\.-]\d{2,4})?$/i
   );
   if (slashMonthMatch) {
     const day = slashMonthMatch[1].padStart(2, '0');
@@ -97,7 +108,7 @@ export function normalizeInvoiceDate(rawDate: string): string {
 
   // Ex: "12 out" ou "12 de out" ou "12 out 2026"
   const wordMatch = trimmed.match(
-    /^(\d{1,2})\s*(?:de\s*)?(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*(?:\s*\d{2,4})?$/i
+    /^(\d{1,2})\s*(?:de\s*)?(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*\.?(?:\s*\d{2,4})?$/i
   );
   if (wordMatch) {
     const day = wordMatch[1].padStart(2, '0');
@@ -120,9 +131,30 @@ export function extractInstallmentInfo(
   let cleanTitle = rawDesc.trim();
   let installment = 'À vista';
 
+  // 0. Padrão Banco Inter / Bancos BR: "(Parcela 07 de 10)" ou "Parcela 07 de 10" ou "(Parcela 07/10)"
+  const interInstallmentMatch = cleanTitle.match(
+    /\(?\s*Parcela\s+(\d{1,2})\s+(?:de|\/)\s+(\d{1,2})\s*\)?/i
+  );
+  if (interInstallmentMatch) {
+    installment = `Parcela ${interInstallmentMatch[1].padStart(2, '0')}/${interInstallmentMatch[2].padStart(2, '0')}`;
+    cleanTitle = cleanTitle
+      .replace(interInstallmentMatch[0], '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    return { cleanTitle, installment };
+  }
+
   // 1. Verificar se o sufixo contém parcela (ex: "01/03" ou "Parcela 2 de 5")
   if (trailingStr && trailingStr.trim()) {
     const t = trailingStr.trim();
+    const tmInter = t.match(/\(?\s*Parcela\s+(\d{1,2})\s+(?:de|\/)\s+(\d{1,2})\s*\)?/i);
+    if (tmInter) {
+      return {
+        cleanTitle,
+        installment: `Parcela ${tmInter[1].padStart(2, '0')}/${tmInter[2].padStart(2, '0')}`,
+      };
+    }
+
     const tm1 = t.match(/(?:-\s*)?Parcela\s+(\d+\/\d+)/i);
     if (tm1) return { cleanTitle, installment: `Parcela ${tm1[1]}` };
 
@@ -163,7 +195,7 @@ export function extractInstallmentInfo(
 /** Converte texto de valor monetário brasileiro ("1.250,50", "R$ 45,90", "- 500,00") para número */
 export function parseBrlAmount(rawVal: string): number {
   const isNegative =
-    rawVal.includes('-') ||
+    (rawVal.includes('-') && !rawVal.includes('+')) ||
     /\b(estorno|crédito|credito|pgto|pagamento)\b/i.test(rawVal);
   const cleaned = rawVal.replace(/[R$US\s\-+]/gi, '');
   let normalized = cleaned;
@@ -176,43 +208,67 @@ export function parseBrlAmount(rawVal: string): number {
 }
 
 /** Verifica se a linha indica pagamento de fatura anterior ou créditos para ignorar */
-export function isPaymentOrCreditLine(desc: string, amount: number): boolean {
+export function isPaymentOrCreditLine(
+  desc: string,
+  amount: number,
+  rawVal?: string
+): boolean {
+  if (rawVal && rawVal.includes('+')) return true;
   if (amount < 0) return true;
   const lower = desc.toLowerCase();
-  return /pagamento\s+(?:de\s+fatura|recebido|efetuado|via\s+pix|por\s+debito)|quitac|credito\s+de\s+fatura|estorno\s+de\s+pagamento/i.test(
+  return /p\s*agto|pagamento|quitac|credito\s+de\s+fatura|estorno\s+de\s+pagamento/i.test(
     lower
   );
 }
 
-/** Expressões regulares amplas para capturar transações em faturas bancárias */
+/** Expressões regulares especializadas para faturas do Banco Inter e bancos brasileiros */
+const TX_INTER = /^(\d{1,2}\s+de\s+[a-z]{3,4}\.?\s+\d{2,4})\s+(.+?)\s+-\s*([+-]?\s*(?:R\$\s*|US\$\s*)?[\d\.]+,\d{2})$/i;
+const TX_STANDARD_HYPHEN = /^(\d{1,2}[\/\.-]\d{1,2}(?:[\/\.-]\d{2,4})?)\s+(.+?)\s+-\s*([+-]?\s*(?:R\$\s*|US\$\s*)?[\d\.]+,\d{2})$/i;
+
 const DATE_PATTERN =
-  '(\\d{1,2}(?:[\\/\\.-]|\\s+(?:de\\s+)?)(?:\\d{1,2}|jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*(?:[\\/\\.-]\\d{2,4}|\\s+\\d{2,4})?)';
+  '(\\d{1,2}(?:[\\/\\.-]|\\s+(?:de\\s+)?)(?:\\d{1,2}|jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*\\.?(?:[\\/\\.-]\\d{2,4}|\\s+\\d{2,4})?)';
 
 const AMOUNT_PATTERN =
-  '(-?\\s*(?:R\\$\\s*|US\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d{2}|-?\\s*(?:R\\$\\s*|US\\$\\s*)?\\d+,\\d{2}|\\d{1,3}(?:\\.\\d{3})*,\\d{2}\\s*-)';
+  '([+-]?\\s*(?:-\\s*)?(?:R\\$\\s*|US\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d{2}|[+-]?\\s*(?:-\\s*)?(?:R\\$\\s*|US\\$\\s*)?\\d+,\\d{2}|\\d{1,3}(?:\\.\\d{3})*,\\d{2}\\s*-)';
 
-// Padrão 1: Data ... Estabelecimento ... Valor (ex: "15/10 IFOOD 45,90" ou "15/10/2026 SHEIN 120,00 01/03")
+// Padrão com Data primeiro: "15/10 IFOOD 45,90" ou "15/10/2026 SHEIN 120,00 01/03"
 const TX_DATE_FIRST = new RegExp(
-  `(?:^|\\s+)${DATE_PATTERN}\\s+(.+?)\\s+${AMOUNT_PATTERN}(?:\\s+(.*))?$`,
+  `(?:^|\\s+)${DATE_PATTERN}\\s+(.+?)(?:\\s+-\\s*|\\s+)${AMOUNT_PATTERN}(?:\\s+(.*))?$`,
   'i'
 );
 
-// Padrão 2: Estabelecimento ... Data ... Valor (ex: "IFOOD RESTAURANTE 15/10 45,90")
+// Padrão com Estabelecimento primeiro: "IFOOD RESTAURANTE 15/10 45,90"
 const TX_DESC_FIRST = new RegExp(
-  `^(.+?)\\s+${DATE_PATTERN}\\s+${AMOUNT_PATTERN}(?:\\s+(.*))?$`,
+  `^(.+?)\\s+${DATE_PATTERN}(?:\\s+-\\s*|\\s+)${AMOUNT_PATTERN}(?:\\s+(.*))?$`,
   'i'
 );
 
 /** Palavras do cabeçalho / resumo geral que NÃO são compras */
 const NON_PURCHASE_PHRASES = [
-  /total\s+da\s+fatura/i,
+  /total\s+da\s+(?:sua\s+)?fatura/i,
+  /total\s+cart[ãa]o/i,
   /vencimento/i,
   /pagamento\s+m[íi]nimo/i,
   /saldo\s+anterior/i,
-  /limite\s+(?:total|utilizado|dispon[íi]vel)/i,
+  /limite\s+(?:total|utilizado|dispon[íi]vel|de\s+cr[ée]dito)/i,
   /encargos\s+financeiros/i,
   /autentica[çc][ãa]o\s+mec[âa]nica/i,
   /resumo\s+da\s+fatura/i,
+  /op[çc][õo]es\s+de\s+parcelamento/i,
+  /parcelamento\s+total/i,
+  /1\s*\+\s*\d+\s+de\s+r\$/i,
+  /taxa\s+efetiva/i,
+  /descritivo\s+detalhado/i,
+  /despesas\s+do\s+m[êe]s/i,
+  /valor\s+antecipado/i,
+  /fatura\s+atual/i,
+  /saldo\s+(?:total\s+de\s+compras|em\s+aberto)/i,
+  /fale\s+com\s+a\s+gente/i,
+  /ouvidoria/i,
+  /\d{4}\*{4,}\d{4}/i,
+  /data\s+movimenta[çc][ãa]o\s+benefici[áa]rio\s+valor/i,
+  /pagavel\s+em\s+qualquer\s+banco/i,
+  /carteira\s+esp[ée]cie/i,
 ];
 
 /**
@@ -240,6 +296,20 @@ export function extractTransactionsFromLines(
       continue;
     }
 
+    // Se alcançou a seção "Próxima fatura", as compras subsequentes são de meses futuros
+    if (
+      /^pr[óo]xima\s+fatura/i.test(l1) ||
+      /compras\s+parceladas\s+realizadas\s+at[ée]\s+o\s+fechamento/i.test(l1)
+    ) {
+      break;
+    }
+
+    // Ignora linhas que são cabeçalhos ou simulações de empréstimo/parcelamento
+    if (NON_PURCHASE_PHRASES.some((p) => p.test(l1))) {
+      i++;
+      continue;
+    }
+
     let matchData: {
       date: string;
       desc: string;
@@ -248,9 +318,23 @@ export function extractTransactionsFromLines(
       consumedLines: number;
     } | null = null;
 
-    // 1. Tenta casar 1 linha
-    let m = l1.match(TX_DATE_FIRST);
+    // 1. Tenta casar 1 linha com prioridade em formatos bancários
+    let m = l1.match(TX_INTER);
     if (m) {
+      matchData = {
+        date: m[1],
+        desc: m[2],
+        val: m[3],
+        consumedLines: 1,
+      };
+    } else if ((m = l1.match(TX_STANDARD_HYPHEN))) {
+      matchData = {
+        date: m[1],
+        desc: m[2],
+        val: m[3],
+        consumedLines: 1,
+      };
+    } else if ((m = l1.match(TX_DATE_FIRST))) {
       matchData = {
         date: m[1],
         desc: m[2],
@@ -274,25 +358,30 @@ export function extractTransactionsFromLines(
     // 2. Se não casou e há linha seguinte, tenta combinar 2 linhas
     if (!matchData && i + 1 < lines.length) {
       const l2 = `${l1} ${lines[i + 1].trim()}`;
-      m = l2.match(TX_DATE_FIRST);
-      if (m) {
-        matchData = {
-          date: m[1],
-          desc: m[2],
-          val: m[3],
-          trailing: m[4],
-          consumedLines: 2,
-        };
-      } else {
-        let mRev = l2.match(TX_DESC_FIRST);
-        if (mRev) {
+      if (!NON_PURCHASE_PHRASES.some((p) => p.test(l2))) {
+        let m2 =
+          l2.match(TX_INTER) ||
+          l2.match(TX_STANDARD_HYPHEN) ||
+          l2.match(TX_DATE_FIRST);
+        if (m2) {
           matchData = {
-            date: mRev[2],
-            desc: mRev[1],
-            val: mRev[3],
-            trailing: mRev[4],
+            date: m2[1],
+            desc: m2[2],
+            val: m2[3],
+            trailing: m2[4],
             consumedLines: 2,
           };
+        } else {
+          let mRev = l2.match(TX_DESC_FIRST);
+          if (mRev) {
+            matchData = {
+              date: mRev[2],
+              desc: mRev[1],
+              val: mRev[3],
+              trailing: mRev[4],
+              consumedLines: 2,
+            };
+          }
         }
       }
     }
@@ -300,44 +389,47 @@ export function extractTransactionsFromLines(
     // 3. Se não casou e há 3 linhas, tenta combinar 3 linhas (layout com Data na l1, Desc na l2, Valor na l3)
     if (!matchData && i + 2 < lines.length) {
       const l3 = `${l1} ${lines[i + 1].trim()} ${lines[i + 2].trim()}`;
-      m = l3.match(TX_DATE_FIRST);
-      if (m) {
-        matchData = {
-          date: m[1],
-          desc: m[2],
-          val: m[3],
-          trailing: m[4],
-          consumedLines: 3,
-        };
+      if (!NON_PURCHASE_PHRASES.some((p) => p.test(l3))) {
+        let m3 = l3.match(TX_DATE_FIRST);
+        if (m3) {
+          matchData = {
+            date: m3[1],
+            desc: m3[2],
+            val: m3[3],
+            trailing: m3[4],
+            consumedLines: 3,
+          };
+        }
       }
     }
 
     if (matchData) {
       const { date, desc, val, trailing, consumedLines } = matchData;
-      const amount = parseBrlAmount(val);
-
-      // Descartar se o texto descritivo for cabeçalho ou resumo geral
       const isHeaderPhrase = NON_PURCHASE_PHRASES.some((p) => p.test(desc));
-      if (!isHeaderPhrase && amount !== 0) {
-        if (isPaymentOrCreditLine(desc, amount)) {
+      if (!isHeaderPhrase) {
+        const amount = parseBrlAmount(val);
+        if (isPaymentOrCreditLine(desc, amount, val)) {
           ignoredPaymentsCount += 1;
           ignoredPaymentsTotal += Math.abs(amount);
-        } else {
+        } else if (amount !== 0) {
           const { cleanTitle, installment } = extractInstallmentInfo(
             desc,
             trailing
           );
-          const formattedDate = normalizeInvoiceDate(date);
+          // Garantir que não é fragmento de texto ou cabeçalho residual
+          if (cleanTitle.replace(/[^a-zA-Z0-9]/g, '').length >= 3) {
+            const formattedDate = normalizeInvoiceDate(date);
 
-          transactions.push({
-            id: `pdf-tx-${Date.now()}-${transactions.length + 1}`,
-            description: cleanTitle,
-            amount: Math.round(amount * 100) / 100,
-            tag: inferCardPurchaseTag(cleanTitle),
-            installment,
-            purchaseDate: formattedDate,
-            notes: `Fatura ${detectedBank} (${fileName})`,
-          });
+            transactions.push({
+              id: `pdf-tx-${Date.now()}-${transactions.length + 1}`,
+              description: cleanTitle,
+              amount: Math.round(amount * 100) / 100,
+              tag: inferCardPurchaseTag(cleanTitle),
+              installment,
+              purchaseDate: formattedDate,
+              notes: `Fatura ${detectedBank} (${fileName})`,
+            });
+          }
         }
       }
       i += consumedLines;
