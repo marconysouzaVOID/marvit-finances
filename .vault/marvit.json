@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T00:50:49.672Z",
+  "updatedAt": "2026-11-10T00:54:08.164Z",
   "data": {
     "version": "2.3.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T00:49:29.419Z",
+    "exportedAt": "2026-11-10T00:54:07.097Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-10T00:49:29.419Z",
+        "updatedAt": "2026-11-10T00:54:07.097Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -22,6 +22,17 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Itau",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardTransactions": [],
+            "cardLimit": 700,
+            "cardDueDay": 2,
+            "isCustom": true,
+            "id": "exp-1794272047097"
+          },
           {
             "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
             "amount": 8791.22,
@@ -154,6 +165,17 @@
       "investimento": 25
     },
     "expenses": [
+      {
+        "name": "Itau",
+        "amount": 0,
+        "category": "estilo",
+        "subcategory": "cartao",
+        "cardTransactions": [],
+        "cardLimit": 700,
+        "cardDueDay": 2,
+        "isCustom": true,
+        "id": "exp-1794272047097"
+      },
       {
         "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
         "amount": 8791.22,
@@ -305,7 +327,7 @@
       {
         "id": "snap-1794009106533",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-10T00:49:29.419Z",
+        "dateCreated": "2026-11-10T00:54:07.097Z",
         "profile": {
           "monthlyIncome": 22000,
           "additionalIncome": 0,
@@ -318,6 +340,17 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Itau",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardTransactions": [],
+            "cardLimit": 700,
+            "cardDueDay": 2,
+            "isCustom": true,
+            "id": "exp-1794272047097"
+          },
           {
             "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
             "amount": 8791.22,
