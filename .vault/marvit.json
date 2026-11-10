@@ -1,10 +1,10 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-10T04:10:37.429Z",
+  "updatedAt": "2026-11-10T04:11:17.004Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-10T01:17:25.526Z",
+    "exportedAt": "2026-11-10T04:11:15.847Z",
     "selectedMonthKey": "2026-10",
     "monthsData": {
       "2026-11": {
@@ -111,7 +111,7 @@
       },
       "2026-10": {
         "monthKey": "2026-10",
-        "updatedAt": "2026-11-10T01:17:25.526Z",
+        "updatedAt": "2026-11-10T04:11:15.847Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -592,195 +592,6 @@
             "isCustom": true,
             "id": "exp-1794272744318",
             "globalCardId": "exp-1794272744318"
-          },
-          {
-            "name": "Nubank Marcony",
-            "amount": 1126.1,
-            "category": "estilo",
-            "subcategory": "cartao",
-            "cardTransactions": [
-              {
-                "id": "csv-tx-1794272908975-1",
-                "description": "Recarga de celular",
-                "amount": 60,
-                "tag": "outros",
-                "installment": "À vista",
-                "purchaseDate": "25/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-2",
-                "description": "Dl *Uberrides",
-                "amount": 12.56,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "24/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-3",
-                "description": "Dl *Uberrides",
-                "amount": 15.25,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "24/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-4",
-                "description": "Dl *Uberrides",
-                "amount": 15.95,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "24/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-5",
-                "description": "Dl *Uberrides",
-                "amount": 8.94,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "24/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-6",
-                "description": "Google Cloud Sgdxrw",
-                "amount": 30,
-                "tag": "outros",
-                "installment": "À vista",
-                "purchaseDate": "23/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-7",
-                "description": "Google One",
-                "amount": 23.99,
-                "tag": "outros",
-                "installment": "À vista",
-                "purchaseDate": "23/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-8",
-                "description": "Dl*Uberrides",
-                "amount": 25.93,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "22/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-9",
-                "description": "Yelumseg Parc7",
-                "amount": 262.43,
-                "tag": "outros",
-                "installment": "À vista",
-                "purchaseDate": "13/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-10",
-                "description": "Apple.Com/Bill",
-                "amount": 19.9,
-                "tag": "assinaturas",
-                "installment": "À vista",
-                "purchaseDate": "11/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-11",
-                "description": "Uber Uber *Trip Help.U",
-                "amount": 12.71,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-12",
-                "description": "Dl *Uberrides",
-                "amount": 8.44,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-13",
-                "description": "Dl *Uberrides",
-                "amount": 6.75,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-14",
-                "description": "Dl *Uberrides",
-                "amount": 10.17,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-15",
-                "description": "Dl *Uberrides",
-                "amount": 9.34,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-16",
-                "description": "Dl *Uberrides",
-                "amount": 49.82,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-17",
-                "description": "Ifd*Ifood Club",
-                "amount": 7.95,
-                "tag": "gastronomia",
-                "installment": "À vista",
-                "purchaseDate": "07/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-19",
-                "description": "Dl*Uberrides",
-                "amount": 8.47,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "27/09"
-              },
-              {
-                "id": "csv-tx-1794272908975-20",
-                "description": "Uber Uber *Trip Help.U",
-                "amount": 10.96,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "26/09"
-              },
-              {
-                "id": "csv-tx-1794272908975-21",
-                "description": "Odonto Riso",
-                "amount": 500,
-                "tag": "outros",
-                "installment": "Parcela 6/8",
-                "purchaseDate": "26/09"
-              },
-              {
-                "id": "csv-tx-1794272908975-22",
-                "description": "Dl*Uberrides",
-                "amount": 7.6,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "26/09"
-              },
-              {
-                "id": "csv-tx-1794272908975-23",
-                "description": "Dl*Uberrides",
-                "amount": 18.94,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "26/09"
-              }
-            ],
-            "cardLimit": 1000,
-            "cardDueDay": 2,
-            "isCustom": true,
-            "id": "exp-1794272730708",
-            "globalCardId": "exp-1794272730708"
           },
           {
             "name": "Inter",
@@ -1435,195 +1246,6 @@
         "globalCardId": "exp-1794272744318"
       },
       {
-        "name": "Nubank Marcony",
-        "amount": 1126.1,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardTransactions": [
-          {
-            "id": "csv-tx-1794272908975-1",
-            "description": "Recarga de celular",
-            "amount": 60,
-            "tag": "outros",
-            "installment": "À vista",
-            "purchaseDate": "25/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-2",
-            "description": "Dl *Uberrides",
-            "amount": 12.56,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "24/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-3",
-            "description": "Dl *Uberrides",
-            "amount": 15.25,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "24/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-4",
-            "description": "Dl *Uberrides",
-            "amount": 15.95,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "24/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-5",
-            "description": "Dl *Uberrides",
-            "amount": 8.94,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "24/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-6",
-            "description": "Google Cloud Sgdxrw",
-            "amount": 30,
-            "tag": "outros",
-            "installment": "À vista",
-            "purchaseDate": "23/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-7",
-            "description": "Google One",
-            "amount": 23.99,
-            "tag": "outros",
-            "installment": "À vista",
-            "purchaseDate": "23/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-8",
-            "description": "Dl*Uberrides",
-            "amount": 25.93,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "22/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-9",
-            "description": "Yelumseg Parc7",
-            "amount": 262.43,
-            "tag": "outros",
-            "installment": "À vista",
-            "purchaseDate": "13/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-10",
-            "description": "Apple.Com/Bill",
-            "amount": 19.9,
-            "tag": "assinaturas",
-            "installment": "À vista",
-            "purchaseDate": "11/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-11",
-            "description": "Uber Uber *Trip Help.U",
-            "amount": 12.71,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "09/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-12",
-            "description": "Dl *Uberrides",
-            "amount": 8.44,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "09/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-13",
-            "description": "Dl *Uberrides",
-            "amount": 6.75,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "09/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-14",
-            "description": "Dl *Uberrides",
-            "amount": 10.17,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "09/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-15",
-            "description": "Dl *Uberrides",
-            "amount": 9.34,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "09/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-16",
-            "description": "Dl *Uberrides",
-            "amount": 49.82,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "09/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-17",
-            "description": "Ifd*Ifood Club",
-            "amount": 7.95,
-            "tag": "gastronomia",
-            "installment": "À vista",
-            "purchaseDate": "07/10"
-          },
-          {
-            "id": "csv-tx-1794272908975-19",
-            "description": "Dl*Uberrides",
-            "amount": 8.47,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "27/09"
-          },
-          {
-            "id": "csv-tx-1794272908975-20",
-            "description": "Uber Uber *Trip Help.U",
-            "amount": 10.96,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "26/09"
-          },
-          {
-            "id": "csv-tx-1794272908975-21",
-            "description": "Odonto Riso",
-            "amount": 500,
-            "tag": "outros",
-            "installment": "Parcela 6/8",
-            "purchaseDate": "26/09"
-          },
-          {
-            "id": "csv-tx-1794272908975-22",
-            "description": "Dl*Uberrides",
-            "amount": 7.6,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "26/09"
-          },
-          {
-            "id": "csv-tx-1794272908975-23",
-            "description": "Dl*Uberrides",
-            "amount": 18.94,
-            "tag": "mobilidade",
-            "installment": "À vista",
-            "purchaseDate": "26/09"
-          }
-        ],
-        "cardLimit": 1000,
-        "cardDueDay": 2,
-        "isCustom": true,
-        "id": "exp-1794272730708",
-        "globalCardId": "exp-1794272730708"
-      },
-      {
         "name": "Inter",
         "amount": 0,
         "category": "estilo",
@@ -1754,8 +1376,8 @@
         "isCustom": true
       },
       {
-        "id": "exp-1794272730708",
-        "globalCardId": "exp-1794272730708",
+        "id": "exp-1794272073562",
+        "globalCardId": "exp-1794272073562",
         "name": "Nubank Marcony",
         "amount": 0,
         "category": "estilo",
@@ -1797,18 +1419,6 @@
         "category": "estilo",
         "subcategory": "cartao",
         "cardLimit": 2500,
-        "cardDueDay": 2,
-        "cardTransactions": [],
-        "isCustom": true
-      },
-      {
-        "id": "exp-1794272073562",
-        "globalCardId": "exp-1794272073562",
-        "name": "Nubank Marcony",
-        "amount": 0,
-        "category": "estilo",
-        "subcategory": "cartao",
-        "cardLimit": 1000,
         "cardDueDay": 2,
         "cardTransactions": [],
         "isCustom": true
@@ -1857,12 +1467,6 @@
         "id": "exp-1794272744318",
         "name": "Nubank Vitoria",
         "cardLimit": 2500,
-        "cardDueDay": 2
-      },
-      {
-        "id": "exp-1794272730708",
-        "name": "Nubank Marcony",
-        "cardLimit": 1000,
         "cardDueDay": 2
       },
       {
@@ -2030,7 +1634,7 @@
       {
         "id": "snap-1794009637290",
         "monthLabel": "Outubro/ 2026",
-        "dateCreated": "2026-11-10T01:17:25.526Z",
+        "dateCreated": "2026-11-10T04:11:15.847Z",
         "profile": {
           "monthlyIncome": 23614.09,
           "additionalIncome": 0,
@@ -2509,195 +2113,8 @@
             "cardLimit": 2500,
             "cardDueDay": 2,
             "isCustom": true,
-            "id": "exp-1794272744318"
-          },
-          {
-            "name": "Nubank Marcony",
-            "amount": 1126.1,
-            "category": "estilo",
-            "subcategory": "cartao",
-            "cardTransactions": [
-              {
-                "id": "csv-tx-1794272908975-1",
-                "description": "Recarga de celular",
-                "amount": 60,
-                "tag": "outros",
-                "installment": "À vista",
-                "purchaseDate": "25/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-2",
-                "description": "Dl *Uberrides",
-                "amount": 12.56,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "24/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-3",
-                "description": "Dl *Uberrides",
-                "amount": 15.25,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "24/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-4",
-                "description": "Dl *Uberrides",
-                "amount": 15.95,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "24/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-5",
-                "description": "Dl *Uberrides",
-                "amount": 8.94,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "24/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-6",
-                "description": "Google Cloud Sgdxrw",
-                "amount": 30,
-                "tag": "outros",
-                "installment": "À vista",
-                "purchaseDate": "23/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-7",
-                "description": "Google One",
-                "amount": 23.99,
-                "tag": "outros",
-                "installment": "À vista",
-                "purchaseDate": "23/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-8",
-                "description": "Dl*Uberrides",
-                "amount": 25.93,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "22/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-9",
-                "description": "Yelumseg Parc7",
-                "amount": 262.43,
-                "tag": "outros",
-                "installment": "À vista",
-                "purchaseDate": "13/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-10",
-                "description": "Apple.Com/Bill",
-                "amount": 19.9,
-                "tag": "assinaturas",
-                "installment": "À vista",
-                "purchaseDate": "11/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-11",
-                "description": "Uber Uber *Trip Help.U",
-                "amount": 12.71,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-12",
-                "description": "Dl *Uberrides",
-                "amount": 8.44,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-13",
-                "description": "Dl *Uberrides",
-                "amount": 6.75,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-14",
-                "description": "Dl *Uberrides",
-                "amount": 10.17,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-15",
-                "description": "Dl *Uberrides",
-                "amount": 9.34,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-16",
-                "description": "Dl *Uberrides",
-                "amount": 49.82,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "09/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-17",
-                "description": "Ifd*Ifood Club",
-                "amount": 7.95,
-                "tag": "gastronomia",
-                "installment": "À vista",
-                "purchaseDate": "07/10"
-              },
-              {
-                "id": "csv-tx-1794272908975-19",
-                "description": "Dl*Uberrides",
-                "amount": 8.47,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "27/09"
-              },
-              {
-                "id": "csv-tx-1794272908975-20",
-                "description": "Uber Uber *Trip Help.U",
-                "amount": 10.96,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "26/09"
-              },
-              {
-                "id": "csv-tx-1794272908975-21",
-                "description": "Odonto Riso",
-                "amount": 500,
-                "tag": "outros",
-                "installment": "Parcela 6/8",
-                "purchaseDate": "26/09"
-              },
-              {
-                "id": "csv-tx-1794272908975-22",
-                "description": "Dl*Uberrides",
-                "amount": 7.6,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "26/09"
-              },
-              {
-                "id": "csv-tx-1794272908975-23",
-                "description": "Dl*Uberrides",
-                "amount": 18.94,
-                "tag": "mobilidade",
-                "installment": "À vista",
-                "purchaseDate": "26/09"
-              }
-            ],
-            "cardLimit": 1000,
-            "cardDueDay": 2,
-            "isCustom": true,
-            "id": "exp-1794272730708"
+            "id": "exp-1794272744318",
+            "globalCardId": "exp-1794272744318"
           },
           {
             "name": "Inter",
@@ -2708,7 +2125,8 @@
             "cardLimit": 3000,
             "cardDueDay": 2,
             "isCustom": true,
-            "id": "exp-1794272675694"
+            "id": "exp-1794272675694",
+            "globalCardId": "exp-1794272675694"
           },
           {
             "name": "Itau",
@@ -2760,7 +2178,8 @@
             "cardLimit": 700,
             "cardDueDay": 2,
             "isCustom": true,
-            "id": "exp-1794272287172"
+            "id": "exp-1794272287172",
+            "globalCardId": "exp-1794272287172"
           },
           {
             "name": "moto eletrica",
@@ -2777,7 +2196,10 @@
             "isCustom": true,
             "id": "exp-1794006938471",
             "subcategory": "cartao",
-            "cardTransactions": []
+            "cardTransactions": [],
+            "globalCardId": "exp-1794006938471",
+            "cardLimit": 1500,
+            "cardDueDay": 10
           },
           {
             "name": "Financiamento Veículo",
@@ -2811,6 +2233,54 @@
             "name": "Contas (Internet)",
             "amount": 117.8,
             "category": "essencial"
+          },
+          {
+            "id": "exp-1794272085025",
+            "globalCardId": "exp-1794272085025",
+            "name": "Nubank Vitoria",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardLimit": 2500,
+            "cardDueDay": 2,
+            "cardTransactions": [],
+            "isCustom": true
+          },
+          {
+            "id": "exp-1794272073562",
+            "globalCardId": "exp-1794272073562",
+            "name": "Nubank Marcony",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardLimit": 1000,
+            "cardDueDay": 2,
+            "cardTransactions": [],
+            "isCustom": true
+          },
+          {
+            "id": "exp-1794272057919",
+            "globalCardId": "exp-1794272057919",
+            "name": "Inter",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardLimit": 3000,
+            "cardDueDay": 2,
+            "cardTransactions": [],
+            "isCustom": true
+          },
+          {
+            "id": "exp-1794272047097",
+            "globalCardId": "exp-1794272047097",
+            "name": "Itau",
+            "amount": 0,
+            "category": "estilo",
+            "subcategory": "cartao",
+            "cardLimit": 700,
+            "cardDueDay": 2,
+            "cardTransactions": [],
+            "isCustom": true
           }
         ],
         "customLongTermGoals": [
@@ -2827,7 +2297,9 @@
             "id": "goal-1794008860404"
           }
         ],
-        "monthKey": "2026-10"
+        "monthKey": "2026-10",
+        "excludedGoalIds": [],
+        "goalContributionOverrides": {}
       }
     ],
     "restoredAt": "2026-11-10T00:49:02.007Z"
