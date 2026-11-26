@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-26T21:13:39.265Z",
+  "updatedAt": "2026-11-26T21:14:16.657Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-26T21:07:00.512Z",
+    "exportedAt": "2026-11-26T21:14:15.399Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-26T21:07:00.512Z",
+        "updatedAt": "2026-11-26T21:14:15.399Z",
         "profile": {
           "monthlyIncome": 23500,
           "additionalIncome": 0,
@@ -371,20 +371,44 @@
           },
           {
             "name": "Nubank Marcony",
-            "amount": 535.82,
+            "amount": 878.15,
             "category": "estilo",
             "subcategory": "cartao",
             "cardTransactions": [
               {
-                "id": "csv-tx-1794289511519-1",
+                "id": "csv-tx-1795727652248-1",
+                "description": "Recarga de celular",
+                "amount": 60,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "25/11"
+              },
+              {
+                "id": "csv-tx-1795727652249-2",
+                "description": "Yelumseg Parc8",
+                "amount": 262.43,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "13/11"
+              },
+              {
+                "id": "csv-tx-1795727652249-3",
+                "description": "Apple.Com/Bill",
+                "amount": 19.9,
+                "tag": "assinaturas",
+                "installment": "À vista",
+                "purchaseDate": "11/11"
+              },
+              {
+                "id": "csv-tx-1795727652249-4",
                 "description": "Dl *Uberrides",
                 "amount": 8.94,
                 "tag": "mobilidade",
                 "installment": "À vista",
-                "purchaseDate": "09/11"
+                "purchaseDate": "10/11"
               },
               {
-                "id": "csv-tx-1794289511520-2",
+                "id": "csv-tx-1795727652249-5",
                 "description": "Ifd*Ifood Club",
                 "amount": 12.9,
                 "tag": "gastronomia",
@@ -392,7 +416,7 @@
                 "purchaseDate": "07/11"
               },
               {
-                "id": "csv-tx-1794289511520-4",
+                "id": "csv-tx-1795727652249-7",
                 "description": "Dl*Uberrides",
                 "amount": 13.98,
                 "tag": "mobilidade",
@@ -400,7 +424,7 @@
                 "purchaseDate": "30/10"
               },
               {
-                "id": "csv-tx-1794289511520-5",
+                "id": "csv-tx-1795727652249-8",
                 "description": "Odonto Riso",
                 "amount": 500,
                 "tag": "outros",
@@ -2658,20 +2682,44 @@
       },
       {
         "name": "Nubank Marcony",
-        "amount": 535.82,
+        "amount": 878.15,
         "category": "estilo",
         "subcategory": "cartao",
         "cardTransactions": [
           {
-            "id": "csv-tx-1794289511519-1",
+            "id": "csv-tx-1795727652248-1",
+            "description": "Recarga de celular",
+            "amount": 60,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "25/11"
+          },
+          {
+            "id": "csv-tx-1795727652249-2",
+            "description": "Yelumseg Parc8",
+            "amount": 262.43,
+            "tag": "outros",
+            "installment": "À vista",
+            "purchaseDate": "13/11"
+          },
+          {
+            "id": "csv-tx-1795727652249-3",
+            "description": "Apple.Com/Bill",
+            "amount": 19.9,
+            "tag": "assinaturas",
+            "installment": "À vista",
+            "purchaseDate": "11/11"
+          },
+          {
+            "id": "csv-tx-1795727652249-4",
             "description": "Dl *Uberrides",
             "amount": 8.94,
             "tag": "mobilidade",
             "installment": "À vista",
-            "purchaseDate": "09/11"
+            "purchaseDate": "10/11"
           },
           {
-            "id": "csv-tx-1794289511520-2",
+            "id": "csv-tx-1795727652249-5",
             "description": "Ifd*Ifood Club",
             "amount": 12.9,
             "tag": "gastronomia",
@@ -2679,7 +2727,7 @@
             "purchaseDate": "07/11"
           },
           {
-            "id": "csv-tx-1794289511520-4",
+            "id": "csv-tx-1795727652249-7",
             "description": "Dl*Uberrides",
             "amount": 13.98,
             "tag": "mobilidade",
@@ -2687,7 +2735,7 @@
             "purchaseDate": "30/10"
           },
           {
-            "id": "csv-tx-1794289511520-5",
+            "id": "csv-tx-1795727652249-8",
             "description": "Odonto Riso",
             "amount": 500,
             "tag": "outros",
@@ -2814,7 +2862,7 @@
         "id": "snap-1794294285484",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-26T21:07:00.512Z",
+        "dateCreated": "2026-11-26T21:14:15.399Z",
         "profile": {
           "monthlyIncome": 23500,
           "additionalIncome": 0,
@@ -3176,20 +3224,44 @@
           },
           {
             "name": "Nubank Marcony",
-            "amount": 535.82,
+            "amount": 878.15,
             "category": "estilo",
             "subcategory": "cartao",
             "cardTransactions": [
               {
-                "id": "csv-tx-1794289511519-1",
+                "id": "csv-tx-1795727652248-1",
+                "description": "Recarga de celular",
+                "amount": 60,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "25/11"
+              },
+              {
+                "id": "csv-tx-1795727652249-2",
+                "description": "Yelumseg Parc8",
+                "amount": 262.43,
+                "tag": "outros",
+                "installment": "À vista",
+                "purchaseDate": "13/11"
+              },
+              {
+                "id": "csv-tx-1795727652249-3",
+                "description": "Apple.Com/Bill",
+                "amount": 19.9,
+                "tag": "assinaturas",
+                "installment": "À vista",
+                "purchaseDate": "11/11"
+              },
+              {
+                "id": "csv-tx-1795727652249-4",
                 "description": "Dl *Uberrides",
                 "amount": 8.94,
                 "tag": "mobilidade",
                 "installment": "À vista",
-                "purchaseDate": "09/11"
+                "purchaseDate": "10/11"
               },
               {
-                "id": "csv-tx-1794289511520-2",
+                "id": "csv-tx-1795727652249-5",
                 "description": "Ifd*Ifood Club",
                 "amount": 12.9,
                 "tag": "gastronomia",
@@ -3197,7 +3269,7 @@
                 "purchaseDate": "07/11"
               },
               {
-                "id": "csv-tx-1794289511520-4",
+                "id": "csv-tx-1795727652249-7",
                 "description": "Dl*Uberrides",
                 "amount": 13.98,
                 "tag": "mobilidade",
@@ -3205,7 +3277,7 @@
                 "purchaseDate": "30/10"
               },
               {
-                "id": "csv-tx-1794289511520-5",
+                "id": "csv-tx-1795727652249-8",
                 "description": "Odonto Riso",
                 "amount": 500,
                 "tag": "outros",
