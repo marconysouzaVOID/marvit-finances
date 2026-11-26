@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-26T21:19:05.907Z",
+  "updatedAt": "2026-11-26T21:19:13.529Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-26T21:19:04.359Z",
+    "exportedAt": "2026-11-26T21:19:12.323Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-26T21:19:04.359Z",
+        "updatedAt": "2026-11-26T21:19:12.323Z",
         "profile": {
           "monthlyIncome": 23500,
           "additionalIncome": 0,
@@ -456,13 +456,6 @@
             "isCustom": true,
             "id": "exp-1794272057919",
             "globalCardId": "exp-1794272057919"
-          },
-          {
-            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-            "amount": 8791.22,
-            "category": "investimento",
-            "isCustom": true,
-            "id": "exp-1794007990084"
           },
           {
             "name": "Financiamento Veículo",
@@ -2776,13 +2769,6 @@
         "globalCardId": "exp-1794272057919"
       },
       {
-        "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-        "amount": 8791.22,
-        "category": "investimento",
-        "isCustom": true,
-        "id": "exp-1794007990084"
-      },
-      {
         "name": "Financiamento Veículo",
         "amount": 1253,
         "category": "essencial",
@@ -2876,7 +2862,7 @@
         "id": "snap-1794294285484",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-26T21:19:04.359Z",
+        "dateCreated": "2026-11-26T21:19:12.323Z",
         "profile": {
           "monthlyIncome": 23500,
           "additionalIncome": 0,
@@ -3323,13 +3309,6 @@
             "isCustom": true,
             "id": "exp-1794272057919",
             "globalCardId": "exp-1794272057919"
-          },
-          {
-            "name": "Novo Imovel (Engenheiro, itbi, cartório, etc)",
-            "amount": 8791.22,
-            "category": "investimento",
-            "isCustom": true,
-            "id": "exp-1794007990084"
           },
           {
             "name": "Financiamento Veículo",
