@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-27T19:11:59.994Z",
+  "updatedAt": "2026-11-27T19:12:42.281Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-27T19:11:58.848Z",
+    "exportedAt": "2026-11-27T19:12:41.062Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-27T19:11:58.848Z",
+        "updatedAt": "2026-11-27T19:12:41.062Z",
         "profile": {
           "monthlyIncome": 25792.5,
           "additionalIncome": 0,
@@ -524,7 +524,9 @@
         ],
         "notes": "Compra do primeiro AP",
         "excludedGoalIds": [],
-        "goalContributionOverrides": {}
+        "goalContributionOverrides": {
+          "goal-1794008860404": 0
+        }
       },
       "2026-10": {
         "monthKey": "2026-10",
@@ -2894,7 +2896,7 @@
         "id": "snap-1794294285484",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-27T19:11:58.848Z",
+        "dateCreated": "2026-11-27T19:12:41.062Z",
         "profile": {
           "monthlyIncome": 25792.5,
           "additionalIncome": 0,
@@ -3423,7 +3425,9 @@
         ],
         "notes": "Compra do primeiro AP",
         "excludedGoalIds": [],
-        "goalContributionOverrides": {}
+        "goalContributionOverrides": {
+          "goal-1794008860404": 0
+        }
       }
     ],
     "restoredAt": "2026-11-10T00:49:02.007Z"
