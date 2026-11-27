@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-27T19:15:15.461Z",
+  "updatedAt": "2026-11-27T19:15:23.167Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-27T19:14:49.319Z",
+    "exportedAt": "2026-11-27T19:15:22.013Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-27T19:14:49.319Z",
+        "updatedAt": "2026-11-27T19:15:22.013Z",
         "profile": {
           "monthlyIncome": 25792.5,
           "additionalIncome": 0,
@@ -32,7 +32,7 @@
           },
           {
             "name": "Fifa",
-            "amount": 150,
+            "amount": 147.1,
             "category": "estilo",
             "subcategory": "direto",
             "isCustom": true,
@@ -2369,7 +2369,7 @@
       },
       {
         "name": "Fifa",
-        "amount": 150,
+        "amount": 147.1,
         "category": "estilo",
         "subcategory": "direto",
         "isCustom": true,
@@ -2912,7 +2912,7 @@
         "id": "snap-1794294285484",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-27T19:14:49.319Z",
+        "dateCreated": "2026-11-27T19:15:22.013Z",
         "profile": {
           "monthlyIncome": 25792.5,
           "additionalIncome": 0,
@@ -2935,7 +2935,7 @@
           },
           {
             "name": "Fifa",
-            "amount": 150,
+            "amount": 147.1,
             "category": "estilo",
             "subcategory": "direto",
             "isCustom": true,
