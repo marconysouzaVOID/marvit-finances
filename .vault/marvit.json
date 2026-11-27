@@ -1,15 +1,15 @@
 {
   "pinHash": "2f344c716ea8115298fe0c4a477ecf0038130752c31ee80a0c1383710f3cde36",
-  "updatedAt": "2026-11-27T19:35:45.354Z",
+  "updatedAt": "2026-11-27T19:36:18.197Z",
   "data": {
     "version": "2.4.0",
     "appName": "Marvit&Finances",
-    "exportedAt": "2026-11-27T19:30:39.923Z",
+    "exportedAt": "2026-11-27T19:36:16.966Z",
     "selectedMonthKey": "2026-11",
     "monthsData": {
       "2026-11": {
         "monthKey": "2026-11",
-        "updatedAt": "2026-11-27T19:30:39.923Z",
+        "updatedAt": "2026-11-27T19:36:16.966Z",
         "profile": {
           "monthlyIncome": 25792.5,
           "additionalIncome": 0,
@@ -22,6 +22,13 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Reserva emergência",
+            "amount": 15140,
+            "category": "investimento",
+            "isCustom": true,
+            "id": "exp-1795808176966"
+          },
           {
             "name": "Galão de água",
             "amount": 30,
@@ -2392,6 +2399,13 @@
     },
     "expenses": [
       {
+        "name": "Reserva emergência",
+        "amount": 15140,
+        "category": "investimento",
+        "isCustom": true,
+        "id": "exp-1795808176966"
+      },
+      {
         "name": "Galão de água",
         "amount": 30,
         "category": "estilo",
@@ -2976,7 +2990,7 @@
         "id": "snap-1794294285484",
         "monthKey": "2026-11",
         "monthLabel": "Novembro / 2026",
-        "dateCreated": "2026-11-27T19:30:39.923Z",
+        "dateCreated": "2026-11-27T19:36:16.966Z",
         "profile": {
           "monthlyIncome": 25792.5,
           "additionalIncome": 0,
@@ -2989,6 +3003,13 @@
           "investimento": 25
         },
         "expenses": [
+          {
+            "name": "Reserva emergência",
+            "amount": 15140,
+            "category": "investimento",
+            "isCustom": true,
+            "id": "exp-1795808176966"
+          },
           {
             "name": "Galão de água",
             "amount": 30,
